@@ -1,0 +1,206 @@
+﻿2019-12-18 19:01:22      Execution started.
+2019-12-18 19:01:22      Qlik Sense Server Version     12.334.4
+2019-12-18 19:01:22      CPU Target                    x64
+2019-12-18 19:01:22      Operating System              Windows Server 2012 R2 Standard  (64 bit edition)
+2019-12-18 19:01:22      Wow64 mode                    Not using Wow64
+2019-12-18 19:01:22      Language                      0409 English English
+2019-12-18 19:01:22      Country                       USA United States United States
+2019-12-18 19:01:22      MDAC Version                  6.3.9600.16384
+2019-12-18 19:01:22      MDAC Full Install Version     6.3.9600.16384
+2019-12-18 19:01:22      PreferredCompression          2
+2019-12-18 19:01:22      EnableParallelReload          1
+2019-12-18 19:01:22      ParallelizeQvdLoads           1
+2019-12-18 19:01:22      AutoSaveAfterReload           0
+2019-12-18 19:01:22      BackupBeforeReload            0
+2019-12-18 19:01:22      EnableFlushLog                0
+2019-12-18 19:01:22      UserLogfileCharset            65001
+2019-12-18 19:01:22      OdbcLoginTimeout              -1
+2019-12-18 19:01:22      OdbcConnectionTimeout         -1
+2019-12-18 19:01:22      LongestPossibleLine           1048576
+2019-12-18 19:01:22      MaxCoreMask                   -1
+2019-12-18 19:01:22      WebFileTimeout                0
+2019-12-18 19:01:22      WebFileUserAgent              Mozilla/5.0
+2019-12-18 19:01:22      DontUseInternetCache          1
+2019-12-18 19:01:22      ScriptWantsDbWrite            false
+2019-12-18 19:01:22      ScriptWantsExe                false
+2019-12-18 19:01:22      ICU_FOR_CHARACTER_CLASSIFICATION true
+2019-12-18 19:01:22      ICU_FOR_CODE_PAGES            true
+2019-12-18 19:01:22      ICU_FOR_COLLATION             true
+2019-12-18 19:01:22      ICU_FOR_LOCALE_INFO           true
+2019-12-18 19:01:22      ICU_FOR_SUPPORT_INFO          true
+2019-12-18 19:01:22      ICU_FOR_TIME_ZONE_INFO        true
+2019-12-18 19:01:22      LogFile CodePage Used:        65001
+2019-12-18 19:01:22      UseMemoryFillPattern          1
+2019-12-18 19:01:22      ScriptMode                    Standard (limits system access)
+2019-12-18 19:01:22      SequentialThreadCount         170
+2019-12-18 19:01:22      NumberOfCores (effective)     56
+2019-12-18 19:01:22      ReloadCodebase                Bnf
+2019-12-18 19:01:23      Reload ID                     d58316b8-1e02-4731-b84e-bf16cc6de5d1
+2019-12-18 19:01:23      Reload Executed By            UserDirectory=INTERNAL; UserId=sa_scheduler
+2019-12-18 19:01:23      Process Executing             Qlik Sense Server
+2019-12-18 19:01:23      Process ID                    7136
+2019-12-18 19:01:23      Grpc version                  5.0.0
+2019-12-18 19:01:23      Protobuf version              3.4.0
+2019-12-18 19:01:23 0004 Binary [lib://Apps/d664619f-6291-4a39-b4a5-303a39c76d86]
+2019-12-18 19:02:09 0009 SET vSiteName = 'sp5_sc_sc_211_qlik'
+2019-12-18 19:02:09 0012 SET vSVNConnection = 'qliksense'
+2019-12-18 19:02:09 0013 SET vSVNSiteFolder = 'SiteInformation'
+2019-12-18 19:02:09 0014 SET vSVNFolder = 'BETA_SECURITY_TEST\Security'
+2019-12-18 19:02:09 0015 SET vDBname = 'sp5_sc_sc_211_qlik'
+2019-12-18 19:02:09 0014 SET vConnection = ['sp5_sc_sc_211_qlik']
+2019-12-18 19:02:09 0002 LET vStartTime = now()
+2019-12-18 19:02:09 0003 SET ThousandSep=','
+2019-12-18 19:02:09 0002 SET DecimalSep='.'
+2019-12-18 19:02:09 0003 SET MoneyThousandSep=','
+2019-12-18 19:02:09 0004 SET MoneyDecimalSep='.'
+2019-12-18 19:02:09 0005 SET MoneyFormat='$#,##0.00;($#,##0.00)'
+2019-12-18 19:02:09 0006 SET TimeFormat='h:mm:ss TT'
+2019-12-18 19:02:09 0007 SET DateFormat='M/D/YYYY'
+2019-12-18 19:02:09 0008 SET TimestampFormat='M/D/YYYY h:mm:ss[.fff] TT'
+2019-12-18 19:02:09 0009 SET FirstWeekDay=6
+2019-12-18 19:02:09 0010 SET BrokenWeeks=1
+2019-12-18 19:02:09 0011 SET ReferenceDay=0
+2019-12-18 19:02:09 0012 SET FirstMonthOfYear=1
+2019-12-18 19:02:09 0013 SET CollationLocale='en-US'
+2019-12-18 19:02:09 0015 SET MonthNames='Jan;Feb;Mar;Apr;May;Jun;Jul;Aug;Sep;Oct;Nov;Dec'
+2019-12-18 19:02:09 0016 SET LongMonthNames='January;February;March;April;May;June;July;August;September;October;November;December'
+2019-12-18 19:02:09 0017 SET DayNames='Mon;Tue;Wed;Thu;Fri;Sat;Sun'
+2019-12-18 19:02:09 0018 SET LongDayNames='Monday;Tuesday;Wednesday;Thursday;Friday;Saturday;Sunday'
+2019-12-18 19:02:09 0025 LIB CONNECT TO 'sp5_sc_sc_211_qlik'
+2019-12-18 19:02:11 0027 SET vConnection = 'SPData_Beta'
+2019-12-18 19:02:11 0028 SET vQVDType = 'Extract'
+2019-12-18 19:02:11 0029 LET vQVDTypePrefix = left(vQVDType, 1)
+2019-12-18 19:02:11 0030 LET vFilenamePrefix = vQVDTypePrefix & '_' & upper(vDBname)
+2019-12-18 19:02:11 0031 SET vQVDTransformType = 'Transform'
+2019-12-18 19:02:11 0032 SET vStoreConnection = 'SPData_Beta'
+2019-12-18 19:02:11 0033 SET vQVDStoreType = 'Security'
+2019-12-18 19:02:11 0034 LET vStoreQVDTypePrefix = left(vQVDStoreType, 1)
+2019-12-18 19:02:11 0036 LET vNumDateSet = num('2015-01-01')
+2019-12-18 19:02:11 0038 LET vEntryExitDate = ('2015-01-01')
+2019-12-18 19:02:11 0040 LET vCallRecordDate = ('2015-01-01')
+2019-12-18 19:02:11 0004 USER:
+2019-12-18 19:02:11 0005 select DISTINCT u1.username,e.user_id, p.provider_id from sp_user_eda_group e JOIN sp_eda_group_provider_tree p ON (e.eda_group_id = p.eda_group_id)
+2019-12-18 19:02:11 0006 join sp_user u1 on e.user_id = u1.user_id
+2019-12-18 19:02:11 0007 where u1.active = true
+2019-12-18 19:02:11 0008   AND u1.username <> 'SVPDELETED'
+2019-12-18 19:02:11 0009   and length(trim(u1.username)) > 0
+2019-12-18 19:02:11 0010 UNION 
+2019-12-18 19:02:11 0011 select DISTINCT u.username,u.user_id, u.provider_id from sp_user u
+2019-12-18 19:02:11 0012 where u.active = true
+2019-12-18 19:02:11 0013   AND u.username <> 'SVPDELETED'
+2019-12-18 19:02:11 0014   and length(trim(u.username)) > 0
+2019-12-18 19:02:14      	3 fields found: username, user_id, provider_id, 
+2019-12-18 19:02:14      481,763 lines fetched
+2019-12-18 19:02:14 0013 visibility_group_provider:
+2019-12-18 19:02:14 0014 LEFT JOIN(USER)
+2019-12-18 19:02:14 0015 LOAD
+2019-12-18 19:02:14 0016     visibility_group_id,
+2019-12-18 19:02:14 0017     provider_id
+2019-12-18 19:02:14 0018 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_VISIBILITY_GROUP_PROVIDER_TREE.qvd]
+2019-12-18 19:02:14 0019 (qvd)
+2019-12-18 19:02:14      	2 fields found: visibility_group_id, provider_id, 
+2019-12-18 19:02:14      69,676 lines fetched
+2019-12-18 19:02:14      Joining/Keeping
+2019-12-18 19:02:16 0021 USER_GROUP:
+2019-12-18 19:02:16 0022 LOAD Distinct
+2019-12-18 19:02:16 0023 	user_id,
+2019-12-18 19:02:16 0024 	UPPER('ICOUNT' & '\' & username & '_' & user_id & '_' & provider_id) AS USERID,
+2019-12-18 19:02:16 0025 	
+2019-12-18 19:02:16 0026     provider_id,
+2019-12-18 19:02:16 0027     visibility_group_id
+2019-12-18 19:02:16 0028 RESIDENT USER
+2019-12-18 19:02:22      	4 fields found: user_id, USERID, provider_id, visibility_group_id, 
+2019-12-18 19:02:22      2,159,945 lines fetched
+2019-12-18 19:02:22 0029 DROP TABLE USER
+2019-12-18 19:02:22 0005 RECENT_CLIENT_tmp:
+2019-12-18 19:02:22 0006 SELECT DISTINCT ee.client_id FROM sp_entry_exit ee
+2019-12-18 19:02:22 0007   WHERE ((ee.exit_date IS NULL) OR (ee.exit_date >= '01/01/2015'))
+2019-12-18 19:02:22 0008 UNION
+2019-12-18 19:02:22 0009 SELECT distinct srv.client_id FROM sp_need_service srv
+2019-12-18 19:02:22 0010   where (srv.client_id IS NOT NULL) AND
+2019-12-18 19:02:22 0011         ((srv.provide_start_date >= '01/01/2015')
+2019-12-18 19:02:22 0012           OR (srv.provide_end_date >= '01/01/2015')
+2019-12-18 19:02:22 0013           OR ((srv.provide_end_date IS NULL) AND (srv.shelter_item = TRUE))
+2019-12-18 19:02:22 0014           OR (srv.refer_date >= '01/01/2015')
+2019-12-18 19:02:22 0015         )
+2019-12-18 19:02:22 0016 UNION
+2019-12-18 19:02:22 0017 SELECT DISTINCT n.client_id FROM sp_need n WHERE (n.client_id IS NOT NULL) and (n.date_set >= '01/01/2015')
+2019-12-18 19:02:22 0018 UNION
+2019-12-18 19:02:22 0019 SELECT DISTINCT g.client_id FROM sp_goal g WHERE (g.date_set >= '01/01/2015')
+2019-12-18 19:02:22 0020 UNION
+2019-12-18 19:02:22 0021 SELECT DISTINCT g.client_id FROM sp_goal_actionstep g WHERE (g.date_set >= '01/01/2015')
+2019-12-18 19:02:22 0022 UNION
+2019-12-18 19:02:22 0023 SELECT DISTINCT a.client_id FROM da_answer a WHERE (a.date_effective >= '01/01/2015')
+2019-12-18 19:02:22 0024 UNION
+2019-12-18 19:02:22 0025 SELECT DISTINCT a.client_id FROM da_recordset a WHERE (a.date_effective >= '01/01/2015')
+2019-12-18 19:02:22 0026 UNION
+2019-12-18 19:02:22 0027 SELECT DISTINCT c.client_id FROM sp_call_record c 
+2019-12-18 19:02:22 0028   WHERE (c.client_id IS NOT NULL) AND ((c.end_date IS NULL) OR (c.end_date >= '01/01/2015'))
+2019-12-18 19:02:43      	1 fields found: client_id, 
+2019-12-18 19:02:43      149,086 lines fetched
+2019-12-18 19:02:43 0006 Client_Group:
+2019-12-18 19:02:43 0007 LOAD DISTINCT 
+2019-12-18 19:02:43 0008  	provider_id,
+2019-12-18 19:02:43 0009     visibility_group_id
+2019-12-18 19:02:43 0010 RESIDENT USER_GROUP
+2019-12-18 19:02:45      	2 fields found: provider_id, visibility_group_id, 
+2019-12-18 19:02:45      69,676 lines fetched
+2019-12-18 19:02:45 0009 Client_tmp:
+2019-12-18 19:02:45 0010 LOAD
+2019-12-18 19:02:45 0011     client_id,
+2019-12-18 19:02:45 0012     active
+2019-12-18 19:02:45 0013 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_CLIENT.qvd]
+2019-12-18 19:02:45 0014 (qvd)
+2019-12-18 19:02:46      	2 fields found: client_id, active, 
+2019-12-18 19:02:46      318,523 lines fetched
+2019-12-18 19:02:46 0016 Client:
+2019-12-18 19:02:46 0017 NOCONCATENATE
+2019-12-18 19:02:46 0018 LOAD
+2019-12-18 19:02:46 0019 	client_id
+2019-12-18 19:02:46 0020 RESIDENT Client_tmp
+2019-12-18 19:02:46 0021 WHERE match(active, 1)
+2019-12-18 19:02:47      	1 fields found: client_id, 
+2019-12-18 19:02:47      284,186 lines fetched
+2019-12-18 19:02:47 0023 DROP TABLE Client_tmp
+2019-12-18 19:02:48 0026 keep_only_recent_clients_tmp:
+2019-12-18 19:02:48 0027 INNER JOIN (Client)
+2019-12-18 19:02:48 0028 LOAD
+2019-12-18 19:02:48 0029 	client_id
+2019-12-18 19:02:48 0030 RESIDENT RECENT_CLIENT_tmp
+2019-12-18 19:02:48      	1 fields found: client_id, 
+2019-12-18 19:02:48      149,086 lines fetched
+2019-12-18 19:02:48      Joining/Keeping
+2019-12-18 19:02:48 0034 client_visibility_tmp:
+2019-12-18 19:02:48 0035 INNER JOIN (Client)
+2019-12-18 19:02:48 0036 LOAD
+2019-12-18 19:02:48 0037 
+2019-12-18 19:02:48 0038     client_id,
+2019-12-18 19:02:48 0039     visibility_group_id,
+2019-12-18 19:02:48 0040     visible
+2019-12-18 19:02:48 0041 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_CLIENTVISIBILITY.qvd]
+2019-12-18 19:02:48 0042 (qvd)
+2019-12-18 19:02:49      	3 fields found: client_id, visibility_group_id, visible, 
+2019-12-18 19:02:49      475,919 lines fetched
+2019-12-18 19:02:49      Joining/Keeping
+2019-12-18 19:02:49 0044 Client_visibility:
+2019-12-18 19:02:49 0045 LEFT JOIN (Client_Group)
+2019-12-18 19:02:49 0046 LOAD DISTINCT
+2019-12-18 19:02:49 0047     visibility_group_id,
+2019-12-18 19:02:49 0048     visible,
+2019-12-18 19:02:49 0049     client_id
+2019-12-18 19:02:49 0050 RESIDENT Client
+2019-12-18 19:02:50      	3 fields found: visibility_group_id, visible, client_id, 
+2019-12-18 19:02:50      172,025 lines fetched
+2019-12-18 19:02:50      Joining/Keeping
+2019-12-18 19:16:26 0052 DROP TABLE Client
+2019-12-18 19:16:29 0054 Visible:
+2019-12-18 19:16:29 0055 Load DISTINCT
+2019-12-18 19:16:29 0056 	provider_id,
+2019-12-18 19:16:29 0057     client_id,
+2019-12-18 19:16:29 0058     1 AS Visible
+2019-12-18 19:16:29 0059 RESIDENT Client_Group
+2019-12-18 19:16:29 0060 WHERE visible = 1
+2019-12-18 19:40:20      	3 fields found: provider_id, client_id, Visible, 
+2019-12-18 19:40:20      2,134,667,579 lines fetched
+2019-12-18 19:40:24      Execution Failed
+2019-12-18 19:40:25      Execution finished.

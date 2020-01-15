@@ -1,0 +1,1481 @@
+﻿2020-01-14 13:55:15      Execution started.
+2020-01-14 13:55:15      Qlik Sense Server Version     12.334.4
+2020-01-14 13:55:15      CPU Target                    x64
+2020-01-14 13:55:15      Operating System              Windows Server 2012 R2 Standard  (64 bit edition)
+2020-01-14 13:55:15      Wow64 mode                    Not using Wow64
+2020-01-14 13:55:15      Language                      0409 English English
+2020-01-14 13:55:15      Country                       USA United States United States
+2020-01-14 13:55:15      MDAC Version                  6.3.9600.16384
+2020-01-14 13:55:15      MDAC Full Install Version     6.3.9600.16384
+2020-01-14 13:55:15      PreferredCompression          2
+2020-01-14 13:55:15      EnableParallelReload          1
+2020-01-14 13:55:15      ParallelizeQvdLoads           1
+2020-01-14 13:55:15      AutoSaveAfterReload           0
+2020-01-14 13:55:15      BackupBeforeReload            0
+2020-01-14 13:55:15      EnableFlushLog                0
+2020-01-14 13:55:15      UserLogfileCharset            65001
+2020-01-14 13:55:15      OdbcLoginTimeout              -1
+2020-01-14 13:55:15      OdbcConnectionTimeout         -1
+2020-01-14 13:55:15      LongestPossibleLine           1048576
+2020-01-14 13:55:15      MaxCoreMask                   -1
+2020-01-14 13:55:15      WebFileTimeout                0
+2020-01-14 13:55:15      WebFileUserAgent              Mozilla/5.0
+2020-01-14 13:55:15      DontUseInternetCache          1
+2020-01-14 13:55:15      ScriptWantsDbWrite            false
+2020-01-14 13:55:15      ScriptWantsExe                false
+2020-01-14 13:55:15      ICU_FOR_CHARACTER_CLASSIFICATION true
+2020-01-14 13:55:15      ICU_FOR_CODE_PAGES            true
+2020-01-14 13:55:15      ICU_FOR_COLLATION             true
+2020-01-14 13:55:15      ICU_FOR_LOCALE_INFO           true
+2020-01-14 13:55:15      ICU_FOR_SUPPORT_INFO          true
+2020-01-14 13:55:15      ICU_FOR_TIME_ZONE_INFO        true
+2020-01-14 13:55:15      LogFile CodePage Used:        65001
+2020-01-14 13:55:15      UseMemoryFillPattern          1
+2020-01-14 13:55:15      ScriptMode                    Standard (limits system access)
+2020-01-14 13:55:15      SequentialThreadCount         170
+2020-01-14 13:55:15      NumberOfCores (effective)     56
+2020-01-14 13:55:15      ReloadCodebase                Bnf
+2020-01-14 13:55:17      Reload ID                     45dddc62-5745-498d-bdf5-1e037053ee4f
+2020-01-14 13:55:17      Reload Executed By            UserDirectory=INTERNAL; UserId=sa_scheduler
+2020-01-14 13:55:17      Process Executing             Qlik Sense Server
+2020-01-14 13:55:17      Process ID                    14188
+2020-01-14 13:55:17      Grpc version                  5.0.0
+2020-01-14 13:55:17      Protobuf version              3.4.0
+2020-01-14 13:55:17 0004 Binary [lib://Apps/d664619f-6291-4a39-b4a5-303a39c76d86]
+2020-01-14 13:56:19 0009 SET vSiteName = 'sp5_sc_sc_211_qlik'
+2020-01-14 13:56:19 0012 SET vSVNConnection = 'qliksense'
+2020-01-14 13:56:19 0013 SET vSVNSiteFolder = 'SiteInformation'
+2020-01-14 13:56:19 0014 SET vSVNFolder = 'BETA_SECURITY_TEST\Security'
+2020-01-14 13:56:19 0015 SET vDBname = 'sp5_sc_sc_211_qlik'
+2020-01-14 13:56:19 0014 SET vConnection = ['sp5_sc_sc_211_qlik']
+2020-01-14 13:56:19 0002 LET vStartTime = now()
+2020-01-14 13:56:19 0003 SET ThousandSep=','
+2020-01-14 13:56:19 0002 SET DecimalSep='.'
+2020-01-14 13:56:19 0003 SET MoneyThousandSep=','
+2020-01-14 13:56:19 0004 SET MoneyDecimalSep='.'
+2020-01-14 13:56:19 0005 SET MoneyFormat='$#,##0.00;($#,##0.00)'
+2020-01-14 13:56:19 0006 SET TimeFormat='h:mm:ss TT'
+2020-01-14 13:56:19 0007 SET DateFormat='M/D/YYYY'
+2020-01-14 13:56:19 0008 SET TimestampFormat='M/D/YYYY h:mm:ss[.fff] TT'
+2020-01-14 13:56:19 0009 SET FirstWeekDay=6
+2020-01-14 13:56:19 0010 SET BrokenWeeks=1
+2020-01-14 13:56:19 0011 SET ReferenceDay=0
+2020-01-14 13:56:19 0012 SET FirstMonthOfYear=1
+2020-01-14 13:56:19 0013 SET CollationLocale='en-US'
+2020-01-14 13:56:19 0015 SET MonthNames='Jan;Feb;Mar;Apr;May;Jun;Jul;Aug;Sep;Oct;Nov;Dec'
+2020-01-14 13:56:19 0016 SET LongMonthNames='January;February;March;April;May;June;July;August;September;October;November;December'
+2020-01-14 13:56:19 0017 SET DayNames='Mon;Tue;Wed;Thu;Fri;Sat;Sun'
+2020-01-14 13:56:19 0018 SET LongDayNames='Monday;Tuesday;Wednesday;Thursday;Friday;Saturday;Sunday'
+2020-01-14 13:56:19 0025 LIB CONNECT TO 'sp5_sc_sc_211_qlik'
+2020-01-14 13:56:21 0027 SET vConnection = 'SPData_Beta'
+2020-01-14 13:56:21 0028 SET vQVDType = 'Extract'
+2020-01-14 13:56:21 0029 LET vQVDTypePrefix = left(vQVDType, 1)
+2020-01-14 13:56:21 0030 LET vFilenamePrefix = vQVDTypePrefix & '_' & upper(vDBname)
+2020-01-14 13:56:21 0031 SET vQVDTransformType = 'Transform'
+2020-01-14 13:56:21 0032 SET vStoreConnection = 'SPData_Beta'
+2020-01-14 13:56:21 0033 SET vQVDStoreType = 'Security'
+2020-01-14 13:56:21 0034 LET vStoreQVDTypePrefix = left(vQVDStoreType, 1)
+2020-01-14 13:56:21 0036 LET vNumDateSet = num('2019-01-01')
+2020-01-14 13:56:21 0038 LET vEntryExitDate = ('2019-01-01')
+2020-01-14 13:56:21 0040 LET vCallRecordDate = ('2019-01-01')
+2020-01-14 13:56:21 0004 USER:
+2020-01-14 13:56:21 0005 select DISTINCT u1.username,e.user_id, p.provider_id from sp_user_eda_group e JOIN sp_eda_group_provider_tree p ON (e.eda_group_id = p.eda_group_id)
+2020-01-14 13:56:21 0006 join sp_user u1 on e.user_id = u1.user_id
+2020-01-14 13:56:21 0007 where u1.active = true
+2020-01-14 13:56:21 0008   AND u1.username <> 'SVPDELETED'
+2020-01-14 13:56:21 0009   and length(trim(u1.username)) > 0
+2020-01-14 13:56:21 0010 UNION 
+2020-01-14 13:56:21 0011 select DISTINCT u.username,u.user_id, u.provider_id from sp_user u
+2020-01-14 13:56:21 0012 where u.active = true
+2020-01-14 13:56:21 0013   AND u.username <> 'SVPDELETED'
+2020-01-14 13:56:21 0014   and length(trim(u.username)) > 0
+2020-01-14 13:56:26      	3 fields found: username, user_id, provider_id, 
+2020-01-14 13:56:26      481,763 lines fetched
+2020-01-14 13:56:26 0013 visibility_group_provider:
+2020-01-14 13:56:26 0014 LEFT JOIN(USER)
+2020-01-14 13:56:26 0015 LOAD
+2020-01-14 13:56:26 0016     visibility_group_id,
+2020-01-14 13:56:26 0017     provider_id
+2020-01-14 13:56:26 0018 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_VISIBILITY_GROUP_PROVIDER_TREE.qvd]
+2020-01-14 13:56:26 0019 (qvd)
+2020-01-14 13:56:26      	2 fields found: visibility_group_id, provider_id, 
+2020-01-14 13:56:26      69,676 lines fetched
+2020-01-14 13:56:26      Joining/Keeping
+2020-01-14 13:56:30 0021 USER_GROUP:
+2020-01-14 13:56:30 0022 LOAD Distinct
+2020-01-14 13:56:30 0023 	user_id,
+2020-01-14 13:56:30 0024 	UPPER('ICOUNT' & '\' & username & '_' & user_id & '_' & provider_id) AS USERID,
+2020-01-14 13:56:30 0025 	
+2020-01-14 13:56:30 0026     provider_id,
+2020-01-14 13:56:30 0027     visibility_group_id
+2020-01-14 13:56:30 0028 RESIDENT USER
+2020-01-14 13:56:33      	4 fields found: user_id, USERID, provider_id, visibility_group_id, 
+2020-01-14 13:56:33      2,159,945 lines fetched
+2020-01-14 13:56:33 0029 DROP TABLE USER
+2020-01-14 13:56:33 0005 RECENT_CLIENT_tmp:
+2020-01-14 13:56:33 0006 SELECT DISTINCT ee.client_id FROM sp_entry_exit ee
+2020-01-14 13:56:33 0007   WHERE ((ee.exit_date IS NULL) OR (ee.exit_date >= '01/01/2019'))
+2020-01-14 13:56:33 0008 UNION
+2020-01-14 13:56:33 0009 SELECT distinct srv.client_id FROM sp_need_service srv
+2020-01-14 13:56:33 0010   where (srv.client_id IS NOT NULL) AND
+2020-01-14 13:56:33 0011         ((srv.provide_start_date >= '01/01/2019')
+2020-01-14 13:56:33 0012           OR (srv.provide_end_date >= '01/01/2019')
+2020-01-14 13:56:33 0013           OR ((srv.provide_end_date IS NULL) AND (srv.shelter_item = TRUE))
+2020-01-14 13:56:33 0014           OR (srv.refer_date >= '01/01/2019')
+2020-01-14 13:56:33 0015         )
+2020-01-14 13:56:33 0016 UNION
+2020-01-14 13:56:33 0017 SELECT DISTINCT n.client_id FROM sp_need n WHERE (n.client_id IS NOT NULL) and (n.date_set >= '01/01/2019')
+2020-01-14 13:56:33 0018 UNION
+2020-01-14 13:56:33 0019 SELECT DISTINCT g.client_id FROM sp_goal g WHERE (g.date_set >= '01/01/2019')
+2020-01-14 13:56:33 0020 UNION
+2020-01-14 13:56:33 0021 SELECT DISTINCT g.client_id FROM sp_goal_actionstep g WHERE (g.date_set >= '01/01/2019')
+2020-01-14 13:56:33 0022 UNION
+2020-01-14 13:56:33 0023 SELECT DISTINCT a.client_id FROM da_answer a WHERE (a.date_effective >= '01/01/2019')
+2020-01-14 13:56:33 0024 UNION
+2020-01-14 13:56:33 0025 SELECT DISTINCT a.client_id FROM da_recordset a WHERE (a.date_effective >= '01/01/2019')
+2020-01-14 13:56:33 0026 UNION
+2020-01-14 13:56:33 0027 SELECT DISTINCT c.client_id FROM sp_call_record c 
+2020-01-14 13:56:33 0028   WHERE (c.client_id IS NOT NULL) AND ((c.end_date IS NULL) OR (c.end_date >= '01/01/2019'))
+2020-01-14 13:57:50      	1 fields found: client_id, 
+2020-01-14 13:57:50      78,988 lines fetched
+2020-01-14 13:57:51 0006 Client_Group:
+2020-01-14 13:57:51 0007 LOAD DISTINCT 
+2020-01-14 13:57:51 0008  	provider_id,
+2020-01-14 13:57:51 0009     visibility_group_id
+2020-01-14 13:57:51 0010 RESIDENT USER_GROUP
+2020-01-14 13:57:51      	2 fields found: provider_id, visibility_group_id, 
+2020-01-14 13:57:51      69,676 lines fetched
+2020-01-14 13:57:52 0009 Client_tmp:
+2020-01-14 13:57:52 0010 LOAD
+2020-01-14 13:57:52 0011     client_id,
+2020-01-14 13:57:52 0012     active
+2020-01-14 13:57:52 0013 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_CLIENT.qvd]
+2020-01-14 13:57:52 0014 (qvd)
+2020-01-14 13:57:52      	2 fields found: client_id, active, 
+2020-01-14 13:57:52      318,523 lines fetched
+2020-01-14 13:57:52 0016 Client:
+2020-01-14 13:57:52 0017 NOCONCATENATE
+2020-01-14 13:57:52 0018 LOAD
+2020-01-14 13:57:52 0019 	client_id
+2020-01-14 13:57:52 0020 RESIDENT Client_tmp
+2020-01-14 13:57:52 0021 WHERE match(active, 1)
+2020-01-14 13:57:52      	1 fields found: client_id, 
+2020-01-14 13:57:52      284,186 lines fetched
+2020-01-14 13:57:52 0023 DROP TABLE Client_tmp
+2020-01-14 13:57:52 0026 keep_only_recent_clients_tmp:
+2020-01-14 13:57:52 0027 INNER JOIN (Client)
+2020-01-14 13:57:52 0028 LOAD
+2020-01-14 13:57:52 0029 	client_id
+2020-01-14 13:57:52 0030 RESIDENT RECENT_CLIENT_tmp
+2020-01-14 13:57:52      	1 fields found: client_id, 
+2020-01-14 13:57:52      78,988 lines fetched
+2020-01-14 13:57:52      Joining/Keeping
+2020-01-14 13:57:53 0034 client_visibility_tmp:
+2020-01-14 13:57:53 0035 INNER JOIN (Client)
+2020-01-14 13:57:53 0036 LOAD
+2020-01-14 13:57:53 0037 
+2020-01-14 13:57:53 0038     client_id,
+2020-01-14 13:57:53 0039     visibility_group_id,
+2020-01-14 13:57:53 0040     visible
+2020-01-14 13:57:53 0041 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_CLIENTVISIBILITY.qvd]
+2020-01-14 13:57:53 0042 (qvd)
+2020-01-14 13:57:53      	3 fields found: client_id, visibility_group_id, visible, 
+2020-01-14 13:57:53      475,919 lines fetched
+2020-01-14 13:57:53      Joining/Keeping
+2020-01-14 13:57:53 0044 Client_visibility:
+2020-01-14 13:57:53 0045 LEFT JOIN (Client_Group)
+2020-01-14 13:57:53 0046 LOAD DISTINCT
+2020-01-14 13:57:53 0047     visibility_group_id,
+2020-01-14 13:57:53 0048     visible,
+2020-01-14 13:57:53 0049     client_id
+2020-01-14 13:57:53 0050 RESIDENT Client
+2020-01-14 13:57:53      	3 fields found: visibility_group_id, visible, client_id, 
+2020-01-14 13:57:53      96,697 lines fetched
+2020-01-14 13:57:53      Joining/Keeping
+2020-01-14 13:59:16 0052 DROP TABLE Client
+2020-01-14 13:59:18 0054 Visible:
+2020-01-14 13:59:18 0055 Load DISTINCT
+2020-01-14 13:59:18 0056 	provider_id,
+2020-01-14 13:59:18 0057     client_id,
+2020-01-14 13:59:18 0058     1 AS Visible
+2020-01-14 13:59:18 0059 RESIDENT Client_Group
+2020-01-14 13:59:18 0060 WHERE visible = 1
+2020-01-14 14:02:44      	3 fields found: provider_id, client_id, Visible, 
+2020-01-14 14:02:44      1,139,149,797 lines fetched
+2020-01-14 14:02:44 0062 not_Visible:
+2020-01-14 14:02:44 0063 LEFT JOIN(Visible)
+2020-01-14 14:02:44 0064 Load DISTINCT
+2020-01-14 14:02:44 0065 	provider_id,
+2020-01-14 14:02:44 0066     client_id,
+2020-01-14 14:02:44 0067     1 AS not_Visible
+2020-01-14 14:02:44 0068 RESIDENT Client_Group
+2020-01-14 14:02:44 0069 WHERE visible = 0
+2020-01-14 14:18:20      	3 fields found: provider_id, client_id, not_Visible, 
+2020-01-14 14:18:20      10,539 lines fetched
+2020-01-14 14:18:20      Joining/Keeping
+2020-01-14 14:21:51 0071 DROP TABLE Client_Group
+2020-01-14 14:21:52 0073 client_visibility:
+2020-01-14 14:21:52 0074 NOCONCATENATE
+2020-01-14 14:21:52 0075 LOAD DISTINCT
+2020-01-14 14:21:52 0076 	provider_id,
+2020-01-14 14:21:52 0077 	client_id AS [Client Id]
+2020-01-14 14:21:52 0078 RESIDENT Visible
+2020-01-14 14:21:52 0079 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2020-01-14 14:25:18      	2 fields found: provider_id, Client Id, 
+2020-01-14 14:25:18      1,139,139,258 lines fetched
+2020-01-14 14:25:18 0081 DROP TABLE Visible
+2020-01-14 14:25:19 0083 client_tmp:
+2020-01-14 14:25:19 0084 LEFT JOIN(client_visibility)
+2020-01-14 14:25:19 0085 LOAD
+2020-01-14 14:25:19 0086     [Client Id],
+2020-01-14 14:25:19 0087     [Client Provider Created By Id]
+2020-01-14 14:25:19 0088 FROM [lib://SPData_Beta/Transform/sp5_sc_sc_211_qlik/E_DIM_Client.qvd]
+2020-01-14 14:25:19 0089 (qvd)
+2020-01-14 14:25:19      	2 fields found: Client Id, Client Provider Created By Id, 
+2020-01-14 14:25:19      385,551 lines fetched
+2020-01-14 14:25:19      Joining/Keeping
+2020-01-14 14:32:19 0007 Entry_Exit_Group:
+2020-01-14 14:32:19 0008 LOAD DISTINCT 
+2020-01-14 14:32:19 0009  	provider_id,
+2020-01-14 14:32:19 0010     visibility_group_id
+2020-01-14 14:32:19 0011 RESIDENT USER_GROUP
+2020-01-14 14:32:20      	2 fields found: provider_id, visibility_group_id, 
+2020-01-14 14:32:20      69,676 lines fetched
+2020-01-14 14:32:20 0007 Entry_Exit_tmp:
+2020-01-14 14:32:20 0008 LOAD
+2020-01-14 14:32:20 0009     entry_exit_id,
+2020-01-14 14:32:20 0010     active
+2020-01-14 14:32:20 0011 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_ENTRY_EXIT.qvd]
+2020-01-14 14:32:20 0012 (qvd)
+2020-01-14 14:32:20 0013 WHERE (isNull(num(exit_date)) OR (num(exit_date) >= '43466')) AND (covered_by_roi = 1)
+2020-01-14 14:32:20      	2 fields found: entry_exit_id, active, 
+2020-01-14 14:32:20      64,580 lines fetched
+2020-01-14 14:32:20 0015 Entry_Exit:
+2020-01-14 14:32:20 0016 NOCONCATENATE
+2020-01-14 14:32:20 0017 LOAD
+2020-01-14 14:32:20 0018 	entry_exit_id
+2020-01-14 14:32:20 0019 RESIDENT Entry_Exit_tmp
+2020-01-14 14:32:20 0020 WHERE match(active, 1)
+2020-01-14 14:32:20      	1 fields found: entry_exit_id, 
+2020-01-14 14:32:20      64,580 lines fetched
+2020-01-14 14:32:20 0025 INNER JOIN(Entry_Exit_tmp)
+2020-01-14 14:32:20 0026 LOAD
+2020-01-14 14:32:20 0027     entry_exit_id,
+2020-01-14 14:32:20 0028     visibility_group_id,
+2020-01-14 14:32:20 0029     visible
+2020-01-14 14:32:20 0030 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_ENTRY_EXITVISIBILITY.qvd]
+2020-01-14 14:32:20 0031 (qvd)
+2020-01-14 14:32:21      	3 fields found: entry_exit_id, visibility_group_id, visible, 
+2020-01-14 14:32:21      900,759 lines fetched
+2020-01-14 14:32:21      Joining/Keeping
+2020-01-14 14:32:21 0033 RENAME table Entry_Exit_tmp to Entry_Exit_VIS
+2020-01-14 14:32:21 0035 enrty_exit_visibility_tmp:
+2020-01-14 14:32:21 0036 INNER JOIN (Entry_Exit)
+2020-01-14 14:32:21 0037 LOAD
+2020-01-14 14:32:21 0038     entry_exit_id,
+2020-01-14 14:32:21 0039     visibility_group_id,
+2020-01-14 14:32:21 0040     visible
+2020-01-14 14:32:21 0041 RESIDENT Entry_Exit_VIS
+2020-01-14 14:32:21      	3 fields found: entry_exit_id, visibility_group_id, visible, 
+2020-01-14 14:32:21      44,897 lines fetched
+2020-01-14 14:32:21      Joining/Keeping
+2020-01-14 14:32:21 0042 DROP TABLE Entry_Exit_VIS
+2020-01-14 14:32:21 0044 Entry_Exit_visibility:
+2020-01-14 14:32:21 0045 LEFT JOIN (Entry_Exit_Group)
+2020-01-14 14:32:21 0046 LOAD DISTINCT
+2020-01-14 14:32:21 0047     visibility_group_id,
+2020-01-14 14:32:21 0048     visible,
+2020-01-14 14:32:21 0049     entry_exit_id
+2020-01-14 14:32:21 0050 RESIDENT Entry_Exit
+2020-01-14 14:32:21      	3 fields found: visibility_group_id, visible, entry_exit_id, 
+2020-01-14 14:32:21      43,644 lines fetched
+2020-01-14 14:32:21      Joining/Keeping
+2020-01-14 14:33:15 0052 DROP TABLE Entry_Exit
+2020-01-14 14:33:16 0054 Visible:
+2020-01-14 14:33:16 0055 Load DISTINCT
+2020-01-14 14:33:16 0056 	provider_id,
+2020-01-14 14:33:16 0057     entry_exit_id,
+2020-01-14 14:33:16 0058     1 AS Visible
+2020-01-14 14:33:16 0059 RESIDENT Entry_Exit_Group
+2020-01-14 14:33:16 0060 WHERE visible = 1
+2020-01-14 14:34:48      	3 fields found: provider_id, entry_exit_id, Visible, 
+2020-01-14 14:34:48      578,092,304 lines fetched
+2020-01-14 14:34:48 0062 not_Visible:
+2020-01-14 14:34:48 0063 LEFT JOIN(Visible)
+2020-01-14 14:34:48 0064 Load DISTINCT
+2020-01-14 14:34:48 0065 	provider_id,
+2020-01-14 14:34:48 0066     entry_exit_id,
+2020-01-14 14:34:48 0067     1 AS not_Visible
+2020-01-14 14:34:48 0068 RESIDENT Entry_Exit_Group
+2020-01-14 14:34:48 0069 WHERE visible = 0
+2020-01-14 14:42:13      	3 fields found: provider_id, entry_exit_id, not_Visible, 
+2020-01-14 14:42:13      1,071 lines fetched
+2020-01-14 14:42:13      Joining/Keeping
+2020-01-14 14:43:36 0071 DROP TABLE Entry_Exit_Group
+2020-01-14 14:43:38 0073 Entry_Exit_visibility:
+2020-01-14 14:43:38 0074 NOCONCATENATE
+2020-01-14 14:43:38 0075 LOAD DISTINCT
+2020-01-14 14:43:38 0076 	provider_id,
+2020-01-14 14:43:38 0077 	entry_exit_id AS [Entry Exit Id]
+2020-01-14 14:43:38 0078 RESIDENT Visible
+2020-01-14 14:43:38 0079 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2020-01-14 14:44:54      	2 fields found: provider_id, Entry Exit Id, 
+2020-01-14 14:44:54      578,092,157 lines fetched
+2020-01-14 14:44:54 0081 DROP TABLE Visible
+2020-01-14 14:44:55 0084 LEFT JOIN(Entry_Exit_visibility)
+2020-01-14 14:44:55 0085 LOAD
+2020-01-14 14:44:55 0086     [Entry Exit Id],
+2020-01-14 14:44:55 0087     [Entry Exit Provider Created By Id],
+2020-01-14 14:44:55 0088 	%EEClientId
+2020-01-14 14:44:55 0089 FROM [lib://SPData_Beta/Transform/sp5_sc_sc_211_qlik/E_DIM_Entry_Exit.qvd]
+2020-01-14 14:44:55 0090 (qvd)
+2020-01-14 14:44:55      	3 fields found: Entry Exit Id, Entry Exit Provider Created By Id, %EEClientId, 
+2020-01-14 14:44:55      625,508 lines fetched
+2020-01-14 14:44:55      Joining/Keeping
+2020-01-14 14:59:38 0008 Case_Manager_Group:
+2020-01-14 14:59:38 0009 LOAD DISTINCT 
+2020-01-14 14:59:38 0010  	provider_id,
+2020-01-14 14:59:38 0011     visibility_group_id
+2020-01-14 14:59:38 0012 RESIDENT USER_GROUP
+2020-01-14 14:59:39      	2 fields found: provider_id, visibility_group_id, 
+2020-01-14 14:59:39      69,676 lines fetched
+2020-01-14 14:59:39 0007 Case_Manager_tmp:
+2020-01-14 14:59:39 0008 LOAD
+2020-01-14 14:59:39 0009     case_manager_id,
+2020-01-14 14:59:39 0010     active,
+2020-01-14 14:59:39 0011 	client_id
+2020-01-14 14:59:39 0012 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_CASE_MANAGER.qvd]
+2020-01-14 14:59:39 0013 (qvd)
+2020-01-14 14:59:39 0014 WHERE (isNull(num(date_ended)) OR (num(date_ended) >= '43466'))
+2020-01-14 14:59:39      	3 fields found: case_manager_id, active, client_id, 
+2020-01-14 14:59:39      64,695 lines fetched
+2020-01-14 14:59:39 0016 Case_Manager:
+2020-01-14 14:59:39 0017 NOCONCATENATE
+2020-01-14 14:59:39 0018 LOAD
+2020-01-14 14:59:39 0019 	case_manager_id,
+2020-01-14 14:59:39 0020 	client_id
+2020-01-14 14:59:39 0021 RESIDENT Case_Manager_tmp
+2020-01-14 14:59:39 0022 WHERE match(active, 1)
+2020-01-14 14:59:39      	2 fields found: case_manager_id, client_id, 
+2020-01-14 14:59:39      64,695 lines fetched
+2020-01-14 14:59:39 0024 DROP TABLE Case_Manager_tmp
+2020-01-14 14:59:39 0026 INNER JOIN (Case_Manager)
+2020-01-14 14:59:39 0027 LOAD
+2020-01-14 14:59:39 0028     case_manager_id,
+2020-01-14 14:59:39 0029     visibility_group_id,
+2020-01-14 14:59:39 0030     visible
+2020-01-14 14:59:39 0031 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_CASE_MANAGERVISIBILITY.qvd]
+2020-01-14 14:59:39 0032 (qvd)
+2020-01-14 14:59:40      	3 fields found: case_manager_id, visibility_group_id, visible, 
+2020-01-14 14:59:40      105,225 lines fetched
+2020-01-14 14:59:40      Joining/Keeping
+2020-01-14 14:59:40 0034 Case_Manager_visibility:
+2020-01-14 14:59:40 0035 LEFT JOIN (Case_Manager_Group)
+2020-01-14 14:59:40 0036 LOAD DISTINCT
+2020-01-14 14:59:40 0037     visibility_group_id,
+2020-01-14 14:59:40 0038     visible,
+2020-01-14 14:59:40 0039     case_manager_id,
+2020-01-14 14:59:40 0040 	client_id
+2020-01-14 14:59:40 0041 RESIDENT Case_Manager
+2020-01-14 14:59:40      	4 fields found: visibility_group_id, visible, case_manager_id, client_id, 
+2020-01-14 14:59:40      63,389 lines fetched
+2020-01-14 14:59:40      Joining/Keeping
+2020-01-14 15:00:51 0043 DROP TABLE Case_Manager
+2020-01-14 15:00:53 0045 Visible:
+2020-01-14 15:00:53 0046 Load DISTINCT
+2020-01-14 15:00:53 0047 	provider_id,
+2020-01-14 15:00:53 0048     case_manager_id,
+2020-01-14 15:00:53 0049     1 AS Visible,
+2020-01-14 15:00:53 0050 	client_id
+2020-01-14 15:00:53 0051 RESIDENT Case_Manager_Group
+2020-01-14 15:00:53 0052 WHERE visible = 1
+2020-01-14 15:03:49      	4 fields found: provider_id, case_manager_id, Visible, client_id, 
+2020-01-14 15:03:49      958,096,242 lines fetched
+2020-01-14 15:03:49 0054 not_Visible:
+2020-01-14 15:03:49 0055 LEFT JOIN(Visible)
+2020-01-14 15:03:49 0056 Load DISTINCT
+2020-01-14 15:03:49 0057 	provider_id,
+2020-01-14 15:03:49 0058     case_manager_id,
+2020-01-14 15:03:49 0059     1 AS not_Visible,
+2020-01-14 15:03:49 0060 	client_id
+2020-01-14 15:03:49 0061 RESIDENT Case_Manager_Group
+2020-01-14 15:03:49 0062 WHERE visible = 0
+2020-01-14 15:15:16      	4 fields found: provider_id, case_manager_id, not_Visible, client_id, 
+2020-01-14 15:15:16      149 lines fetched
+2020-01-14 15:15:16      Joining/Keeping
+2020-01-14 15:19:13 0064 DROP TABLE Case_Manager_Group
+2020-01-14 15:19:16 0066 Case_Manager_visibility:
+2020-01-14 15:19:16 0067 NOCONCATENATE
+2020-01-14 15:19:16 0068 LOAD DISTINCT
+2020-01-14 15:19:16 0069 	provider_id,
+2020-01-14 15:19:16 0070 	case_manager_id AS [Case Manager Id],
+2020-01-14 15:19:16 0071 	client_id AS %casemanagerclientid
+2020-01-14 15:19:16 0072 RESIDENT Visible
+2020-01-14 15:19:16 0073 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2020-01-14 15:22:13      	3 fields found: provider_id, Case Manager Id, %casemanagerclientid, 
+2020-01-14 15:22:13      958,096,148 lines fetched
+2020-01-14 15:22:13 0075 DROP TABLE Visible
+2020-01-14 15:22:14 0077 Case_Manager_visibility_tmp:
+2020-01-14 15:22:14 0078 LEFT JOIN(Case_Manager_visibility)
+2020-01-14 15:22:14 0079 LOAD
+2020-01-14 15:22:14 0080     [Case Manager Id]
+2020-01-14 15:22:14 0081 RESIDENt DIM_Case_Manager
+2020-01-14 15:22:14      	1 fields found: Case Manager Id, 
+2020-01-14 15:22:14      64,695 lines fetched
+2020-01-14 15:22:14      Joining/Keeping
+2020-01-14 15:27:04 0009 Goal_Group:
+2020-01-14 15:27:04 0010 LOAD DISTINCT 
+2020-01-14 15:27:04 0011  	provider_id,
+2020-01-14 15:27:04 0012     visibility_group_id
+2020-01-14 15:27:04 0013 RESIDENT USER_GROUP
+2020-01-14 15:27:05      	2 fields found: provider_id, visibility_group_id, 
+2020-01-14 15:27:05      69,676 lines fetched
+2020-01-14 15:27:05 0007 Goal_tmp:
+2020-01-14 15:27:05 0008 LOAD
+2020-01-14 15:27:05 0009     goal_id,
+2020-01-14 15:27:05 0010     active,
+2020-01-14 15:27:05 0011 	client_id
+2020-01-14 15:27:05 0012 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_GOAL.qvd]
+2020-01-14 15:27:05 0013 (qvd)
+2020-01-14 15:27:05 0014 WHERE num(date_set) >= '43466'
+2020-01-14 15:27:05      	3 fields found: goal_id, active, client_id, 
+2020-01-14 15:27:05      10,379 lines fetched
+2020-01-14 15:27:05 0016 Goal:
+2020-01-14 15:27:05 0017 NOCONCATENATE
+2020-01-14 15:27:05 0018 LOAD
+2020-01-14 15:27:05 0019 	goal_id,
+2020-01-14 15:27:05 0020 	client_id
+2020-01-14 15:27:05 0021 RESIDENT Goal_tmp
+2020-01-14 15:27:05 0022 WHERE match(active, 1)
+2020-01-14 15:27:05      	2 fields found: goal_id, client_id, 
+2020-01-14 15:27:05      10,379 lines fetched
+2020-01-14 15:27:05 0024 DROP TABLE Goal_tmp
+2020-01-14 15:27:05 0026 INNER JOIN (Goal)
+2020-01-14 15:27:05 0027 LOAD
+2020-01-14 15:27:05 0028     goal_id,
+2020-01-14 15:27:05 0029     visibility_group_id,
+2020-01-14 15:27:05 0030     visible
+2020-01-14 15:27:05 0031 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_GOALVISIBILITY.qvd]
+2020-01-14 15:27:05 0032 (qvd)
+2020-01-14 15:27:05      	3 fields found: goal_id, visibility_group_id, visible, 
+2020-01-14 15:27:05      44,366 lines fetched
+2020-01-14 15:27:05      Joining/Keeping
+2020-01-14 15:27:05 0034 Goal_visibility:
+2020-01-14 15:27:05 0035 LEFT JOIN (Goal_Group)
+2020-01-14 15:27:05 0036 LOAD DISTINCT
+2020-01-14 15:27:05 0037     visibility_group_id,
+2020-01-14 15:27:05 0038     visible,
+2020-01-14 15:27:05 0039     goal_id,
+2020-01-14 15:27:05 0040 	client_id
+2020-01-14 15:27:05 0041 RESIDENT Goal
+2020-01-14 15:27:05      	4 fields found: visibility_group_id, visible, goal_id, client_id, 
+2020-01-14 15:27:05      3,491 lines fetched
+2020-01-14 15:27:05      Joining/Keeping
+2020-01-14 15:27:06 0043 DROP TABLE Goal
+2020-01-14 15:27:06 0045 Visible:
+2020-01-14 15:27:06 0046 Load DISTINCT
+2020-01-14 15:27:06 0047 	provider_id,
+2020-01-14 15:27:06 0048     goal_id,
+2020-01-14 15:27:06 0049     1 AS Visible,
+2020-01-14 15:27:06 0050 	client_id
+2020-01-14 15:27:06 0051 RESIDENT Goal_Group
+2020-01-14 15:27:06 0052 WHERE visible = 1
+2020-01-14 15:27:06      	4 fields found: provider_id, goal_id, Visible, client_id, 
+2020-01-14 15:27:06      146,741 lines fetched
+2020-01-14 15:27:06 0054 not_Visible:
+2020-01-14 15:27:06 0055 LEFT JOIN(Visible)
+2020-01-14 15:27:06 0056 Load DISTINCT
+2020-01-14 15:27:06 0057 	provider_id,
+2020-01-14 15:27:06 0058     goal_id,
+2020-01-14 15:27:06 0059     1 AS not_Visible,
+2020-01-14 15:27:06 0060 	client_id
+2020-01-14 15:27:06 0061 RESIDENT Goal_Group
+2020-01-14 15:27:06 0062 WHERE visible = 0
+2020-01-14 15:27:06      	4 fields found: provider_id, goal_id, not_Visible, client_id, 
+2020-01-14 15:27:06      0 lines fetched
+2020-01-14 15:27:06      Joining/Keeping
+2020-01-14 15:27:06 0064 DROP TABLE Goal_Group
+2020-01-14 15:27:06 0066 Goal_visibility:
+2020-01-14 15:27:06 0067 NOCONCATENATE
+2020-01-14 15:27:06 0068 LOAD DISTINCT
+2020-01-14 15:27:06 0069 	provider_id,
+2020-01-14 15:27:06 0070 	goal_id AS [Goal Id],
+2020-01-14 15:27:06 0071 	client_id AS %goalclientid
+2020-01-14 15:27:06 0072 RESIDENT Visible
+2020-01-14 15:27:06 0073 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2020-01-14 15:27:07      	3 fields found: provider_id, Goal Id, %goalclientid, 
+2020-01-14 15:27:07      146,741 lines fetched
+2020-01-14 15:27:07 0075 DROP TABLE Visible
+2020-01-14 15:27:07 0077 Goal_visibility_tmp:
+2020-01-14 15:27:07 0078 LEFT JOIN(Goal_visibility)
+2020-01-14 15:27:07 0079 LOAD
+2020-01-14 15:27:07 0080     [Goal Id]
+2020-01-14 15:27:07 0081 RESIDENt DIM_Goal
+2020-01-14 15:27:07      	1 fields found: Goal Id, 
+2020-01-14 15:27:07      10,379 lines fetched
+2020-01-14 15:27:07      Joining/Keeping
+2020-01-14 15:27:07 0010 Goal_Actionstep_Group:
+2020-01-14 15:27:07 0011 LOAD DISTINCT 
+2020-01-14 15:27:07 0012  	provider_id,
+2020-01-14 15:27:07 0013     visibility_group_id
+2020-01-14 15:27:07 0014 RESIDENT USER_GROUP
+2020-01-14 15:27:08      	2 fields found: provider_id, visibility_group_id, 
+2020-01-14 15:27:08      69,676 lines fetched
+2020-01-14 15:27:08 0007 Goal_Actionstep_tmp:
+2020-01-14 15:27:08 0008 LOAD
+2020-01-14 15:27:08 0009     goal_actionstep_id,
+2020-01-14 15:27:08 0010     active,
+2020-01-14 15:27:08 0011 	goal_id
+2020-01-14 15:27:08 0012 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_GOAL_ACTIONSTEP.qvd]
+2020-01-14 15:27:08 0013 (qvd)
+2020-01-14 15:27:08 0014 WHERE num(date_set) >= '43466'
+2020-01-14 15:27:08      	3 fields found: goal_actionstep_id, active, goal_id, 
+2020-01-14 15:27:08      1,199 lines fetched
+2020-01-14 15:27:08 0016 Goal_Actionstep:
+2020-01-14 15:27:08 0017 NOCONCATENATE
+2020-01-14 15:27:08 0018 LOAD
+2020-01-14 15:27:08 0019 	goal_actionstep_id,
+2020-01-14 15:27:08 0020 	goal_id
+2020-01-14 15:27:08 0021 RESIDENT Goal_Actionstep_tmp
+2020-01-14 15:27:08 0022 WHERE match(active, 1)
+2020-01-14 15:27:08      	2 fields found: goal_actionstep_id, goal_id, 
+2020-01-14 15:27:08      1,199 lines fetched
+2020-01-14 15:27:08 0024 DROP TABLE Goal_Actionstep_tmp
+2020-01-14 15:27:08 0026 INNER JOIN (Goal_Actionstep)
+2020-01-14 15:27:08 0027 LOAD
+2020-01-14 15:27:08 0028     goal_actionstep_id,
+2020-01-14 15:27:08 0029     visibility_group_id,
+2020-01-14 15:27:08 0030     visible
+2020-01-14 15:27:08 0031 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_GOAL_ACTIONSTEPVISIBILITY.qvd]
+2020-01-14 15:27:08 0032 (qvd)
+2020-01-14 15:27:08      	3 fields found: goal_actionstep_id, visibility_group_id, visible, 
+2020-01-14 15:27:08      3,485 lines fetched
+2020-01-14 15:27:08      Joining/Keeping
+2020-01-14 15:27:08 0034 Goal_Actionstep_visibility:
+2020-01-14 15:27:08 0035 LEFT JOIN (Goal_Actionstep_Group)
+2020-01-14 15:27:08 0036 LOAD DISTINCT
+2020-01-14 15:27:08 0037     visibility_group_id,
+2020-01-14 15:27:08 0038     visible,
+2020-01-14 15:27:08 0039     goal_actionstep_id,
+2020-01-14 15:27:08 0040 	goal_id
+2020-01-14 15:27:08 0041 RESIDENT Goal_Actionstep
+2020-01-14 15:27:08      	4 fields found: visibility_group_id, visible, goal_actionstep_id, goal_id, 
+2020-01-14 15:27:08      8 lines fetched
+2020-01-14 15:27:08      Joining/Keeping
+2020-01-14 15:27:08 0043 DROP TABLE Goal_Actionstep
+2020-01-14 15:27:08 0045 Visible:
+2020-01-14 15:27:08 0046 Load DISTINCT
+2020-01-14 15:27:08 0047 	provider_id,
+2020-01-14 15:27:08 0048     goal_actionstep_id,
+2020-01-14 15:27:08 0049     1 AS Visible,
+2020-01-14 15:27:08 0050 	goal_id
+2020-01-14 15:27:08 0051 RESIDENT Goal_Actionstep_Group
+2020-01-14 15:27:08 0052 WHERE visible = 1
+2020-01-14 15:27:08      	4 fields found: provider_id, goal_actionstep_id, Visible, goal_id, 
+2020-01-14 15:27:08      8 lines fetched
+2020-01-14 15:27:08 0054 not_Visible:
+2020-01-14 15:27:08 0055 LEFT JOIN(Visible)
+2020-01-14 15:27:08 0056 Load DISTINCT
+2020-01-14 15:27:08 0057 	provider_id,
+2020-01-14 15:27:08 0058     goal_actionstep_id,
+2020-01-14 15:27:08 0059     1 AS not_Visible,
+2020-01-14 15:27:08 0060 	goal_id
+2020-01-14 15:27:08 0061 RESIDENT Goal_Actionstep_Group
+2020-01-14 15:27:08 0062 WHERE visible = 0
+2020-01-14 15:27:09      	4 fields found: provider_id, goal_actionstep_id, not_Visible, goal_id, 
+2020-01-14 15:27:09      0 lines fetched
+2020-01-14 15:27:09      Joining/Keeping
+2020-01-14 15:27:09 0064 DROP TABLE Goal_Actionstep_Group
+2020-01-14 15:27:09 0066 Goal_Actionstep_visibility:
+2020-01-14 15:27:09 0067 NOCONCATENATE
+2020-01-14 15:27:09 0068 LOAD DISTINCT
+2020-01-14 15:27:09 0069 	provider_id,
+2020-01-14 15:27:09 0070 	goal_actionstep_id AS [Goal Actionstep Id],
+2020-01-14 15:27:09 0071 	goal_id AS %goalactionstepgoalid
+2020-01-14 15:27:09 0072 RESIDENT Visible
+2020-01-14 15:27:09 0073 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2020-01-14 15:27:09      	3 fields found: provider_id, Goal Actionstep Id, %goalactionstepgoalid, 
+2020-01-14 15:27:09      8 lines fetched
+2020-01-14 15:27:09 0075 DROP TABLE Visible
+2020-01-14 15:27:09 0077 Goal_Actionstep_visibility_tmp:
+2020-01-14 15:27:09 0078 LEFT JOIN(Goal_Actionstep_visibility)
+2020-01-14 15:27:09 0079 LOAD
+2020-01-14 15:27:09 0080     [Goal Actionstep Id]
+2020-01-14 15:27:09 0081 RESIDENt DIM_Goal_Actionstep
+2020-01-14 15:27:09      	1 fields found: Goal Actionstep Id, 
+2020-01-14 15:27:09      1,199 lines fetched
+2020-01-14 15:27:09      Joining/Keeping
+2020-01-14 15:27:09 0011 Need_Group:
+2020-01-14 15:27:09 0012 LOAD DISTINCT 
+2020-01-14 15:27:09 0013  	provider_id,
+2020-01-14 15:27:09 0014     visibility_group_id
+2020-01-14 15:27:09 0015 RESIDENT USER_GROUP
+2020-01-14 15:27:09      	2 fields found: provider_id, visibility_group_id, 
+2020-01-14 15:27:09      69,676 lines fetched
+2020-01-14 15:27:10 0007 Need_tmp:
+2020-01-14 15:27:10 0008 LOAD
+2020-01-14 15:27:10 0009     need_id,
+2020-01-14 15:27:10 0010     active,
+2020-01-14 15:27:10 0011 	client_id
+2020-01-14 15:27:10 0012 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_NEED.qvd]
+2020-01-14 15:27:10 0013 (qvd)
+2020-01-14 15:27:10 0014 WHERE num(date_set) >= '43466'
+2020-01-14 15:27:10      	3 fields found: need_id, active, client_id, 
+2020-01-14 15:27:10      227,079 lines fetched
+2020-01-14 15:27:10 0016 Need:
+2020-01-14 15:27:10 0017 NOCONCATENATE
+2020-01-14 15:27:10 0018 LOAD
+2020-01-14 15:27:10 0019 	need_id,
+2020-01-14 15:27:10 0020 	client_id
+2020-01-14 15:27:10 0021 RESIDENT Need_tmp
+2020-01-14 15:27:10 0022 WHERE match(active, 1)
+2020-01-14 15:27:10      	2 fields found: need_id, client_id, 
+2020-01-14 15:27:10      227,079 lines fetched
+2020-01-14 15:27:11 0024 DROP TABLE Need_tmp
+2020-01-14 15:27:11 0026 INNER JOIN (Need)
+2020-01-14 15:27:11 0027 LOAD
+2020-01-14 15:27:11 0028     need_id,
+2020-01-14 15:27:11 0029     visibility_group_id,
+2020-01-14 15:27:11 0030     visible
+2020-01-14 15:27:11 0031 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_NEEDVISIBILITY.qvd]
+2020-01-14 15:27:11 0032 (qvd)
+2020-01-14 15:27:13      	3 fields found: need_id, visibility_group_id, visible, 
+2020-01-14 15:27:13      3,892,113 lines fetched
+2020-01-14 15:27:13      Joining/Keeping
+2020-01-14 15:27:14 0034 Need_visibility:
+2020-01-14 15:27:14 0035 LEFT JOIN (Need_Group)
+2020-01-14 15:27:14 0036 LOAD DISTINCT
+2020-01-14 15:27:14 0037     visibility_group_id,
+2020-01-14 15:27:14 0038     visible,
+2020-01-14 15:27:14 0039     need_id,
+2020-01-14 15:27:14 0040 	client_id
+2020-01-14 15:27:14 0041 RESIDENT Need
+2020-01-14 15:27:14      	4 fields found: visibility_group_id, visible, need_id, client_id, 
+2020-01-14 15:27:14      165,192 lines fetched
+2020-01-14 15:27:14      Joining/Keeping
+2020-01-14 15:30:30 0043 DROP TABLE Need
+2020-01-14 15:30:33 0045 Visible:
+2020-01-14 15:30:33 0046 Load DISTINCT
+2020-01-14 15:30:33 0047 	provider_id,
+2020-01-14 15:30:33 0048     need_id,
+2020-01-14 15:30:33 0049     1 AS Visible,
+2020-01-14 15:30:33 0050 	client_id
+2020-01-14 15:30:33 0051 RESIDENT Need_Group
+2020-01-14 15:30:33 0052 WHERE visible = 1
+2020-01-14 15:38:21      	4 fields found: provider_id, need_id, Visible, client_id, 
+2020-01-14 15:38:21      2,411,393,464 lines fetched
+2020-01-14 15:38:21 0054 not_Visible:
+2020-01-14 15:38:21 0055 LEFT JOIN(Visible)
+2020-01-14 15:38:21 0056 Load DISTINCT
+2020-01-14 15:38:21 0057 	provider_id,
+2020-01-14 15:38:21 0058     need_id,
+2020-01-14 15:38:21 0059     1 AS not_Visible,
+2020-01-14 15:38:21 0060 	client_id
+2020-01-14 15:38:21 0061 RESIDENT Need_Group
+2020-01-14 15:38:21 0062 WHERE visible = 0
+2020-01-14 16:05:52      	4 fields found: provider_id, need_id, not_Visible, client_id, 
+2020-01-14 16:05:52      0 lines fetched
+2020-01-14 16:05:52      Joining/Keeping
+2020-01-14 16:16:23 0064 DROP TABLE Need_Group
+2020-01-14 16:16:28 0066 Need_visibility:
+2020-01-14 16:16:28 0067 NOCONCATENATE
+2020-01-14 16:16:28 0068 LOAD DISTINCT
+2020-01-14 16:16:28 0069 	provider_id,
+2020-01-14 16:16:28 0070 	need_id AS [Need Id],
+2020-01-14 16:16:28 0071 	client_id AS %needclientid
+2020-01-14 16:16:28 0072 RESIDENT Visible
+2020-01-14 16:16:28 0073 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2020-01-14 16:24:56      	3 fields found: provider_id, Need Id, %needclientid, 
+2020-01-14 16:24:56      2,411,393,464 lines fetched
+2020-01-14 16:24:56 0075 DROP TABLE Visible
+2020-01-14 16:24:59 0077 Need_visibility_tmp:
+2020-01-14 16:24:59 0078 LEFT JOIN(Need_visibility)
+2020-01-14 16:24:59 0079 LOAD
+2020-01-14 16:24:59 0080     [Need Id]
+2020-01-14 16:24:59 0081 RESIDENt FACT_Need_Service
+2020-01-14 16:25:00      	1 fields found: Need Id, 
+2020-01-14 16:25:00      312,675 lines fetched
+2020-01-14 16:25:00      Joining/Keeping
+2020-01-14 16:44:13 0012 Client_Infraction_Group:
+2020-01-14 16:44:13 0013 LOAD DISTINCT 
+2020-01-14 16:44:13 0014  	provider_id,
+2020-01-14 16:44:13 0015     visibility_group_id
+2020-01-14 16:44:13 0016 RESIDENT USER_GROUP
+2020-01-14 16:44:13      	2 fields found: provider_id, visibility_group_id, 
+2020-01-14 16:44:13      69,676 lines fetched
+2020-01-14 16:44:13 0007 Client_Infraction_tmp:
+2020-01-14 16:44:13 0008 LOAD
+2020-01-14 16:44:13 0009     client_infraction_id,
+2020-01-14 16:44:13 0010     active,
+2020-01-14 16:44:13 0011 	client_id
+2020-01-14 16:44:13 0012 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_CLIENT_INFRACTION.qvd]
+2020-01-14 16:44:13 0013 (qvd)
+2020-01-14 16:44:13 0014 WHERE (isNull(num(bar_end_date)) OR (num(bar_end_date) >= '43466'))
+2020-01-14 16:44:14      	3 fields found: client_infraction_id, active, client_id, 
+2020-01-14 16:44:14      3,015 lines fetched
+2020-01-14 16:44:14 0016 Client_Infraction:
+2020-01-14 16:44:14 0017 NOCONCATENATE
+2020-01-14 16:44:14 0018 LOAD
+2020-01-14 16:44:14 0019 	client_infraction_id,
+2020-01-14 16:44:14 0020 	client_id
+2020-01-14 16:44:14 0021 RESIDENT Client_Infraction_tmp
+2020-01-14 16:44:14 0022 WHERE match(active, 1)
+2020-01-14 16:44:14      	2 fields found: client_infraction_id, client_id, 
+2020-01-14 16:44:14      3,015 lines fetched
+2020-01-14 16:44:14 0024 DROP TABLE Client_Infraction_tmp
+2020-01-14 16:44:14 0026 client_infraction_visibility_tmp:
+2020-01-14 16:44:14 0027 INNER JOIN (Client_Infraction)
+2020-01-14 16:44:14 0028 LOAD
+2020-01-14 16:44:14 0029     client_infraction_id,
+2020-01-14 16:44:14 0030     visibility_group_id,
+2020-01-14 16:44:14 0031     visible
+2020-01-14 16:44:14 0032 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_CLIENT_INFRACTIONVISIBILITY.qvd]
+2020-01-14 16:44:14 0033 (qvd)
+2020-01-14 16:44:14      	3 fields found: client_infraction_id, visibility_group_id, visible, 
+2020-01-14 16:44:14      4,349 lines fetched
+2020-01-14 16:44:14      Joining/Keeping
+2020-01-14 16:44:14 0036 LEFT JOIN (Client_Infraction_Group)
+2020-01-14 16:44:14 0037 LOAD DISTINCT
+2020-01-14 16:44:14 0038     visibility_group_id,
+2020-01-14 16:44:14 0039     visible,
+2020-01-14 16:44:14 0040     client_infraction_id,
+2020-01-14 16:44:14 0041 	client_id
+2020-01-14 16:44:14 0042 RESIDENT Client_Infraction
+2020-01-14 16:44:14      	4 fields found: visibility_group_id, visible, client_infraction_id, client_id, 
+2020-01-14 16:44:14      1,422 lines fetched
+2020-01-14 16:44:14      Joining/Keeping
+2020-01-14 16:44:15 0044 DROP TABLE Client_Infraction
+2020-01-14 16:44:15 0046 Visible:
+2020-01-14 16:44:15 0047 Load DISTINCT
+2020-01-14 16:44:15 0048 	provider_id,
+2020-01-14 16:44:15 0049     client_infraction_id,
+2020-01-14 16:44:15 0050     1 AS Visible,
+2020-01-14 16:44:15 0051 	client_id
+2020-01-14 16:44:15 0052 RESIDENT Client_Infraction_Group
+2020-01-14 16:44:15 0053 WHERE visible = 1
+2020-01-14 16:44:18      	4 fields found: provider_id, client_infraction_id, Visible, client_id, 
+2020-01-14 16:44:18      13,005,150 lines fetched
+2020-01-14 16:44:18 0055 not_Visible:
+2020-01-14 16:44:18 0056 LEFT JOIN(Visible)
+2020-01-14 16:44:18 0057 Load DISTINCT
+2020-01-14 16:44:18 0058 	provider_id,
+2020-01-14 16:44:18 0059     client_infraction_id,
+2020-01-14 16:44:18 0060     1 AS not_Visible,
+2020-01-14 16:44:18 0061 	client_id
+2020-01-14 16:44:18 0062 RESIDENT Client_Infraction_Group
+2020-01-14 16:44:18 0063 WHERE visible = 0
+2020-01-14 16:44:27      	4 fields found: provider_id, client_infraction_id, not_Visible, client_id, 
+2020-01-14 16:44:27      9 lines fetched
+2020-01-14 16:44:27      Joining/Keeping
+2020-01-14 16:44:33 0065 DROP TABLE Client_Infraction_Group
+2020-01-14 16:44:33 0067 Client_Infraction_visibility:
+2020-01-14 16:44:33 0068 NOCONCATENATE
+2020-01-14 16:44:33 0069 LOAD DISTINCT
+2020-01-14 16:44:33 0070 	provider_id,
+2020-01-14 16:44:33 0071 	client_infraction_id AS [Client Incident Id],
+2020-01-14 16:44:33 0072 	client_id AS %clientinfractionclientid
+2020-01-14 16:44:33 0073 RESIDENT Visible
+2020-01-14 16:44:33 0074 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2020-01-14 16:44:39      	3 fields found: provider_id, Client Incident Id, %clientinfractionclientid, 
+2020-01-14 16:44:39      13,005,141 lines fetched
+2020-01-14 16:44:39 0076 DROP TABLE Visible
+2020-01-14 16:44:39 0079 LEFT JOIN(Client_Infraction_visibility)
+2020-01-14 16:44:39 0080 LOAD
+2020-01-14 16:44:39 0081     [Client Incident Id]
+2020-01-14 16:44:39 0082 RESIDENt DIM_Client_Infraction
+2020-01-14 16:44:39      	1 fields found: Client Incident Id, 
+2020-01-14 16:44:39      3,015 lines fetched
+2020-01-14 16:44:39      Joining/Keeping
+2020-01-14 16:44:47 0013 Matrix_Group_Group:
+2020-01-14 16:44:47 0014 LOAD DISTINCT 
+2020-01-14 16:44:47 0015  	provider_id,
+2020-01-14 16:44:47 0016     visibility_group_id
+2020-01-14 16:44:47 0017 RESIDENT USER_GROUP
+2020-01-14 16:44:48      	2 fields found: provider_id, visibility_group_id, 
+2020-01-14 16:44:48      69,676 lines fetched
+2020-01-14 16:44:48 0007 Matrix_Group_tmp:
+2020-01-14 16:44:48 0008 LOAD
+2020-01-14 16:44:48 0009     matrix_group_id,
+2020-01-14 16:44:48 0010 	client_id
+2020-01-14 16:44:48 0011 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_MATRIX_GROUP.qvd]
+2020-01-14 16:44:48 0012 (qvd)
+2020-01-14 16:44:48 0013 WHERE num(date_created) >= '43466'
+2020-01-14 16:44:48      	2 fields found: matrix_group_id, client_id, 
+2020-01-14 16:44:48      1,296 lines fetched
+2020-01-14 16:44:48 0015 Matrix_Group:
+2020-01-14 16:44:48 0016 NOCONCATENATE
+2020-01-14 16:44:48 0017 LOAD
+2020-01-14 16:44:48 0018 	matrix_group_id,
+2020-01-14 16:44:48 0019 	client_id
+2020-01-14 16:44:48 0020 RESIDENT Matrix_Group_tmp
+2020-01-14 16:44:48      	2 fields found: matrix_group_id, client_id, 
+2020-01-14 16:44:48      1,296 lines fetched
+2020-01-14 16:44:48 0023 DROP TABLE Matrix_Group_tmp
+2020-01-14 16:44:48 0025 INNER JOIN (Matrix_Group)
+2020-01-14 16:44:48 0026 LOAD
+2020-01-14 16:44:48 0027     matrix_group_id,
+2020-01-14 16:44:48 0028     visibility_group_id,
+2020-01-14 16:44:48 0029     visible
+2020-01-14 16:44:48 0030 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_MATRIX_GROUPVISIBILITY.qvd]
+2020-01-14 16:44:48 0031 (qvd)
+2020-01-14 16:44:48      	3 fields found: matrix_group_id, visibility_group_id, visible, 
+2020-01-14 16:44:48      2,877 lines fetched
+2020-01-14 16:44:48      Joining/Keeping
+2020-01-14 16:44:48 0033 Matrix_Group_visibility:
+2020-01-14 16:44:48 0034 LEFT JOIN (Matrix_Group_Group)
+2020-01-14 16:44:48 0035 LOAD DISTINCT
+2020-01-14 16:44:48 0036     visibility_group_id,
+2020-01-14 16:44:48 0037     visible,
+2020-01-14 16:44:48 0038     matrix_group_id,
+2020-01-14 16:44:48 0039 	client_id
+2020-01-14 16:44:48 0040 RESIDENT Matrix_Group
+2020-01-14 16:44:48      	4 fields found: visibility_group_id, visible, matrix_group_id, client_id, 
+2020-01-14 16:44:48      38 lines fetched
+2020-01-14 16:44:48      Joining/Keeping
+2020-01-14 16:44:49 0042 DROP TABLE Matrix_Group
+2020-01-14 16:44:49 0044 Visible:
+2020-01-14 16:44:49 0045 Load DISTINCT
+2020-01-14 16:44:49 0046 	provider_id,
+2020-01-14 16:44:49 0047     matrix_group_id,
+2020-01-14 16:44:49 0048     1 AS Visible,
+2020-01-14 16:44:49 0049 	client_id
+2020-01-14 16:44:49 0050 RESIDENT Matrix_Group_Group
+2020-01-14 16:44:49 0051 WHERE visible = 1
+2020-01-14 16:44:49      	4 fields found: provider_id, matrix_group_id, Visible, client_id, 
+2020-01-14 16:44:49      32,244 lines fetched
+2020-01-14 16:44:49 0053 not_Visible:
+2020-01-14 16:44:49 0054 LEFT JOIN(Visible)
+2020-01-14 16:44:49 0055 Load DISTINCT
+2020-01-14 16:44:49 0056 	provider_id,
+2020-01-14 16:44:49 0057     matrix_group_id,
+2020-01-14 16:44:49 0058     1 AS not_Visible,
+2020-01-14 16:44:49 0059 	client_id
+2020-01-14 16:44:49 0060 RESIDENT Matrix_Group_Group
+2020-01-14 16:44:49 0061 WHERE visible = 0
+2020-01-14 16:44:49      	4 fields found: provider_id, matrix_group_id, not_Visible, client_id, 
+2020-01-14 16:44:49      0 lines fetched
+2020-01-14 16:44:49      Joining/Keeping
+2020-01-14 16:44:49 0063 DROP TABLE Matrix_Group_Group
+2020-01-14 16:44:49 0065 Matrix_Group_visibility:
+2020-01-14 16:44:49 0066 NOCONCATENATE
+2020-01-14 16:44:49 0067 LOAD DISTINCT
+2020-01-14 16:44:49 0068 	provider_id,
+2020-01-14 16:44:49 0069 	matrix_group_id AS [Matrix Group Id],
+2020-01-14 16:44:49 0070 	client_id AS %matrixgroupclientid
+2020-01-14 16:44:49 0071 RESIDENT Visible
+2020-01-14 16:44:49 0072 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2020-01-14 16:44:49      	3 fields found: provider_id, Matrix Group Id, %matrixgroupclientid, 
+2020-01-14 16:44:49      32,244 lines fetched
+2020-01-14 16:44:49 0074 DROP TABLE Visible
+2020-01-14 16:44:49 0076 Matrix_Group_visibility_tmp:
+2020-01-14 16:44:49 0077 LEFT JOIN(Matrix_Group_visibility)
+2020-01-14 16:44:49 0078 LOAD
+2020-01-14 16:44:49 0079     [Measurement Group Id] AS [Matrix Group Id]
+2020-01-14 16:44:49 0080 RESIDENT DIM_Measurement_Answer
+2020-01-14 16:44:49      	1 fields found: Matrix Group Id, 
+2020-01-14 16:44:49      319,675 lines fetched
+2020-01-14 16:44:49      Joining/Keeping
+2020-01-14 16:44:49 0014 Call_Record_Group:
+2020-01-14 16:44:49 0015 LOAD DISTINCT 
+2020-01-14 16:44:49 0016  	provider_id,
+2020-01-14 16:44:49 0017     visibility_group_id
+2020-01-14 16:44:49 0018 RESIDENT USER_GROUP
+2020-01-14 16:44:50      	2 fields found: provider_id, visibility_group_id, 
+2020-01-14 16:44:50      69,676 lines fetched
+2020-01-14 16:44:51 0007 Call_Record_tmp:
+2020-01-14 16:44:51 0008 LOAD
+2020-01-14 16:44:51 0009     call_record_id,
+2020-01-14 16:44:51 0010     active,
+2020-01-14 16:44:51 0011 	client_id
+2020-01-14 16:44:51 0012 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_CALL_RECORD.qvd]
+2020-01-14 16:44:51 0013 (qvd)
+2020-01-14 16:44:51 0014 WHERE (isNull(num(end_date)) OR (num(end_date) >= '43466'))
+2020-01-14 16:44:51      	3 fields found: call_record_id, active, client_id, 
+2020-01-14 16:44:51      71,278 lines fetched
+2020-01-14 16:44:51 0016 Call_Record:
+2020-01-14 16:44:51 0017 NOCONCATENATE
+2020-01-14 16:44:51 0018 LOAD
+2020-01-14 16:44:51 0019 	call_record_id,
+2020-01-14 16:44:51 0020 	client_id
+2020-01-14 16:44:51 0021 RESIDENT Call_Record_tmp
+2020-01-14 16:44:51 0022 WHERE match(active, 1)
+2020-01-14 16:44:51      	2 fields found: call_record_id, client_id, 
+2020-01-14 16:44:51      71,278 lines fetched
+2020-01-14 16:44:51 0024 DROP TABLE Call_Record_tmp
+2020-01-14 16:44:51 0027 call_record_visibility_tmp:
+2020-01-14 16:44:51 0028 INNER JOIN (Call_Record)
+2020-01-14 16:44:51 0029 LOAD
+2020-01-14 16:44:51 0030     callrecord_id AS call_record_id,
+2020-01-14 16:44:51 0031     visibility_group_id,
+2020-01-14 16:44:51 0032     visible
+2020-01-14 16:44:51 0033 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_CALLRECORDVISIBILITY.qvd]
+2020-01-14 16:44:51 0034 (qvd)
+2020-01-14 16:44:52      	3 fields found: call_record_id, visibility_group_id, visible, 
+2020-01-14 16:44:52      1,507,520 lines fetched
+2020-01-14 16:44:52      Joining/Keeping
+2020-01-14 16:44:53 0036 Call_Record_visibility:
+2020-01-14 16:44:53 0037 LEFT JOIN (Call_Record_Group)
+2020-01-14 16:44:53 0038 LOAD DISTINCT
+2020-01-14 16:44:53 0039     visibility_group_id,
+2020-01-14 16:44:53 0040     visible,
+2020-01-14 16:44:53 0041     call_record_id,
+2020-01-14 16:44:53 0042 	client_id
+2020-01-14 16:44:53 0043 RESIDENT Call_Record
+2020-01-14 16:44:53      	4 fields found: visibility_group_id, visible, call_record_id, client_id, 
+2020-01-14 16:44:53      67,231 lines fetched
+2020-01-14 16:44:53      Joining/Keeping
+2020-01-14 16:47:04 0045 DROP TABLE Call_Record
+2020-01-14 16:47:06 0047 Visible:
+2020-01-14 16:47:06 0048 Load DISTINCT
+2020-01-14 16:47:06 0049 	provider_id,
+2020-01-14 16:47:06 0050     call_record_id,
+2020-01-14 16:47:06 0051     1 AS Visible,
+2020-01-14 16:47:06 0052 	client_id
+2020-01-14 16:47:06 0053 RESIDENT Call_Record_Group
+2020-01-14 16:47:06 0054 WHERE visible = 1
+2020-01-14 16:51:49      	4 fields found: provider_id, call_record_id, Visible, client_id, 
+2020-01-14 16:51:49      1,048,400,214 lines fetched
+2020-01-14 16:51:50 0056 not_Visible:
+2020-01-14 16:51:50 0057 LEFT JOIN(Visible)
+2020-01-14 16:51:50 0058 Load DISTINCT
+2020-01-14 16:51:50 0059 	provider_id,
+2020-01-14 16:51:50 0060     call_record_id,
+2020-01-14 16:51:50 0061     1 AS not_Visible,
+2020-01-14 16:51:50 0062 	client_id
+2020-01-14 16:51:50 0063 RESIDENT Call_Record_Group
+2020-01-14 16:51:50 0064 WHERE visible = 0
+2020-01-14 17:04:37      	4 fields found: provider_id, call_record_id, not_Visible, client_id, 
+2020-01-14 17:04:37      0 lines fetched
+2020-01-14 17:04:37      Joining/Keeping
+2020-01-14 17:09:40 0066 DROP TABLE Call_Record_Group
+2020-01-14 17:09:42 0068 Call_Record_visibility:
+2020-01-14 17:09:42 0069 NOCONCATENATE
+2020-01-14 17:09:42 0070 LOAD DISTINCT
+2020-01-14 17:09:42 0071 	provider_id,
+2020-01-14 17:09:42 0072 	call_record_id AS [Call Record Id],
+2020-01-14 17:09:42 0073 	client_id AS %callrecordclientid
+2020-01-14 17:09:42 0074 RESIDENT Visible
+2020-01-14 17:09:42 0075 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2020-01-14 17:13:47      	3 fields found: provider_id, Call Record Id, %callrecordclientid, 
+2020-01-14 17:13:47      1,048,400,214 lines fetched
+2020-01-14 17:13:47 0077 DROP TABLE Visible
+2020-01-14 17:13:49 0080 LEFT JOIN(Call_Record_visibility)
+2020-01-14 17:13:49 0081 LOAD
+2020-01-14 17:13:49 0082     [Call Record Id]
+2020-01-14 17:13:49 0083 FROM [lib://SPData_Beta/Transform/sp5_sc_sc_211_qlik/E_FACT_Call_Record.qvd]
+2020-01-14 17:13:49 0084 (qvd)
+2020-01-14 17:13:49      	1 fields found: Call Record Id, 
+2020-01-14 17:13:49      61,635 lines fetched
+2020-01-14 17:13:49      Joining/Keeping
+2020-01-14 17:20:05 0016 Call_Recordset_Group:
+2020-01-14 17:20:05 0017 LOAD DISTINCT 
+2020-01-14 17:20:05 0018  	provider_id,
+2020-01-14 17:20:05 0019     visibility_group_id
+2020-01-14 17:20:05 0020 RESIDENT USER_GROUP
+2020-01-14 17:20:06      	2 fields found: provider_id, visibility_group_id, 
+2020-01-14 17:20:06      69,676 lines fetched
+2020-01-14 17:20:06 0007 Call_Recordset_tmp:
+2020-01-14 17:20:06 0008 LOAD
+2020-01-14 17:20:06 0009     call_recordset_id,
+2020-01-14 17:20:06 0010     active,
+2020-01-14 17:20:06 0011 	call_record_id
+2020-01-14 17:20:06 0012 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_CALL_RECORDSET.qvd]
+2020-01-14 17:20:06 0013 (qvd)
+2020-01-14 17:20:06      	3 fields found: call_recordset_id, active, call_record_id, 
+2020-01-14 17:20:06      8,435 lines fetched
+2020-01-14 17:20:06 0016 Call_Recordset:
+2020-01-14 17:20:06 0017 NOCONCATENATE
+2020-01-14 17:20:06 0018 LOAD
+2020-01-14 17:20:06 0019 	call_recordset_id,
+2020-01-14 17:20:06 0020 	call_record_id
+2020-01-14 17:20:06 0021 RESIDENT Call_Recordset_tmp
+2020-01-14 17:20:06 0022 WHERE match(active, 1)
+2020-01-14 17:20:06      	2 fields found: call_recordset_id, call_record_id, 
+2020-01-14 17:20:06      8,435 lines fetched
+2020-01-14 17:20:06 0024 DROP TABLE Call_Recordset_tmp
+2020-01-14 17:20:06 0026 INNER JOIN (Call_Recordset)
+2020-01-14 17:20:06 0027 LOAD
+2020-01-14 17:20:06 0028     recordset_id as call_recordset_id,
+2020-01-14 17:20:06 0029     visibility_group_id,
+2020-01-14 17:20:06 0030     visible
+2020-01-14 17:20:06 0031 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_CALL_RECORDSETVISIBILITY.qvd]
+2020-01-14 17:20:06 0032 (qvd)
+2020-01-14 17:20:07      	3 fields found: call_recordset_id, visibility_group_id, visible, 
+2020-01-14 17:20:07      31,917 lines fetched
+2020-01-14 17:20:07      Joining/Keeping
+2020-01-14 17:20:07 0034 Call_Recordset_visibility:
+2020-01-14 17:20:07 0035 LEFT JOIN (Call_Recordset_Group)
+2020-01-14 17:20:07 0036 LOAD DISTINCT
+2020-01-14 17:20:07 0037     visibility_group_id,
+2020-01-14 17:20:07 0038     visible,
+2020-01-14 17:20:07 0039     call_record_id,
+2020-01-14 17:20:07 0040 	call_recordset_id
+2020-01-14 17:20:07 0041 RESIDENT Call_Recordset
+2020-01-14 17:20:07      	4 fields found: visibility_group_id, visible, call_record_id, call_recordset_id, 
+2020-01-14 17:20:07      7,699 lines fetched
+2020-01-14 17:20:07      Joining/Keeping
+2020-01-14 17:20:33 0043 DROP TABLE Call_Recordset
+2020-01-14 17:20:34 0045 Visible:
+2020-01-14 17:20:34 0046 Load DISTINCT
+2020-01-14 17:20:34 0047 	provider_id,
+2020-01-14 17:20:34 0048     call_recordset_id,
+2020-01-14 17:20:34 0049     1 AS Visible,
+2020-01-14 17:20:34 0050 	call_record_id
+2020-01-14 17:20:34 0051 RESIDENT Call_Recordset_Group
+2020-01-14 17:20:34 0052 WHERE visible = 1
+2020-01-14 17:21:00      	4 fields found: provider_id, call_recordset_id, Visible, call_record_id, 
+2020-01-14 17:21:00      120,058,206 lines fetched
+2020-01-14 17:21:00 0054 not_Visible:
+2020-01-14 17:21:00 0055 LEFT JOIN(Visible)
+2020-01-14 17:21:00 0056 Load DISTINCT
+2020-01-14 17:21:00 0057 	provider_id,
+2020-01-14 17:21:00 0058     call_recordset_id,
+2020-01-14 17:21:00 0059     1 AS not_Visible,
+2020-01-14 17:21:00 0060 	call_record_id
+2020-01-14 17:21:00 0061 RESIDENT Call_Recordset_Group
+2020-01-14 17:21:00 0062 WHERE visible = 0
+2020-01-14 17:22:23      	4 fields found: provider_id, call_recordset_id, not_Visible, call_record_id, 
+2020-01-14 17:22:23      0 lines fetched
+2020-01-14 17:22:23      Joining/Keeping
+2020-01-14 17:22:48 0064 DROP TABLE Call_Recordset_Group
+2020-01-14 17:22:48 0066 Call_Recordset_visibility:
+2020-01-14 17:22:48 0067 NOCONCATENATE
+2020-01-14 17:22:48 0068 LOAD DISTINCT
+2020-01-14 17:22:48 0069 	provider_id,
+2020-01-14 17:22:48 0070 	call_recordset_id AS [Call Recordset Id],
+2020-01-14 17:22:48 0071 	call_record_id AS %callrecordid
+2020-01-14 17:22:48 0072 RESIDENT Visible
+2020-01-14 17:22:48 0073 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2020-01-14 17:23:06      	3 fields found: provider_id, Call Recordset Id, %callrecordid, 
+2020-01-14 17:23:06      120,058,206 lines fetched
+2020-01-14 17:23:07 0075 DROP TABLE Visible
+2020-01-14 17:23:07 0017 SP_SETTING_DIRECTORY:
+2020-01-14 17:23:07 0018 NOCONCATENATE
+2020-01-14 17:23:07 0019 LOAD 
+2020-01-14 17:23:07 0020     val_varchar
+2020-01-14 17:23:07 0021 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_SETTING.qvd](qvd)
+2020-01-14 17:23:07 0022 WHERE name = 'QLIK_TICKET_HOMEDIR'
+2020-01-14 17:23:07      	1 fields found: val_varchar, 
+2020-01-14 17:23:07      1 lines fetched
+2020-01-14 17:23:07 0013 LET vSiteDirectory = Peek('val_varchar',0,'SP_SETTING_DIRECTORY')
+2020-01-14 17:23:07 0014 SET vUserDirectory = sc211_qlik
+2020-01-14 17:23:07 0015 SET vBowmanDirectory = 'BOWMANSYSTEMS'
+2020-01-14 17:23:07 0017 DROP TABLE SP_SETTING_DIRECTORY
+2020-01-14 17:23:07 0020 USER_ACCESS:
+2020-01-14 17:23:07 0021 LOAD * INLINE [
+2020-01-14 17:23:07 0022     ACCESS, USERID
+2020-01-14 17:23:07 0023     ADMIN, QLIK-PILOT\QSERVICE
+2020-01-14 17:23:07 0024     ADMIN, INTERNAL\SA_SCHEDULER
+2020-01-14 17:23:07 0025 	ADMIN, BOWMANSYSTEMS\LREMALA
+2020-01-14 17:23:07 0026 	ADMIN, BOWMANSYSTEMS\TPIDGEON
+2020-01-14 17:23:07 0027 	ADMIN, BOWMANSYSTEMS\JMILLER
+2020-01-14 17:23:07 0028 	ADMIN, BOWMANSYSTEMS\KSOBERS
+2020-01-14 17:23:07 0029 ]
+2020-01-14 17:23:07      	2 fields found: ACCESS, USERID, 
+2020-01-14 17:23:07      6 lines fetched
+2020-01-14 17:23:07 0018 USER_ACCESS_tmp:
+2020-01-14 17:23:07 0019 SELECT
+2020-01-14 17:23:07 0020 u.user_id, u.username, u.provider_id,
+2020-01-14 17:23:07 0021 CASE WHEN (SELECT true
+2020-01-14 17:23:07 0022            FROM sp_action_in_role AS ar2
+2020-01-14 17:23:07 0023            JOIN "action" AS a2 ON ar2.action_id = a2.action_id
+2020-01-14 17:23:07 0024            JOIN sp_role AS r2 ON ar2.role_id = r2.role_id
+2020-01-14 17:23:07 0025            JOIN sp_user AS u2 ON r2.role_id = u2.role_id 
+2020-01-14 17:23:07 0026            WHERE (u2.user_id = u.user_id) AND (a2.name = 'VISIBILITY_BYPASSSECURITY')) THEN 1
+2020-01-14 17:23:07 0027      WHEN (SELECT true
+2020-01-14 17:23:07 0028            FROM sp_action_in_role AS ar2
+2020-01-14 17:23:07 0029            JOIN "action" AS a2 ON ar2.action_id = a2.action_id
+2020-01-14 17:23:07 0030            JOIN sp_role AS r2 ON ar2.role_id = r2.role_id
+2020-01-14 17:23:07 0031            JOIN sp_user AS u2 ON r2.role_id = u2.role_id 
+2020-01-14 17:23:07 0032            WHERE (u2.user_id = u.user_id) AND (a2.name = 'VISIBILITY_BYPASSSECURITY_TREE')) THEN 2
+2020-01-14 17:23:07 0033      ELSE 3
+2020-01-14 17:23:07 0034 END as user_access_tier
+2020-01-14 17:23:07 0035 , r.name
+2020-01-14 17:23:07 0036 FROM sp_user u
+2020-01-14 17:23:07 0037 INNER JOIN sp_role r on r.role_id = u.role_id
+2020-01-14 17:23:07 0038 UNION
+2020-01-14 17:23:07 0039 select DISTINCT e.user_id,u1.username,p.provider_id, 
+2020-01-14 17:23:07 0040 CASE WHEN (SELECT true
+2020-01-14 17:23:07 0041            FROM sp_action_in_role AS ar2
+2020-01-14 17:23:07 0042            JOIN "action" AS a2 ON ar2.action_id = a2.action_id
+2020-01-14 17:23:07 0043            JOIN sp_role AS r2 ON ar2.role_id = r2.role_id
+2020-01-14 17:23:07 0044            JOIN sp_user AS u2 ON r2.role_id = u2.role_id 
+2020-01-14 17:23:07 0045            WHERE (u2.user_id = u1.user_id) AND (a2.name = 'VISIBILITY_BYPASSSECURITY')) THEN 1
+2020-01-14 17:23:07 0046      WHEN (SELECT true
+2020-01-14 17:23:07 0047            FROM sp_action_in_role AS ar2
+2020-01-14 17:23:07 0048            JOIN "action" AS a2 ON ar2.action_id = a2.action_id
+2020-01-14 17:23:07 0049            JOIN sp_role AS r2 ON ar2.role_id = r2.role_id
+2020-01-14 17:23:07 0050            JOIN sp_user AS u2 ON r2.role_id = u2.role_id 
+2020-01-14 17:23:07 0051            WHERE (u2.user_id = u1.user_id) AND (a2.name = 'VISIBILITY_BYPASSSECURITY_TREE')) THEN 2
+2020-01-14 17:23:07 0052      ELSE 3
+2020-01-14 17:23:07 0053 END as user_access_tier
+2020-01-14 17:23:07 0054 ,r1.name 
+2020-01-14 17:23:07 0055 from sp_user_eda_group e JOIN sp_eda_group_provider_tree p ON (e.eda_group_id = p.eda_group_id)
+2020-01-14 17:23:07 0056 join sp_user u1 on e.user_id = u1.user_id
+2020-01-14 17:23:07 0057 INNER JOIN sp_role r1 on r1.role_id = u1.role_id
+2020-01-14 17:23:07 0058 WHERE u1.active = true
+2020-01-14 17:23:07 0059 ORDER BY 1,2,3
+2020-01-14 17:23:31      	5 fields found: user_id, username, provider_id, user_access_tier, name, 
+2020-01-14 17:23:31      485,093 lines fetched
+2020-01-14 17:23:31 0046 CONCATENATE(USER_ACCESS)
+2020-01-14 17:23:31 0047 LOAD DISTINCT 
+2020-01-14 17:23:31 0048 	'USER' AS ACCESS,
+2020-01-14 17:23:31 0049 	user_id AS %_USER_ID,
+2020-01-14 17:23:31 0050 	UPPER('sc211_qlik' & '\' & username & '_' & user_id & '_' & provider_id) AS USERID,
+2020-01-14 17:23:31 0051 	
+2020-01-14 17:23:31 0052     user_access_tier & '|' & provider_id AS TIER_LINK
+2020-01-14 17:23:31 0053 RESIDENT USER_ACCESS_tmp
+2020-01-14 17:23:32      	4 fields found: ACCESS, %_USER_ID, USERID, TIER_LINK, 
+2020-01-14 17:23:32      485,099 lines fetched
+2020-01-14 17:23:32 0056 DROP TABLE USER_ACCESS_tmp
+2020-01-14 17:23:32 0019 SECURITY_TABLE:
+2020-01-14 17:23:32 0020 NOCONCATENATE
+2020-01-14 17:23:32 0021 LOAD *
+2020-01-14 17:23:32 0022 RESIDENT USER_ACCESS
+2020-01-14 17:23:32      	4 fields found: ACCESS, USERID, %_USER_ID, TIER_LINK, 
+2020-01-14 17:23:32      485,099 lines fetched
+2020-01-14 17:23:33 0020 DROP TABLE USER_ACCESS
+2020-01-14 17:23:33 0021 INHERENT_SECURITY_tmp:
+2020-01-14 17:23:33 0022 
+2020-01-14 17:23:33 0023 	SELECT DISTINCT 1 as user_access_tier, u.provider_id as user_provider_id, p.provider_id as provider_id
+2020-01-14 17:23:33 0024   FROM sp_action_in_role AS ar
+2020-01-14 17:23:33 0025   JOIN "action" AS a ON ar.action_id = a.action_id
+2020-01-14 17:23:33 0026   JOIN sp_role AS r ON ar.role_id = r.role_id
+2020-01-14 17:23:33 0027 	  JOIN sp_user AS u ON r.role_id = u.role_id
+2020-01-14 17:23:33 0028           inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2020-01-14 17:23:33 0029           inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2020-01-14 17:23:33 0030           inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id,
+2020-01-14 17:23:33 0031   sp_provider p
+2020-01-14 17:23:33 0032 	WHERE (u.active = true) AND p.active = true AND(a.name = 'VISIBILITY_BYPASSSECURITY') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2020-01-14 17:23:33 0033 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2020-01-14 17:23:34      	3 fields found: user_access_tier, user_provider_id, provider_id, 
+2020-01-14 17:23:34      40,894 lines fetched
+2020-01-14 17:23:34 0018 CONCATENATE(INHERENT_SECURITY_tmp)
+2020-01-14 17:23:34 0019 
+2020-01-14 17:23:34 0020 
+2020-01-14 17:23:34 0021 SELECT distinct 2 as user_access_tier, uap.user_provider_id, dp.provider_id as provider_id
+2020-01-14 17:23:34 0022 FROM
+2020-01-14 17:23:34 0023 (
+2020-01-14 17:23:34 0024   SELECT DISTINCT u.provider_id as user_provider_id, egpt.provider_id as provider_id
+2020-01-14 17:23:34 0025   FROM sp_user_eda_group ueg
+2020-01-14 17:23:34 0026     JOIN sp_user AS u ON ueg.user_id=u.user_id
+2020-01-14 17:23:34 0027 		join sp_user_eda_group e5 on u.user_id = e5.user_id  
+2020-01-14 17:23:34 0028     JOIN sp_eda_group_provider_tree egpt ON egpt.eda_group_id = ueg.eda_group_id
+2020-01-14 17:23:34 0029     JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2020-01-14 17:23:34 0030     JOIN action a ON a.action_id = aic.action_id
+2020-01-14 17:23:34 0031             inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2020-01-14 17:23:34 0032             inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2020-01-14 17:23:34 0033             inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2020-01-14 17:23:34 0034     WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2020-01-14 17:23:34 0035 	    and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2020-01-14 17:23:34 0036 ) uap
+2020-01-14 17:23:34 0037 JOIN sp_provider_tree dp ON ancestor_provider_id = uap.provider_id
+2020-01-14 17:23:34 0038 WHERE ancestor_provider_id = uap.user_provider_id
+2020-01-14 17:23:34      	3 fields found: user_access_tier, user_provider_id, provider_id, 
+2020-01-14 17:23:34      40,909 lines fetched
+2020-01-14 17:23:34 0041 CONCATENATE(INHERENT_SECURITY_tmp)
+2020-01-14 17:23:34 0042 
+2020-01-14 17:23:34 0043 
+2020-01-14 17:23:34 0044 SELECT distinct 2 as user_access_tier, u.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id
+2020-01-14 17:23:34 0045 FROM sp_user u
+2020-01-14 17:23:34 0046 JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2020-01-14 17:23:34 0047 JOIN action a ON a.action_id = aic.action_id
+2020-01-14 17:23:34 0048 INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+2020-01-14 17:23:34 0049         inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2020-01-14 17:23:34 0050         inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2020-01-14 17:23:34 0051         inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2020-01-14 17:23:34 0052 	WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2020-01-14 17:23:34 0053 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2020-01-14 17:23:34      	3 fields found: user_access_tier, user_provider_id, provider_id, 
+2020-01-14 17:23:34      40,911 lines fetched
+2020-01-14 17:23:34 0057 CONCATENATE(INHERENT_SECURITY_tmp)
+2020-01-14 17:23:34 0058 
+2020-01-14 17:23:34 0059 
+2020-01-14 17:23:34 0060 
+2020-01-14 17:23:34 0061 SELECT distinct 3 as user_access_tier, u.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id
+2020-01-14 17:23:34 0062 FROM sp_user u
+2020-01-14 17:23:34 0063 JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2020-01-14 17:23:34 0064 JOIN action a ON a.action_id = aic.action_id
+2020-01-14 17:23:34 0065 INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+2020-01-14 17:23:34 0066         inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2020-01-14 17:23:34 0067         inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2020-01-14 17:23:34 0068         inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2020-01-14 17:23:34 0069 WHERE (u.active = true) AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2020-01-14 17:23:34 0070 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2020-01-14 17:23:34 0071 AND u.user_id NOT IN (SELECT DISTINCT u2.user_id
+2020-01-14 17:23:34 0072                       FROM sp_user u2
+2020-01-14 17:23:34 0073                       JOIN sp_action_in_role aic2 ON aic2.role_id = u2.role_id
+2020-01-14 17:23:34 0074                       JOIN action a2 ON a2.action_id = aic2.action_id
+2020-01-14 17:23:34 0075                       WHERE (u2.active = true) AND (a2.name in ( 'VISIBILITY_BYPASSSECURITY_TREE', 'VISIBILITY_BYPASSSECURITY')) AND ((u2.last_login > (now()::DATE + interval '-6 months')) or (u2.date_added > (now()::DATE + interval '-1 months')))
+2020-01-14 17:23:34 0076 )
+2020-01-14 17:23:34 0077 	ORDER BY 1,2
+2020-01-14 17:23:35      	3 fields found: user_access_tier, user_provider_id, provider_id, 
+2020-01-14 17:23:35      40,911 lines fetched
+2020-01-14 17:23:35 0079 CONCATENATE(INHERENT_SECURITY_tmp)	
+2020-01-14 17:23:35 0080 	SELECT DISTINCT 1 as user_access_tier, p1.provider_id as user_provider_id, p.provider_id as provider_id
+2020-01-14 17:23:35 0081   FROM sp_action_in_role AS ar
+2020-01-14 17:23:35 0082   JOIN "action" AS a ON ar.action_id = a.action_id
+2020-01-14 17:23:35 0083   JOIN sp_role AS r ON ar.role_id = r.role_id
+2020-01-14 17:23:35 0084 	  JOIN sp_user AS u ON r.role_id = u.role_id
+2020-01-14 17:23:35 0085 	  join sp_user_eda_group e1 on u.user_id = e1.user_id
+2020-01-14 17:23:35 0086 	  JOIN sp_eda_group_provider_tree p1 ON (e1.eda_group_id = p1.eda_group_id)
+2020-01-14 17:23:35 0087           inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2020-01-14 17:23:35 0088           inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2020-01-14 17:23:35 0089           inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id,        
+2020-01-14 17:23:35 0090           sp_provider p
+2020-01-14 17:23:35 0091 	WHERE (u.active = true)AND p.active = true AND(a.name = 'VISIBILITY_BYPASSSECURITY') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2020-01-14 17:23:35 0092 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2020-01-14 17:23:35 0093  
+2020-01-14 17:23:35 0094  UNION
+2020-01-14 17:23:35 0095 --CONCATENATE(INHERENT_SECURITY_tmp)
+2020-01-14 17:23:35 0096 
+2020-01-14 17:23:35 0097 SELECT distinct 2 as user_access_tier, uap.user_provider_id, dp.provider_id as provider_id
+2020-01-14 17:23:35 0098 FROM
+2020-01-14 17:23:35 0099 (
+2020-01-14 17:23:35 0100   SELECT DISTINCT egpt.provider_id as user_provider_id, egpt.provider_id as provider_id
+2020-01-14 17:23:35 0101   FROM sp_user_eda_group ueg
+2020-01-14 17:23:35 0102     JOIN sp_user AS u ON ueg.user_id=u.user_id
+2020-01-14 17:23:35 0103     JOIN sp_eda_group_provider_tree egpt ON egpt.eda_group_id = ueg.eda_group_id
+2020-01-14 17:23:35 0104     JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2020-01-14 17:23:35 0105     JOIN action a ON a.action_id = aic.action_id
+2020-01-14 17:23:35 0106             inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2020-01-14 17:23:35 0107             inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2020-01-14 17:23:35 0108             inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2020-01-14 17:23:35 0109     WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2020-01-14 17:23:35 0110 	    and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2020-01-14 17:23:35 0111 ) uap
+2020-01-14 17:23:35 0112 JOIN sp_provider_tree dp ON ancestor_provider_id = uap.provider_id
+2020-01-14 17:23:35 0113 WHERE ancestor_provider_id = uap.user_provider_id
+2020-01-14 17:23:35 0114  
+2020-01-14 17:23:35 0115 UNION
+2020-01-14 17:23:35 0116 
+2020-01-14 17:23:35 0117 
+2020-01-14 17:23:35 0118 SELECT distinct 2 as user_access_tier, p2.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id
+2020-01-14 17:23:35 0119 FROM sp_user u
+2020-01-14 17:23:35 0120   join sp_user_eda_group e2 on u.user_id = e2.user_id
+2020-01-14 17:23:35 0121 	  JOIN sp_eda_group_provider_tree p2 ON (e2.eda_group_id = p2.eda_group_id)
+2020-01-14 17:23:35 0122 JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2020-01-14 17:23:35 0123 JOIN action a ON a.action_id = aic.action_id
+2020-01-14 17:23:35 0124 INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+2020-01-14 17:23:35 0125         inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2020-01-14 17:23:35 0126         inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2020-01-14 17:23:35 0127         inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2020-01-14 17:23:35 0128 	WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2020-01-14 17:23:35 0129 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2020-01-14 17:23:35 0130  
+2020-01-14 17:23:35 0131 UNION
+2020-01-14 17:23:35 0132 
+2020-01-14 17:23:35 0133 SELECT distinct 3 as user_access_tier, p3.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id
+2020-01-14 17:23:35 0134 FROM sp_user u
+2020-01-14 17:23:35 0135   join sp_user_eda_group e3 on u.user_id = e3.user_id
+2020-01-14 17:23:35 0136 	  JOIN sp_eda_group_provider_tree p3 ON (e3.eda_group_id = p3.eda_group_id)
+2020-01-14 17:23:35 0137 JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2020-01-14 17:23:35 0138 JOIN action a ON a.action_id = aic.action_id
+2020-01-14 17:23:35 0139 INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+2020-01-14 17:23:35 0140         inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2020-01-14 17:23:35 0141         inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2020-01-14 17:23:35 0142         inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2020-01-14 17:23:35 0143 WHERE (u.active = true) AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2020-01-14 17:23:35 0144 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2020-01-14 17:23:35 0145 AND u.user_id NOT IN (SELECT DISTINCT u2.user_id
+2020-01-14 17:23:35 0146                       FROM sp_user u2
+2020-01-14 17:23:35 0147                       JOIN sp_action_in_role aic2 ON aic2.role_id = u2.role_id
+2020-01-14 17:23:35 0148                       JOIN action a2 ON a2.action_id = aic2.action_id
+2020-01-14 17:23:35 0149                       WHERE (u2.active = true) AND (a2.name in ( 'VISIBILITY_BYPASSSECURITY_TREE', 'VISIBILITY_BYPASSSECURITY')) AND ((u2.last_login > (now()::DATE + interval '-6 months')) or (u2.date_added > (now()::DATE + interval '-1 months')))
+2020-01-14 17:23:35 0150 )
+2020-01-14 17:23:35 0151 	ORDER BY 1,2
+2020-01-14 17:49:06      	3 fields found: user_access_tier, user_provider_id, provider_id, 
+2020-01-14 17:49:06      91,142,006 lines fetched
+2020-01-14 17:49:06 0153 INHERENT_SECURITY:
+2020-01-14 17:49:06 0154 NOCONCATENATE
+2020-01-14 17:49:06 0155 LOAD 
+2020-01-14 17:49:06 0156 	user_access_tier & '|' & user_provider_id AS TIER_LINK,
+2020-01-14 17:49:06 0157     user_provider_id AS provider_id,
+2020-01-14 17:49:06 0158     user_access_tier,
+2020-01-14 17:49:06 0159 
+2020-01-14 17:49:06 0160     provider_id AS [Client Provider Created By Id]
+2020-01-14 17:49:06 0161 RESIDENT INHERENT_SECURITY_tmp
+2020-01-14 17:49:32      	4 fields found: TIER_LINK, provider_id, user_access_tier, Client Provider Created By Id, 
+2020-01-14 17:49:32      91,142,006 lines fetched
+2020-01-14 17:49:33 0165 USER_ACCESS:
+2020-01-14 17:49:33 0166 LOAD 0 as %_Access_Key
+2020-01-14 17:49:33 0167 AutoGenerate 0
+2020-01-14 17:49:33      	1 fields found: %_Access_Key, 
+2020-01-14 17:49:33      0 lines fetched
+2020-01-14 17:49:33 0022 Client_Access:
+2020-01-14 17:49:33 0023 NOCONCATENATE
+2020-01-14 17:49:33 0024 LOAD DISTINCT
+2020-01-14 17:49:33 0025 	TIER_LINK,
+2020-01-14 17:49:33 0026     [Client Provider Created By Id]
+2020-01-14 17:49:33 0027 RESIDENT INHERENT_SECURITY
+2020-01-14 17:49:45      	2 fields found: TIER_LINK, Client Provider Created By Id, 
+2020-01-14 17:49:45      91,101,095 lines fetched
+2020-01-14 17:49:45 0008 client_security:
+2020-01-14 17:49:45 0009 LOAD
+2020-01-14 17:49:45 0010     [Client Id],
+2020-01-14 17:49:45 0011     [Client Is Active],
+2020-01-14 17:49:45 0012     [Client Provider Created By Id]
+2020-01-14 17:49:45 0013 FROM [lib://SPData_Beta/Transform/sp5_sc_sc_211_qlik/E_DIM_Client.qvd]
+2020-01-14 17:49:45 0014 (qvd)
+2020-01-14 17:49:46      	3 fields found: Client Id, Client Is Active, Client Provider Created By Id, 
+2020-01-14 17:49:46      385,551 lines fetched
+2020-01-14 17:49:46 0018 keep_only_recent_clients_tmp:
+2020-01-14 17:49:46 0019 INNER JOIN (client_security)
+2020-01-14 17:49:46 0020 LOAD
+2020-01-14 17:49:46 0021 	client_id AS [Client Id]
+2020-01-14 17:49:46 0022 RESIDENT RECENT_CLIENT_tmp
+2020-01-14 17:49:46      	1 fields found: Client Id, 
+2020-01-14 17:49:46      78,988 lines fetched
+2020-01-14 17:49:46      Joining/Keeping
+2020-01-14 17:49:47 0024 DROP TABLE RECENT_CLIENT_tmp
+2020-01-14 17:49:47 0027 INNER JOIN(Client_Access)
+2020-01-14 17:49:47 0028 LOAD DISTINCT
+2020-01-14 17:49:47 0029     'Client' AS %_Access_Type,
+2020-01-14 17:49:47 0030     'Client' & ' | ' & [Client Id] AS %_Access_Key,
+2020-01-14 17:49:47 0031     [Client Id] AS %DIM_CLIENT_KEY,
+2020-01-14 17:49:47 0032     [Client Provider Created By Id],
+2020-01-14 17:49:47 0033     1 AS [INHERENT SECURITY]
+2020-01-14 17:49:47 0034 RESIDENT client_security
+2020-01-14 17:49:47 0035 WHERE match([Client Is Active], 'Yes')
+2020-01-14 17:49:47      	5 fields found: %_Access_Type, %_Access_Key, %DIM_CLIENT_KEY, Client Provider Created By Id, INHERENT SECURITY, 
+2020-01-14 17:49:47      77,738 lines fetched
+2020-01-14 17:49:47      Joining/Keeping
+2020-01-14 17:51:38 0038 DROP TABLE client_security
+2020-01-14 17:51:38 0023 explicit_client_security:
+2020-01-14 17:51:38 0024 NOCONCATENATE
+2020-01-14 17:51:38 0025 LOAD DISTINCT
+2020-01-14 17:51:38 0026 	TIER_LINK,
+2020-01-14 17:51:38 0027     provider_id
+2020-01-14 17:51:38 0028 
+2020-01-14 17:51:38 0029 
+2020-01-14 17:51:38 0030 RESIDENT INHERENT_SECURITY
+2020-01-14 17:51:50      	2 fields found: TIER_LINK, provider_id, 
+2020-01-14 17:51:50      15,605 lines fetched
+2020-01-14 17:51:50 0010 client_security:
+2020-01-14 17:51:50 0011 LOAD
+2020-01-14 17:51:50 0012     [Client Id],
+2020-01-14 17:51:50 0013     provider_id
+2020-01-14 17:51:50 0014 
+2020-01-14 17:51:50 0015 RESIDENT client_visibility
+2020-01-14 17:53:16      	2 fields found: Client Id, provider_id, 
+2020-01-14 17:53:16      1,139,139,258 lines fetched
+2020-01-14 17:53:17 0018 JOIN(explicit_client_security)
+2020-01-14 17:53:17 0019 LOAD 
+2020-01-14 17:53:17 0020     'Client' AS %_Access_Type,
+2020-01-14 17:53:17 0021     'Client' & ' | ' & [Client Id] AS %_Access_Key,
+2020-01-14 17:53:17 0022     [Client Id],
+2020-01-14 17:53:17 0023     provider_id,
+2020-01-14 17:53:17 0024 
+2020-01-14 17:53:17 0025     1 AS [EXPLICIT SECURITY]
+2020-01-14 17:53:17 0026 RESIDENT client_security
+2020-01-14 17:56:18      	5 fields found: %_Access_Type, %_Access_Key, Client Id, provider_id, EXPLICIT SECURITY, 
+2020-01-14 17:56:18      1,139,139,258 lines fetched
+2020-01-14 17:56:18      Joining/Keeping
+2020-01-14 18:04:40 0028 DROP TABLE client_security
+2020-01-14 18:04:40 0030 CONCATENATE(Client_Access)
+2020-01-14 18:04:40 0031 LOAD
+2020-01-14 18:04:40 0032 	TIER_LINK,
+2020-01-14 18:04:40 0033     %_Access_Type,
+2020-01-14 18:04:40 0034     %_Access_Key,
+2020-01-14 18:04:40 0035     [Client Id] AS %DIM_CLIENT_KEY,
+2020-01-14 18:04:40 0036     provider_id,
+2020-01-14 18:04:40 0037 
+2020-01-14 18:04:40 0038     [EXPLICIT SECURITY]
+2020-01-14 18:04:40 0039 RESIDENT explicit_client_security
+2020-01-14 18:11:37      	6 fields found: TIER_LINK, %_Access_Type, %_Access_Key, %DIM_CLIENT_KEY, provider_id, EXPLICIT SECURITY, 
+2020-01-14 18:11:37      2,333,398,643 lines fetched
+2020-01-14 18:11:37 0041 DROP TABLE explicit_client_security
+2020-01-14 18:11:41 0024 INHERENT_SECURITY_tmp_EE:
+2020-01-14 18:11:41 0025 NOCONCATENATE
+2020-01-14 18:11:41 0026 LOAD 
+2020-01-14 18:11:41 0027 	user_access_tier & '|' & user_provider_id AS TIER_LINK,
+2020-01-14 18:11:41 0028     user_provider_id AS provider_id,
+2020-01-14 18:11:41 0029 	user_provider_id,
+2020-01-14 18:11:41 0030     user_access_tier,
+2020-01-14 18:11:41 0031     provider_id AS [Client Provider Created By Id]
+2020-01-14 18:11:41 0032 RESIDENT INHERENT_SECURITY_tmp
+2020-01-14 18:12:09      	5 fields found: TIER_LINK, provider_id, user_provider_id, user_access_tier, Client Provider Created By Id, 
+2020-01-14 18:12:09      91,142,006 lines fetched
+2020-01-14 18:12:09 0011 JOIN(INHERENT_SECURITY_tmp_EE)
+2020-01-14 18:12:09 0012 LOAD
+2020-01-14 18:12:09 0013     entry_exit_id,
+2020-01-14 18:12:09 0014     provider_id,
+2020-01-14 18:12:09 0015 	client_id
+2020-01-14 18:12:09 0016 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_ENTRY_EXIT.qvd]
+2020-01-14 18:12:09 0017 (qvd)
+2020-01-14 18:12:09 0018 WHERE (isNull(num(exit_date)) OR (num(exit_date) >= '43466')) AND (covered_by_roi = 1)
+2020-01-14 18:12:09      	3 fields found: entry_exit_id, provider_id, client_id, 
+2020-01-14 18:12:09      64,580 lines fetched
+2020-01-14 18:12:09      Joining/Keeping
+2020-01-14 18:13:07 0020 JOIN(INHERENT_SECURITY_tmp_EE)
+2020-01-14 18:13:07 0021 LOAD
+2020-01-14 18:13:07 0022     entry_exit_id,
+2020-01-14 18:13:07 0023     provider_creating_id as provider_id,
+2020-01-14 18:13:07 0024 	client_id
+2020-01-14 18:13:07 0025 FROM [lib://SPData_Beta/Extract/sp5_sc_sc_211_qlik/E_SP5_SC_SC_211_QLIK_SP_ENTRY_EXIT.qvd]
+2020-01-14 18:13:07 0026 (qvd)
+2020-01-14 18:13:07 0027 WHERE (isNull(num(exit_date)) OR (num(exit_date) >= '43466')) AND (covered_by_roi = 1)
+2020-01-14 18:13:07      	3 fields found: entry_exit_id, provider_id, client_id, 
+2020-01-14 18:13:07      64,580 lines fetched
+2020-01-14 18:13:07      Joining/Keeping
+2020-01-14 18:15:06 0029 ENTRY_EXIT_ACCESS:
+2020-01-14 18:15:06 0030 NOCONCATENATE
+2020-01-14 18:15:06 0031 LOAD 
+2020-01-14 18:15:06 0032 	client_id AS [Client Id],
+2020-01-14 18:15:06 0033     entry_exit_id AS [Entry Exit Id],
+2020-01-14 18:15:06 0034 	user_access_tier & '|' & user_provider_id AS TIER_LINK
+2020-01-14 18:15:06 0035 RESIDENT INHERENT_SECURITY_tmp_EE
+2020-01-14 18:17:45      	3 fields found: Client Id, Entry Exit Id, TIER_LINK, 
+2020-01-14 18:17:45      465,183,524 lines fetched
+2020-01-14 18:17:45 0036 DROP TABLE INHERENT_SECURITY_tmp
+2020-01-14 18:17:45 0038 STORE ENTRY_EXIT_ACCESS INTO [lib://SPData_Beta/Security/sp5_sc_sc_211_qlik/SENTRY_EXIT_ACCESS.qvd]
+2020-01-14 18:18:40 0039 DROP TABLE INHERENT_SECURITY_tmp_EE
+2020-01-14 18:18:43 0041 USER_ACCESS:
+2020-01-14 18:18:43 0042 LOAD 0 as %_Access_Key
+2020-01-14 18:18:43 0043 AutoGenerate 0
+2020-01-14 18:18:43      	1 fields found: %_Access_Key, 
+2020-01-14 18:18:43      0 lines fetched
+2020-01-14 18:18:43 0025 CLIENT_EE_ACCESS:
+2020-01-14 18:18:43 0026 LOAD DISTINCT 
+2020-01-14 18:18:43 0027     [Entry Exit Id] AS %DIM_EE_KEY_SEC,
+2020-01-14 18:18:43 0028 	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST,
+2020-01-14 18:18:43 0029 	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_TEST,
+2020-01-14 18:18:43 0030 	
+2020-01-14 18:18:43 0031 	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_ENTRY_ANSWER,
+2020-01-14 18:18:43 0032 	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_EXIT_ANSWER
+2020-01-14 18:18:43 0033 RESIDENT ENTRY_EXIT_ACCESS
+2020-01-14 18:26:25      	5 fields found: %DIM_EE_KEY_SEC, %SA_CLIENT_TEST, %SA_EE_TEST, %SA_EE_ENTRY_ANSWER, %SA_EE_EXIT_ANSWER, 
+2020-01-14 18:26:25      114,587 lines fetched
+2020-01-14 18:26:26 0010 DROP TABLE ENTRY_EXIT_ACCESS
+2020-01-14 18:26:28 0013 explicit_entry_exit_security:
+2020-01-14 18:26:28 0014 NOCONCATENATE
+2020-01-14 18:26:28 0015 LOAD DISTINCT
+2020-01-14 18:26:28 0016 	TIER_LINK,
+2020-01-14 18:26:28 0017     provider_id
+2020-01-14 18:26:28 0018 RESIDENT INHERENT_SECURITY
+2020-01-14 18:26:42      	2 fields found: TIER_LINK, provider_id, 
+2020-01-14 18:26:42      15,605 lines fetched
+2020-01-14 18:26:43 0020 entry_exit_security:
+2020-01-14 18:26:43 0021 NOCONCATENATE
+2020-01-14 18:26:43 0022 LOAD
+2020-01-14 18:26:43 0023     [Entry Exit Id],
+2020-01-14 18:26:43 0024     provider_id,
+2020-01-14 18:26:43 0025 	%EEClientId
+2020-01-14 18:26:43 0026 RESIDENT Entry_Exit_visibility
+2020-01-14 18:27:39      	3 fields found: Entry Exit Id, provider_id, %EEClientId, 
+2020-01-14 18:27:39      578,092,157 lines fetched
+2020-01-14 18:27:39 0028 DROP TABLE Entry_Exit_visibility
+2020-01-14 18:27:46 0030 JOIN(explicit_entry_exit_security)
+2020-01-14 18:27:46 0031 LOAD 
+2020-01-14 18:27:46 0032     [Entry Exit Id],
+2020-01-14 18:27:46 0033     provider_id,
+2020-01-14 18:27:46 0034     1 AS [EXPLICIT SECURITY],
+2020-01-14 18:27:46 0035 	%EEClientId
+2020-01-14 18:27:46 0036 RESIDENT entry_exit_security
+2020-01-14 18:28:55      	4 fields found: Entry Exit Id, provider_id, EXPLICIT SECURITY, %EEClientId, 
+2020-01-14 18:28:55      578,092,157 lines fetched
+2020-01-14 18:28:55      Joining/Keeping
+2020-01-14 18:30:10      	
+2020-01-14 18:30:10      Action canceled by user
+2020-01-14 18:30:21      Execution Failed
+2020-01-14 18:30:21      Execution finished.

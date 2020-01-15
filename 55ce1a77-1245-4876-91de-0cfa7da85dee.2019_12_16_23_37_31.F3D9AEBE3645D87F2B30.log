@@ -1,0 +1,1611 @@
+﻿2019-12-16 23:37:31      Execution started.
+2019-12-16 23:37:31      Qlik Sense Server Version     12.334.4
+2019-12-16 23:37:31      CPU Target                    x64
+2019-12-16 23:37:31      Operating System              Windows Server 2012 R2 Standard  (64 bit edition)
+2019-12-16 23:37:31      Wow64 mode                    Not using Wow64
+2019-12-16 23:37:31      Language                      0409 English English
+2019-12-16 23:37:31      Country                       USA United States United States
+2019-12-16 23:37:31      MDAC Version                  6.3.9600.16384
+2019-12-16 23:37:31      MDAC Full Install Version     6.3.9600.16384
+2019-12-16 23:37:31      PreferredCompression          2
+2019-12-16 23:37:31      EnableParallelReload          1
+2019-12-16 23:37:31      ParallelizeQvdLoads           1
+2019-12-16 23:37:31      AutoSaveAfterReload           0
+2019-12-16 23:37:31      BackupBeforeReload            0
+2019-12-16 23:37:31      EnableFlushLog                0
+2019-12-16 23:37:31      UserLogfileCharset            65001
+2019-12-16 23:37:31      OdbcLoginTimeout              -1
+2019-12-16 23:37:31      OdbcConnectionTimeout         -1
+2019-12-16 23:37:31      LongestPossibleLine           1048576
+2019-12-16 23:37:31      MaxCoreMask                   -1
+2019-12-16 23:37:31      WebFileTimeout                0
+2019-12-16 23:37:31      WebFileUserAgent              Mozilla/5.0
+2019-12-16 23:37:31      DontUseInternetCache          1
+2019-12-16 23:37:31      ScriptWantsDbWrite            false
+2019-12-16 23:37:31      ScriptWantsExe                false
+2019-12-16 23:37:31      ICU_FOR_CHARACTER_CLASSIFICATION true
+2019-12-16 23:37:31      ICU_FOR_CODE_PAGES            true
+2019-12-16 23:37:31      ICU_FOR_COLLATION             true
+2019-12-16 23:37:31      ICU_FOR_LOCALE_INFO           true
+2019-12-16 23:37:31      ICU_FOR_SUPPORT_INFO          true
+2019-12-16 23:37:31      ICU_FOR_TIME_ZONE_INFO        true
+2019-12-16 23:37:31      LogFile CodePage Used:        65001
+2019-12-16 23:37:31      UseMemoryFillPattern          1
+2019-12-16 23:37:31      ScriptMode                    Standard (limits system access)
+2019-12-16 23:37:31      SequentialThreadCount         170
+2019-12-16 23:37:31      NumberOfCores (effective)     56
+2019-12-16 23:37:31      ReloadCodebase                Bnf
+2019-12-16 23:37:32      Reload ID                     971875cb-b931-49e9-af35-816a58d23a7e
+2019-12-16 23:37:32      Reload Executed By            UserDirectory=INTERNAL; UserId=sa_scheduler
+2019-12-16 23:37:32      Process Executing             Qlik Sense Server
+2019-12-16 23:37:32      Process ID                    5976
+2019-12-16 23:37:32      Grpc version                  5.0.0
+2019-12-16 23:37:32      Protobuf version              3.4.0
+2019-12-16 23:37:32 0004 Binary [lib://Apps/81157f91-e5c3-44a1-9119-35fc9d44aa2b]
+2019-12-16 23:37:47 0009 SET vSiteName = 'sp5_il_nil_qlik'
+2019-12-16 23:37:47 0012 SET vSVNConnection = 'qliksense'
+2019-12-16 23:37:47 0013 SET vSVNSiteFolder = 'SiteInformation'
+2019-12-16 23:37:47 0014 SET vSVNFolder = 'BETA_SECURITY_TEST\Security'
+2019-12-16 23:37:47 0015 SET vDBname = 'sp5_il_nil_qlik'
+2019-12-16 23:37:47 0014 SET vConnection = ['sp5_il_nil_qlik']
+2019-12-16 23:37:47 0002 LET vStartTime = now()
+2019-12-16 23:37:47 0003 SET ThousandSep=','
+2019-12-16 23:37:47 0002 SET DecimalSep='.'
+2019-12-16 23:37:47 0003 SET MoneyThousandSep=','
+2019-12-16 23:37:47 0004 SET MoneyDecimalSep='.'
+2019-12-16 23:37:47 0005 SET MoneyFormat='$#,##0.00;($#,##0.00)'
+2019-12-16 23:37:47 0006 SET TimeFormat='h:mm:ss TT'
+2019-12-16 23:37:47 0007 SET DateFormat='M/D/YYYY'
+2019-12-16 23:37:47 0008 SET TimestampFormat='M/D/YYYY h:mm:ss[.fff] TT'
+2019-12-16 23:37:47 0009 SET FirstWeekDay=6
+2019-12-16 23:37:47 0010 SET BrokenWeeks=1
+2019-12-16 23:37:47 0011 SET ReferenceDay=0
+2019-12-16 23:37:47 0012 SET FirstMonthOfYear=1
+2019-12-16 23:37:47 0013 SET CollationLocale='en-US'
+2019-12-16 23:37:47 0015 SET MonthNames='Jan;Feb;Mar;Apr;May;Jun;Jul;Aug;Sep;Oct;Nov;Dec'
+2019-12-16 23:37:47 0016 SET LongMonthNames='January;February;March;April;May;June;July;August;September;October;November;December'
+2019-12-16 23:37:47 0017 SET DayNames='Mon;Tue;Wed;Thu;Fri;Sat;Sun'
+2019-12-16 23:37:47 0018 SET LongDayNames='Monday;Tuesday;Wednesday;Thursday;Friday;Saturday;Sunday'
+2019-12-16 23:37:47 0025 LIB CONNECT TO 'sp5_il_nil_qlik'
+2019-12-16 23:37:48 0027 SET vConnection = 'SPData_Beta'
+2019-12-16 23:37:48 0028 SET vQVDType = 'Extract'
+2019-12-16 23:37:48 0029 LET vQVDTypePrefix = left(vQVDType, 1)
+2019-12-16 23:37:48 0030 LET vFilenamePrefix = vQVDTypePrefix & '_' & upper(vDBname)
+2019-12-16 23:37:48 0031 SET vQVDTransformType = 'Transform'
+2019-12-16 23:37:48 0032 SET vStoreConnection = 'SPData_Beta'
+2019-12-16 23:37:48 0033 SET vQVDStoreType = 'Security'
+2019-12-16 23:37:48 0034 LET vStoreQVDTypePrefix = left(vQVDStoreType, 1)
+2019-12-16 23:37:48 0036 LET vNumDateSet = num('2015-01-01')
+2019-12-16 23:37:48 0038 LET vEntryExitDate = ('2015-01-01')
+2019-12-16 23:37:48 0040 LET vCallRecordDate = ('2015-01-01')
+2019-12-16 23:37:48 0004 USER:
+2019-12-16 23:37:48 0005 select DISTINCT u1.username,e.user_id, p.provider_id from sp_user_eda_group e JOIN sp_eda_group_provider_tree p ON (e.eda_group_id = p.eda_group_id)
+2019-12-16 23:37:48 0006 join sp_user u1 on e.user_id = u1.user_id
+2019-12-16 23:37:48 0007 where u1.active = true
+2019-12-16 23:37:48 0008   AND u1.username <> 'SVPDELETED'
+2019-12-16 23:37:48 0009   and length(trim(u1.username)) > 0
+2019-12-16 23:37:48 0010 UNION 
+2019-12-16 23:37:48 0011 select DISTINCT u.username,u.user_id, u.provider_id from sp_user u
+2019-12-16 23:37:48 0012 where u.active = true
+2019-12-16 23:37:48 0013   AND u.username <> 'SVPDELETED'
+2019-12-16 23:37:48 0014   and length(trim(u.username)) > 0
+2019-12-16 23:37:49      	3 fields found: username, user_id, provider_id, 
+2019-12-16 23:37:49      175,105 lines fetched
+2019-12-16 23:37:49 0013 visibility_group_provider:
+2019-12-16 23:37:49 0014 LEFT JOIN(USER)
+2019-12-16 23:37:49 0015 LOAD
+2019-12-16 23:37:49 0016     visibility_group_id,
+2019-12-16 23:37:49 0017     provider_id
+2019-12-16 23:37:49 0018 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_VISIBILITY_GROUP_PROVIDER_TREE.qvd]
+2019-12-16 23:37:49 0019 (qvd)
+2019-12-16 23:37:49      	2 fields found: visibility_group_id, provider_id, 
+2019-12-16 23:37:49      36,026 lines fetched
+2019-12-16 23:37:49      Joining/Keeping
+2019-12-16 23:37:49 0021 USER_GROUP:
+2019-12-16 23:37:49 0022 LOAD Distinct
+2019-12-16 23:37:49 0023 	user_id,
+2019-12-16 23:37:49 0024 	UPPER('ICOUNT' & '\' & username & '_' & user_id & '_' & provider_id) AS USERID,
+2019-12-16 23:37:49 0025 	
+2019-12-16 23:37:49 0026     provider_id,
+2019-12-16 23:37:49 0027     visibility_group_id
+2019-12-16 23:37:49 0028 RESIDENT USER
+2019-12-16 23:37:51      	4 fields found: user_id, USERID, provider_id, visibility_group_id, 
+2019-12-16 23:37:51      1,164,199 lines fetched
+2019-12-16 23:37:51 0029 DROP TABLE USER
+2019-12-16 23:37:51 0005 RECENT_CLIENT_tmp:
+2019-12-16 23:37:51 0006 SELECT DISTINCT ee.client_id FROM sp_entry_exit ee
+2019-12-16 23:37:51 0007   WHERE ((ee.exit_date IS NULL) OR (ee.exit_date >= '01/01/2015'))
+2019-12-16 23:37:51 0008 UNION
+2019-12-16 23:37:51 0009 SELECT distinct srv.client_id FROM sp_need_service srv
+2019-12-16 23:37:51 0010   where (srv.client_id IS NOT NULL) AND
+2019-12-16 23:37:51 0011         ((srv.provide_start_date >= '01/01/2015')
+2019-12-16 23:37:51 0012           OR (srv.provide_end_date >= '01/01/2015')
+2019-12-16 23:37:51 0013           OR ((srv.provide_end_date IS NULL) AND (srv.shelter_item = TRUE))
+2019-12-16 23:37:51 0014           OR (srv.refer_date >= '01/01/2015')
+2019-12-16 23:37:51 0015         )
+2019-12-16 23:37:51 0016 UNION
+2019-12-16 23:37:51 0017 SELECT DISTINCT n.client_id FROM sp_need n WHERE (n.client_id IS NOT NULL) and (n.date_set >= '01/01/2015')
+2019-12-16 23:37:51 0018 UNION
+2019-12-16 23:37:51 0019 SELECT DISTINCT g.client_id FROM sp_goal g WHERE (g.date_set >= '01/01/2015')
+2019-12-16 23:37:51 0020 UNION
+2019-12-16 23:37:51 0021 SELECT DISTINCT g.client_id FROM sp_goal_actionstep g WHERE (g.date_set >= '01/01/2015')
+2019-12-16 23:37:51 0022 UNION
+2019-12-16 23:37:51 0023 SELECT DISTINCT a.client_id FROM da_answer a WHERE (a.date_effective >= '01/01/2015')
+2019-12-16 23:37:51 0024 UNION
+2019-12-16 23:37:51 0025 SELECT DISTINCT a.client_id FROM da_recordset a WHERE (a.date_effective >= '01/01/2015')
+2019-12-16 23:37:51 0026 UNION
+2019-12-16 23:37:51 0027 SELECT DISTINCT c.client_id FROM sp_call_record c 
+2019-12-16 23:37:51 0028   WHERE (c.client_id IS NOT NULL) AND ((c.end_date IS NULL) OR (c.end_date >= '01/01/2015'))
+2019-12-16 23:38:01      	1 fields found: client_id, 
+2019-12-16 23:38:01      102,206 lines fetched
+2019-12-16 23:38:01 0006 Client_Group:
+2019-12-16 23:38:01 0007 LOAD DISTINCT 
+2019-12-16 23:38:01 0008  	provider_id,
+2019-12-16 23:38:01 0009     visibility_group_id
+2019-12-16 23:38:01 0010 RESIDENT USER_GROUP
+2019-12-16 23:38:01      	2 fields found: provider_id, visibility_group_id, 
+2019-12-16 23:38:01      36,026 lines fetched
+2019-12-16 23:38:01 0009 Client_tmp:
+2019-12-16 23:38:01 0010 LOAD
+2019-12-16 23:38:01 0011     client_id,
+2019-12-16 23:38:01 0012     active
+2019-12-16 23:38:01 0013 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_CLIENT.qvd]
+2019-12-16 23:38:01 0014 (qvd)
+2019-12-16 23:38:02      	2 fields found: client_id, active, 
+2019-12-16 23:38:02      223,634 lines fetched
+2019-12-16 23:38:02 0016 Client:
+2019-12-16 23:38:02 0017 NOCONCATENATE
+2019-12-16 23:38:02 0018 LOAD
+2019-12-16 23:38:02 0019 	client_id
+2019-12-16 23:38:02 0020 RESIDENT Client_tmp
+2019-12-16 23:38:02 0021 WHERE match(active, 1)
+2019-12-16 23:38:02      	1 fields found: client_id, 
+2019-12-16 23:38:02      211,232 lines fetched
+2019-12-16 23:38:02 0023 DROP TABLE Client_tmp
+2019-12-16 23:38:02 0026 keep_only_recent_clients_tmp:
+2019-12-16 23:38:02 0027 INNER JOIN (Client)
+2019-12-16 23:38:02 0028 LOAD
+2019-12-16 23:38:02 0029 	client_id
+2019-12-16 23:38:02 0030 RESIDENT RECENT_CLIENT_tmp
+2019-12-16 23:38:02      	1 fields found: client_id, 
+2019-12-16 23:38:02      102,206 lines fetched
+2019-12-16 23:38:02      Joining/Keeping
+2019-12-16 23:38:02 0034 client_visibility_tmp:
+2019-12-16 23:38:02 0035 INNER JOIN (Client)
+2019-12-16 23:38:02 0036 LOAD
+2019-12-16 23:38:02 0037 
+2019-12-16 23:38:02 0038     client_id,
+2019-12-16 23:38:02 0039     visibility_group_id,
+2019-12-16 23:38:02 0040     visible
+2019-12-16 23:38:02 0041 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_CLIENTVISIBILITY.qvd]
+2019-12-16 23:38:02 0042 (qvd)
+2019-12-16 23:38:02      	3 fields found: client_id, visibility_group_id, visible, 
+2019-12-16 23:38:02      245,844 lines fetched
+2019-12-16 23:38:02      Joining/Keeping
+2019-12-16 23:38:03 0044 Client_visibility:
+2019-12-16 23:38:03 0045 LEFT JOIN (Client_Group)
+2019-12-16 23:38:03 0046 LOAD DISTINCT
+2019-12-16 23:38:03 0047     visibility_group_id,
+2019-12-16 23:38:03 0048     visible,
+2019-12-16 23:38:03 0049     client_id
+2019-12-16 23:38:03 0050 RESIDENT Client
+2019-12-16 23:38:03      	3 fields found: visibility_group_id, visible, client_id, 
+2019-12-16 23:38:03      111,521 lines fetched
+2019-12-16 23:38:03      Joining/Keeping
+2019-12-16 23:38:09 0052 DROP TABLE Client
+2019-12-16 23:38:09 0054 Visible:
+2019-12-16 23:38:09 0055 Load DISTINCT
+2019-12-16 23:38:09 0056 	provider_id,
+2019-12-16 23:38:09 0057     client_id,
+2019-12-16 23:38:09 0058     1 AS Visible
+2019-12-16 23:38:09 0059 RESIDENT Client_Group
+2019-12-16 23:38:09 0060 WHERE visible = 1
+2019-12-16 23:38:25      	3 fields found: provider_id, client_id, Visible, 
+2019-12-16 23:38:25      96,716,512 lines fetched
+2019-12-16 23:38:25 0062 not_Visible:
+2019-12-16 23:38:25 0063 LEFT JOIN(Visible)
+2019-12-16 23:38:25 0064 Load DISTINCT
+2019-12-16 23:38:25 0065 	provider_id,
+2019-12-16 23:38:25 0066     client_id,
+2019-12-16 23:38:25 0067     1 AS not_Visible
+2019-12-16 23:38:25 0068 RESIDENT Client_Group
+2019-12-16 23:38:25 0069 WHERE visible = 0
+2019-12-16 23:39:33      	3 fields found: provider_id, client_id, not_Visible, 
+2019-12-16 23:39:33      41,323 lines fetched
+2019-12-16 23:39:33      Joining/Keeping
+2019-12-16 23:39:51 0071 DROP TABLE Client_Group
+2019-12-16 23:39:51 0073 client_visibility:
+2019-12-16 23:39:51 0074 NOCONCATENATE
+2019-12-16 23:39:51 0075 LOAD DISTINCT
+2019-12-16 23:39:51 0076 	provider_id,
+2019-12-16 23:39:51 0077 	client_id AS [Client Id]
+2019-12-16 23:39:51 0078 RESIDENT Visible
+2019-12-16 23:39:51 0079 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2019-12-16 23:40:14      	2 fields found: provider_id, Client Id, 
+2019-12-16 23:40:14      96,708,752 lines fetched
+2019-12-16 23:40:14 0081 DROP TABLE Visible
+2019-12-16 23:40:14 0083 client_tmp:
+2019-12-16 23:40:14 0084 LEFT JOIN(client_visibility)
+2019-12-16 23:40:14 0085 LOAD
+2019-12-16 23:40:14 0086     [Client Id],
+2019-12-16 23:40:14 0087     [Client Provider Created By Id]
+2019-12-16 23:40:14 0088 FROM [lib://SPData_Beta/Transform/sp5_il_nil_qlik/E_DIM_Client.qvd]
+2019-12-16 23:40:14 0089 (qvd)
+2019-12-16 23:40:14      	2 fields found: Client Id, Client Provider Created By Id, 
+2019-12-16 23:40:14      254,201 lines fetched
+2019-12-16 23:40:14      Joining/Keeping
+2019-12-16 23:40:45 0007 Entry_Exit_Group:
+2019-12-16 23:40:45 0008 LOAD DISTINCT 
+2019-12-16 23:40:45 0009  	provider_id,
+2019-12-16 23:40:45 0010     visibility_group_id
+2019-12-16 23:40:45 0011 RESIDENT USER_GROUP
+2019-12-16 23:40:46      	2 fields found: provider_id, visibility_group_id, 
+2019-12-16 23:40:46      36,026 lines fetched
+2019-12-16 23:40:46 0007 Entry_Exit_tmp:
+2019-12-16 23:40:46 0008 LOAD
+2019-12-16 23:40:46 0009     entry_exit_id,
+2019-12-16 23:40:46 0010     active
+2019-12-16 23:40:46 0011 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_ENTRY_EXIT.qvd]
+2019-12-16 23:40:46 0012 (qvd)
+2019-12-16 23:40:46 0013 WHERE (isNull(num(exit_date)) OR (num(exit_date) >= '42005')) AND (covered_by_roi = 1)
+2019-12-16 23:40:46      	2 fields found: entry_exit_id, active, 
+2019-12-16 23:40:46      95,103 lines fetched
+2019-12-16 23:40:46 0015 Entry_Exit:
+2019-12-16 23:40:46 0016 NOCONCATENATE
+2019-12-16 23:40:46 0017 LOAD
+2019-12-16 23:40:46 0018 	entry_exit_id
+2019-12-16 23:40:46 0019 RESIDENT Entry_Exit_tmp
+2019-12-16 23:40:46 0020 WHERE match(active, 1)
+2019-12-16 23:40:46      	1 fields found: entry_exit_id, 
+2019-12-16 23:40:46      95,103 lines fetched
+2019-12-16 23:40:46 0022 DROP TABLE Entry_Exit_tmp
+2019-12-16 23:40:46 0025 enrty_exit_visibility_tmp:
+2019-12-16 23:40:46 0026 INNER JOIN (Entry_Exit)
+2019-12-16 23:40:46 0027 LOAD
+2019-12-16 23:40:46 0028     entry_exit_id,
+2019-12-16 23:40:46 0029     visibility_group_id,
+2019-12-16 23:40:46 0030     visible
+2019-12-16 23:40:46 0031 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_ENTRY_EXITVISIBILITY.qvd]
+2019-12-16 23:40:46 0032 (qvd)
+2019-12-16 23:40:46      	3 fields found: entry_exit_id, visibility_group_id, visible, 
+2019-12-16 23:40:46      151,363 lines fetched
+2019-12-16 23:40:46      Joining/Keeping
+2019-12-16 23:40:46 0034 Entry_Exit_visibility:
+2019-12-16 23:40:46 0035 LEFT JOIN (Entry_Exit_Group)
+2019-12-16 23:40:46 0036 LOAD DISTINCT
+2019-12-16 23:40:46 0037     visibility_group_id,
+2019-12-16 23:40:46 0038     visible,
+2019-12-16 23:40:46 0039     entry_exit_id
+2019-12-16 23:40:46 0040 RESIDENT Entry_Exit
+2019-12-16 23:40:46      	3 fields found: visibility_group_id, visible, entry_exit_id, 
+2019-12-16 23:40:46      69,132 lines fetched
+2019-12-16 23:40:46      Joining/Keeping
+2019-12-16 23:40:48 0042 DROP TABLE Entry_Exit
+2019-12-16 23:40:48 0044 Visible:
+2019-12-16 23:40:48 0045 Load DISTINCT
+2019-12-16 23:40:48 0046 	provider_id,
+2019-12-16 23:40:48 0047     entry_exit_id,
+2019-12-16 23:40:48 0048     1 AS Visible
+2019-12-16 23:40:48 0049 RESIDENT Entry_Exit_Group
+2019-12-16 23:40:48 0050 WHERE visible = 1
+2019-12-16 23:40:53      	3 fields found: provider_id, entry_exit_id, Visible, 
+2019-12-16 23:40:53      22,765,714 lines fetched
+2019-12-16 23:40:54 0052 not_Visible:
+2019-12-16 23:40:54 0053 LEFT JOIN(Visible)
+2019-12-16 23:40:54 0054 Load DISTINCT
+2019-12-16 23:40:54 0055 	provider_id,
+2019-12-16 23:40:54 0056     entry_exit_id,
+2019-12-16 23:40:54 0057     1 AS not_Visible
+2019-12-16 23:40:54 0058 RESIDENT Entry_Exit_Group
+2019-12-16 23:40:54 0059 WHERE visible = 0
+2019-12-16 23:41:09      	3 fields found: provider_id, entry_exit_id, not_Visible, 
+2019-12-16 23:41:09      198,356 lines fetched
+2019-12-16 23:41:09      Joining/Keeping
+2019-12-16 23:41:14 0061 DROP TABLE Entry_Exit_Group
+2019-12-16 23:41:15 0063 Entry_Exit_visibility:
+2019-12-16 23:41:15 0064 NOCONCATENATE
+2019-12-16 23:41:15 0065 LOAD DISTINCT
+2019-12-16 23:41:15 0066 	provider_id,
+2019-12-16 23:41:15 0067 	entry_exit_id AS [Entry Exit Id]
+2019-12-16 23:41:15 0068 RESIDENT Visible
+2019-12-16 23:41:15 0069 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2019-12-16 23:41:19      	2 fields found: provider_id, Entry Exit Id, 
+2019-12-16 23:41:19      22,765,714 lines fetched
+2019-12-16 23:41:19 0071 DROP TABLE Visible
+2019-12-16 23:41:19 0074 LEFT JOIN(Entry_Exit_visibility)
+2019-12-16 23:41:19 0075 LOAD
+2019-12-16 23:41:19 0076     [Entry Exit Id],
+2019-12-16 23:41:19 0077     [Entry Exit Provider Created By Id],
+2019-12-16 23:41:19 0078 	%EEClientId
+2019-12-16 23:41:19 0079 FROM [lib://SPData_Beta/Transform/sp5_il_nil_qlik/E_DIM_Entry_Exit.qvd]
+2019-12-16 23:41:19 0080 (qvd)
+2019-12-16 23:41:19      	3 fields found: Entry Exit Id, Entry Exit Provider Created By Id, %EEClientId, 
+2019-12-16 23:41:19      1,040,435 lines fetched
+2019-12-16 23:41:19      Joining/Keeping
+2019-12-16 23:41:50 0008 Case_Manager_Group:
+2019-12-16 23:41:50 0009 LOAD DISTINCT 
+2019-12-16 23:41:50 0010  	provider_id,
+2019-12-16 23:41:50 0011     visibility_group_id
+2019-12-16 23:41:50 0012 RESIDENT USER_GROUP
+2019-12-16 23:41:51      	2 fields found: provider_id, visibility_group_id, 
+2019-12-16 23:41:51      36,026 lines fetched
+2019-12-16 23:41:51 0007 Case_Manager_tmp:
+2019-12-16 23:41:51 0008 LOAD
+2019-12-16 23:41:51 0009     case_manager_id,
+2019-12-16 23:41:51 0010     active,
+2019-12-16 23:41:51 0011 	client_id
+2019-12-16 23:41:51 0012 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_CASE_MANAGER.qvd]
+2019-12-16 23:41:51 0013 (qvd)
+2019-12-16 23:41:51 0014 WHERE (isNull(num(date_ended)) OR (num(date_ended) >= '42005'))
+2019-12-16 23:41:51      	3 fields found: case_manager_id, active, client_id, 
+2019-12-16 23:41:51      52,714 lines fetched
+2019-12-16 23:41:51 0016 Case_Manager:
+2019-12-16 23:41:51 0017 NOCONCATENATE
+2019-12-16 23:41:51 0018 LOAD
+2019-12-16 23:41:51 0019 	case_manager_id,
+2019-12-16 23:41:51 0020 	client_id
+2019-12-16 23:41:51 0021 RESIDENT Case_Manager_tmp
+2019-12-16 23:41:51 0022 WHERE match(active, 1)
+2019-12-16 23:41:51      	2 fields found: case_manager_id, client_id, 
+2019-12-16 23:41:51      52,714 lines fetched
+2019-12-16 23:41:51 0024 DROP TABLE Case_Manager_tmp
+2019-12-16 23:41:51 0026 INNER JOIN (Case_Manager)
+2019-12-16 23:41:51 0027 LOAD
+2019-12-16 23:41:51 0028     case_manager_id,
+2019-12-16 23:41:51 0029     visibility_group_id,
+2019-12-16 23:41:51 0030     visible
+2019-12-16 23:41:51 0031 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_CASE_MANAGERVISIBILITY.qvd]
+2019-12-16 23:41:51 0032 (qvd)
+2019-12-16 23:41:51      	3 fields found: case_manager_id, visibility_group_id, visible, 
+2019-12-16 23:41:51      72,532 lines fetched
+2019-12-16 23:41:51      Joining/Keeping
+2019-12-16 23:41:51 0034 Case_Manager_visibility:
+2019-12-16 23:41:51 0035 LEFT JOIN (Case_Manager_Group)
+2019-12-16 23:41:51 0036 LOAD DISTINCT
+2019-12-16 23:41:51 0037     visibility_group_id,
+2019-12-16 23:41:51 0038     visible,
+2019-12-16 23:41:51 0039     case_manager_id,
+2019-12-16 23:41:51 0040 	client_id
+2019-12-16 23:41:51 0041 RESIDENT Case_Manager
+2019-12-16 23:41:51      	4 fields found: visibility_group_id, visible, case_manager_id, client_id, 
+2019-12-16 23:41:51      47,514 lines fetched
+2019-12-16 23:41:51      Joining/Keeping
+2019-12-16 23:41:52 0043 DROP TABLE Case_Manager
+2019-12-16 23:41:52 0045 Visible:
+2019-12-16 23:41:52 0046 Load DISTINCT
+2019-12-16 23:41:52 0047 	provider_id,
+2019-12-16 23:41:52 0048     case_manager_id,
+2019-12-16 23:41:52 0049     1 AS Visible,
+2019-12-16 23:41:52 0050 	client_id
+2019-12-16 23:41:52 0051 RESIDENT Case_Manager_Group
+2019-12-16 23:41:52 0052 WHERE visible = 1
+2019-12-16 23:41:55      	4 fields found: provider_id, case_manager_id, Visible, client_id, 
+2019-12-16 23:41:55      8,614,952 lines fetched
+2019-12-16 23:41:55 0054 not_Visible:
+2019-12-16 23:41:55 0055 LEFT JOIN(Visible)
+2019-12-16 23:41:55 0056 Load DISTINCT
+2019-12-16 23:41:55 0057 	provider_id,
+2019-12-16 23:41:55 0058     case_manager_id,
+2019-12-16 23:41:55 0059     1 AS not_Visible,
+2019-12-16 23:41:55 0060 	client_id
+2019-12-16 23:41:55 0061 RESIDENT Case_Manager_Group
+2019-12-16 23:41:55 0062 WHERE visible = 0
+2019-12-16 23:42:01      	4 fields found: provider_id, case_manager_id, not_Visible, client_id, 
+2019-12-16 23:42:01      172,183 lines fetched
+2019-12-16 23:42:01      Joining/Keeping
+2019-12-16 23:42:04 0064 DROP TABLE Case_Manager_Group
+2019-12-16 23:42:04 0066 Case_Manager_visibility:
+2019-12-16 23:42:04 0067 NOCONCATENATE
+2019-12-16 23:42:04 0068 LOAD DISTINCT
+2019-12-16 23:42:04 0069 	provider_id,
+2019-12-16 23:42:04 0070 	case_manager_id AS [Case Manager Id],
+2019-12-16 23:42:04 0071 	client_id AS %casemanagerclientid
+2019-12-16 23:42:04 0072 RESIDENT Visible
+2019-12-16 23:42:04 0073 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2019-12-16 23:42:07      	3 fields found: provider_id, Case Manager Id, %casemanagerclientid, 
+2019-12-16 23:42:07      8,443,004 lines fetched
+2019-12-16 23:42:07 0075 DROP TABLE Visible
+2019-12-16 23:42:07 0077 Case_Manager_visibility_tmp:
+2019-12-16 23:42:07 0078 LEFT JOIN(Case_Manager_visibility)
+2019-12-16 23:42:07 0079 LOAD
+2019-12-16 23:42:07 0080     [Case Manager Id]
+2019-12-16 23:42:07 0081 RESIDENt DIM_Case_Manager
+2019-12-16 23:42:07      	1 fields found: Case Manager Id, 
+2019-12-16 23:42:07      52,714 lines fetched
+2019-12-16 23:42:07      Joining/Keeping
+2019-12-16 23:42:10 0009 Goal_Group:
+2019-12-16 23:42:10 0010 LOAD DISTINCT 
+2019-12-16 23:42:10 0011  	provider_id,
+2019-12-16 23:42:10 0012     visibility_group_id
+2019-12-16 23:42:10 0013 RESIDENT USER_GROUP
+2019-12-16 23:42:11      	2 fields found: provider_id, visibility_group_id, 
+2019-12-16 23:42:11      36,026 lines fetched
+2019-12-16 23:42:11 0007 Goal_tmp:
+2019-12-16 23:42:11 0008 LOAD
+2019-12-16 23:42:11 0009     goal_id,
+2019-12-16 23:42:11 0010     active,
+2019-12-16 23:42:11 0011 	client_id
+2019-12-16 23:42:11 0012 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_GOAL.qvd]
+2019-12-16 23:42:11 0013 (qvd)
+2019-12-16 23:42:11 0014 WHERE num(date_set) >= '42005'
+2019-12-16 23:42:11      	3 fields found: goal_id, active, client_id, 
+2019-12-16 23:42:11      38,136 lines fetched
+2019-12-16 23:42:11 0016 Goal:
+2019-12-16 23:42:11 0017 NOCONCATENATE
+2019-12-16 23:42:11 0018 LOAD
+2019-12-16 23:42:11 0019 	goal_id,
+2019-12-16 23:42:11 0020 	client_id
+2019-12-16 23:42:11 0021 RESIDENT Goal_tmp
+2019-12-16 23:42:11 0022 WHERE match(active, 1)
+2019-12-16 23:42:11      	2 fields found: goal_id, client_id, 
+2019-12-16 23:42:11      38,136 lines fetched
+2019-12-16 23:42:11 0024 DROP TABLE Goal_tmp
+2019-12-16 23:42:11 0026 INNER JOIN (Goal)
+2019-12-16 23:42:11 0027 LOAD
+2019-12-16 23:42:11 0028     goal_id,
+2019-12-16 23:42:11 0029     visibility_group_id,
+2019-12-16 23:42:11 0030     visible
+2019-12-16 23:42:11 0031 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_GOALVISIBILITY.qvd]
+2019-12-16 23:42:11 0032 (qvd)
+2019-12-16 23:42:11      	3 fields found: goal_id, visibility_group_id, visible, 
+2019-12-16 23:42:11      126,459 lines fetched
+2019-12-16 23:42:11      Joining/Keeping
+2019-12-16 23:42:11 0034 Goal_visibility:
+2019-12-16 23:42:11 0035 LEFT JOIN (Goal_Group)
+2019-12-16 23:42:11 0036 LOAD DISTINCT
+2019-12-16 23:42:11 0037     visibility_group_id,
+2019-12-16 23:42:11 0038     visible,
+2019-12-16 23:42:11 0039     goal_id,
+2019-12-16 23:42:11 0040 	client_id
+2019-12-16 23:42:11 0041 RESIDENT Goal
+2019-12-16 23:42:11      	4 fields found: visibility_group_id, visible, goal_id, client_id, 
+2019-12-16 23:42:11      20,255 lines fetched
+2019-12-16 23:42:11      Joining/Keeping
+2019-12-16 23:42:11 0043 DROP TABLE Goal
+2019-12-16 23:42:11 0045 Visible:
+2019-12-16 23:42:11 0046 Load DISTINCT
+2019-12-16 23:42:11 0047 	provider_id,
+2019-12-16 23:42:11 0048     goal_id,
+2019-12-16 23:42:11 0049     1 AS Visible,
+2019-12-16 23:42:11 0050 	client_id
+2019-12-16 23:42:11 0051 RESIDENT Goal_Group
+2019-12-16 23:42:11 0052 WHERE visible = 1
+2019-12-16 23:42:12      	4 fields found: provider_id, goal_id, Visible, client_id, 
+2019-12-16 23:42:12      824,843 lines fetched
+2019-12-16 23:42:12 0054 not_Visible:
+2019-12-16 23:42:12 0055 LEFT JOIN(Visible)
+2019-12-16 23:42:12 0056 Load DISTINCT
+2019-12-16 23:42:12 0057 	provider_id,
+2019-12-16 23:42:12 0058     goal_id,
+2019-12-16 23:42:12 0059     1 AS not_Visible,
+2019-12-16 23:42:12 0060 	client_id
+2019-12-16 23:42:12 0061 RESIDENT Goal_Group
+2019-12-16 23:42:12 0062 WHERE visible = 0
+2019-12-16 23:42:13      	4 fields found: provider_id, goal_id, not_Visible, client_id, 
+2019-12-16 23:42:13      0 lines fetched
+2019-12-16 23:42:13      Joining/Keeping
+2019-12-16 23:42:13 0064 DROP TABLE Goal_Group
+2019-12-16 23:42:13 0066 Goal_visibility:
+2019-12-16 23:42:13 0067 NOCONCATENATE
+2019-12-16 23:42:13 0068 LOAD DISTINCT
+2019-12-16 23:42:13 0069 	provider_id,
+2019-12-16 23:42:13 0070 	goal_id AS [Goal Id],
+2019-12-16 23:42:13 0071 	client_id AS %goalclientid
+2019-12-16 23:42:13 0072 RESIDENT Visible
+2019-12-16 23:42:13 0073 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2019-12-16 23:42:14      	3 fields found: provider_id, Goal Id, %goalclientid, 
+2019-12-16 23:42:14      824,843 lines fetched
+2019-12-16 23:42:14 0075 DROP TABLE Visible
+2019-12-16 23:42:14 0077 Goal_visibility_tmp:
+2019-12-16 23:42:14 0078 LEFT JOIN(Goal_visibility)
+2019-12-16 23:42:14 0079 LOAD
+2019-12-16 23:42:14 0080     [Goal Id]
+2019-12-16 23:42:14 0081 RESIDENt DIM_Goal
+2019-12-16 23:42:14      	1 fields found: Goal Id, 
+2019-12-16 23:42:14      38,136 lines fetched
+2019-12-16 23:42:14      Joining/Keeping
+2019-12-16 23:42:14 0010 Goal_Actionstep_Group:
+2019-12-16 23:42:14 0011 LOAD DISTINCT 
+2019-12-16 23:42:14 0012  	provider_id,
+2019-12-16 23:42:14 0013     visibility_group_id
+2019-12-16 23:42:14 0014 RESIDENT USER_GROUP
+2019-12-16 23:42:15      	2 fields found: provider_id, visibility_group_id, 
+2019-12-16 23:42:15      36,026 lines fetched
+2019-12-16 23:42:15 0007 Goal_Actionstep_tmp:
+2019-12-16 23:42:15 0008 LOAD
+2019-12-16 23:42:15 0009     goal_actionstep_id,
+2019-12-16 23:42:15 0010     active,
+2019-12-16 23:42:15 0011 	goal_id
+2019-12-16 23:42:15 0012 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_GOAL_ACTIONSTEP.qvd]
+2019-12-16 23:42:15 0013 (qvd)
+2019-12-16 23:42:15 0014 WHERE num(date_set) >= '42005'
+2019-12-16 23:42:15      	3 fields found: goal_actionstep_id, active, goal_id, 
+2019-12-16 23:42:15      1,901 lines fetched
+2019-12-16 23:42:15 0016 Goal_Actionstep:
+2019-12-16 23:42:15 0017 NOCONCATENATE
+2019-12-16 23:42:15 0018 LOAD
+2019-12-16 23:42:15 0019 	goal_actionstep_id,
+2019-12-16 23:42:15 0020 	goal_id
+2019-12-16 23:42:15 0021 RESIDENT Goal_Actionstep_tmp
+2019-12-16 23:42:15 0022 WHERE match(active, 1)
+2019-12-16 23:42:15      	2 fields found: goal_actionstep_id, goal_id, 
+2019-12-16 23:42:15      1,901 lines fetched
+2019-12-16 23:42:15 0024 DROP TABLE Goal_Actionstep_tmp
+2019-12-16 23:42:15 0026 INNER JOIN (Goal_Actionstep)
+2019-12-16 23:42:15 0027 LOAD
+2019-12-16 23:42:15 0028     goal_actionstep_id,
+2019-12-16 23:42:15 0029     visibility_group_id,
+2019-12-16 23:42:15 0030     visible
+2019-12-16 23:42:15 0031 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_GOAL_ACTIONSTEPVISIBILITY.qvd]
+2019-12-16 23:42:15 0032 (qvd)
+2019-12-16 23:42:15      	3 fields found: goal_actionstep_id, visibility_group_id, visible, 
+2019-12-16 23:42:15      6,514 lines fetched
+2019-12-16 23:42:15      Joining/Keeping
+2019-12-16 23:42:15 0034 Goal_Actionstep_visibility:
+2019-12-16 23:42:15 0035 LEFT JOIN (Goal_Actionstep_Group)
+2019-12-16 23:42:15 0036 LOAD DISTINCT
+2019-12-16 23:42:15 0037     visibility_group_id,
+2019-12-16 23:42:15 0038     visible,
+2019-12-16 23:42:15 0039     goal_actionstep_id,
+2019-12-16 23:42:15 0040 	goal_id
+2019-12-16 23:42:15 0041 RESIDENT Goal_Actionstep
+2019-12-16 23:42:15      	4 fields found: visibility_group_id, visible, goal_actionstep_id, goal_id, 
+2019-12-16 23:42:15      332 lines fetched
+2019-12-16 23:42:15      Joining/Keeping
+2019-12-16 23:42:15 0043 DROP TABLE Goal_Actionstep
+2019-12-16 23:42:15 0045 Visible:
+2019-12-16 23:42:15 0046 Load DISTINCT
+2019-12-16 23:42:15 0047 	provider_id,
+2019-12-16 23:42:15 0048     goal_actionstep_id,
+2019-12-16 23:42:15 0049     1 AS Visible,
+2019-12-16 23:42:15 0050 	goal_id
+2019-12-16 23:42:15 0051 RESIDENT Goal_Actionstep_Group
+2019-12-16 23:42:15 0052 WHERE visible = 1
+2019-12-16 23:42:15      	4 fields found: provider_id, goal_actionstep_id, Visible, goal_id, 
+2019-12-16 23:42:15      12,508 lines fetched
+2019-12-16 23:42:15 0054 not_Visible:
+2019-12-16 23:42:15 0055 LEFT JOIN(Visible)
+2019-12-16 23:42:15 0056 Load DISTINCT
+2019-12-16 23:42:15 0057 	provider_id,
+2019-12-16 23:42:15 0058     goal_actionstep_id,
+2019-12-16 23:42:15 0059     1 AS not_Visible,
+2019-12-16 23:42:15 0060 	goal_id
+2019-12-16 23:42:15 0061 RESIDENT Goal_Actionstep_Group
+2019-12-16 23:42:15 0062 WHERE visible = 0
+2019-12-16 23:42:15      	4 fields found: provider_id, goal_actionstep_id, not_Visible, goal_id, 
+2019-12-16 23:42:15      644 lines fetched
+2019-12-16 23:42:15      Joining/Keeping
+2019-12-16 23:42:15 0064 DROP TABLE Goal_Actionstep_Group
+2019-12-16 23:42:15 0066 Goal_Actionstep_visibility:
+2019-12-16 23:42:15 0067 NOCONCATENATE
+2019-12-16 23:42:15 0068 LOAD DISTINCT
+2019-12-16 23:42:15 0069 	provider_id,
+2019-12-16 23:42:15 0070 	goal_actionstep_id AS [Goal Actionstep Id],
+2019-12-16 23:42:15 0071 	goal_id AS %goalactionstepgoalid
+2019-12-16 23:42:15 0072 RESIDENT Visible
+2019-12-16 23:42:15 0073 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2019-12-16 23:42:15      	3 fields found: provider_id, Goal Actionstep Id, %goalactionstepgoalid, 
+2019-12-16 23:42:15      11,864 lines fetched
+2019-12-16 23:42:15 0075 DROP TABLE Visible
+2019-12-16 23:42:15 0077 Goal_Actionstep_visibility_tmp:
+2019-12-16 23:42:15 0078 LEFT JOIN(Goal_Actionstep_visibility)
+2019-12-16 23:42:15 0079 LOAD
+2019-12-16 23:42:15 0080     [Goal Actionstep Id]
+2019-12-16 23:42:15 0081 RESIDENt DIM_Goal_Actionstep
+2019-12-16 23:42:15      	1 fields found: Goal Actionstep Id, 
+2019-12-16 23:42:15      1,901 lines fetched
+2019-12-16 23:42:15      Joining/Keeping
+2019-12-16 23:42:15 0011 Need_Group:
+2019-12-16 23:42:15 0012 LOAD DISTINCT 
+2019-12-16 23:42:15 0013  	provider_id,
+2019-12-16 23:42:15 0014     visibility_group_id
+2019-12-16 23:42:15 0015 RESIDENT USER_GROUP
+2019-12-16 23:42:16      	2 fields found: provider_id, visibility_group_id, 
+2019-12-16 23:42:16      36,026 lines fetched
+2019-12-16 23:42:16 0007 Need_tmp:
+2019-12-16 23:42:16 0008 LOAD
+2019-12-16 23:42:16 0009     need_id,
+2019-12-16 23:42:16 0010     active,
+2019-12-16 23:42:16 0011 	client_id
+2019-12-16 23:42:16 0012 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_NEED.qvd]
+2019-12-16 23:42:16 0013 (qvd)
+2019-12-16 23:42:16 0014 WHERE num(date_set) >= '42005'
+2019-12-16 23:42:19      	3 fields found: need_id, active, client_id, 
+2019-12-16 23:42:19      2,180,713 lines fetched
+2019-12-16 23:42:19 0016 Need:
+2019-12-16 23:42:19 0017 NOCONCATENATE
+2019-12-16 23:42:19 0018 LOAD
+2019-12-16 23:42:19 0019 	need_id,
+2019-12-16 23:42:19 0020 	client_id
+2019-12-16 23:42:19 0021 RESIDENT Need_tmp
+2019-12-16 23:42:19 0022 WHERE match(active, 1)
+2019-12-16 23:42:20      	2 fields found: need_id, client_id, 
+2019-12-16 23:42:20      2,180,713 lines fetched
+2019-12-16 23:42:20 0024 DROP TABLE Need_tmp
+2019-12-16 23:42:20 0026 INNER JOIN (Need)
+2019-12-16 23:42:20 0027 LOAD
+2019-12-16 23:42:20 0028     need_id,
+2019-12-16 23:42:20 0029     visibility_group_id,
+2019-12-16 23:42:20 0030     visible
+2019-12-16 23:42:20 0031 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_NEEDVISIBILITY.qvd]
+2019-12-16 23:42:20 0032 (qvd)
+2019-12-16 23:42:24      	3 fields found: need_id, visibility_group_id, visible, 
+2019-12-16 23:42:24      10,917,931 lines fetched
+2019-12-16 23:42:24      Joining/Keeping
+2019-12-16 23:42:25 0034 Need_visibility:
+2019-12-16 23:42:25 0035 LEFT JOIN (Need_Group)
+2019-12-16 23:42:25 0036 LOAD DISTINCT
+2019-12-16 23:42:25 0037     visibility_group_id,
+2019-12-16 23:42:25 0038     visible,
+2019-12-16 23:42:25 0039     need_id,
+2019-12-16 23:42:25 0040 	client_id
+2019-12-16 23:42:25 0041 RESIDENT Need
+2019-12-16 23:42:26      	4 fields found: visibility_group_id, visible, need_id, client_id, 
+2019-12-16 23:42:26      1,727,798 lines fetched
+2019-12-16 23:42:26      Joining/Keeping
+2019-12-16 23:42:48 0043 DROP TABLE Need
+2019-12-16 23:42:49 0045 Visible:
+2019-12-16 23:42:49 0046 Load DISTINCT
+2019-12-16 23:42:49 0047 	provider_id,
+2019-12-16 23:42:49 0048     need_id,
+2019-12-16 23:42:49 0049     1 AS Visible,
+2019-12-16 23:42:49 0050 	client_id
+2019-12-16 23:42:49 0051 RESIDENT Need_Group
+2019-12-16 23:42:49 0052 WHERE visible = 1
+2019-12-16 23:43:59      	4 fields found: provider_id, need_id, Visible, client_id, 
+2019-12-16 23:43:59      221,077,989 lines fetched
+2019-12-16 23:44:00 0054 not_Visible:
+2019-12-16 23:44:00 0055 LEFT JOIN(Visible)
+2019-12-16 23:44:00 0056 Load DISTINCT
+2019-12-16 23:44:00 0057 	provider_id,
+2019-12-16 23:44:00 0058     need_id,
+2019-12-16 23:44:00 0059     1 AS not_Visible,
+2019-12-16 23:44:00 0060 	client_id
+2019-12-16 23:44:00 0061 RESIDENT Need_Group
+2019-12-16 23:44:00 0062 WHERE visible = 0
+2019-12-16 23:46:36      	4 fields found: provider_id, need_id, not_Visible, client_id, 
+2019-12-16 23:46:36      48,268,444 lines fetched
+2019-12-16 23:46:36      Joining/Keeping
+2019-12-16 23:47:32 0064 DROP TABLE Need_Group
+2019-12-16 23:47:33 0066 Need_visibility:
+2019-12-16 23:47:33 0067 NOCONCATENATE
+2019-12-16 23:47:33 0068 LOAD DISTINCT
+2019-12-16 23:47:33 0069 	provider_id,
+2019-12-16 23:47:33 0070 	need_id AS [Need Id],
+2019-12-16 23:47:33 0071 	client_id AS %needclientid
+2019-12-16 23:47:33 0072 RESIDENT Visible
+2019-12-16 23:47:33 0073 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2019-12-16 23:48:11      	3 fields found: provider_id, Need Id, %needclientid, 
+2019-12-16 23:48:11      221,077,944 lines fetched
+2019-12-16 23:48:12 0075 DROP TABLE Visible
+2019-12-16 23:48:12 0077 Need_visibility_tmp:
+2019-12-16 23:48:12 0078 LEFT JOIN(Need_visibility)
+2019-12-16 23:48:12 0079 LOAD
+2019-12-16 23:48:12 0080     [Need Id]
+2019-12-16 23:48:12 0081 RESIDENt FACT_Need_Service
+2019-12-16 23:48:17      	1 fields found: Need Id, 
+2019-12-16 23:48:17      2,900,348 lines fetched
+2019-12-16 23:48:17      Joining/Keeping
+2019-12-16 23:49:33 0012 Client_Infraction_Group:
+2019-12-16 23:49:33 0013 LOAD DISTINCT 
+2019-12-16 23:49:33 0014  	provider_id,
+2019-12-16 23:49:33 0015     visibility_group_id
+2019-12-16 23:49:33 0016 RESIDENT USER_GROUP
+2019-12-16 23:49:34      	2 fields found: provider_id, visibility_group_id, 
+2019-12-16 23:49:34      36,026 lines fetched
+2019-12-16 23:49:34 0007 Client_Infraction_tmp:
+2019-12-16 23:49:34 0008 LOAD
+2019-12-16 23:49:34 0009     client_infraction_id,
+2019-12-16 23:49:34 0010     active,
+2019-12-16 23:49:34 0011 	client_id
+2019-12-16 23:49:34 0012 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_CLIENT_INFRACTION.qvd]
+2019-12-16 23:49:34 0013 (qvd)
+2019-12-16 23:49:34 0014 WHERE (isNull(num(bar_end_date)) OR (num(bar_end_date) >= '42005'))
+2019-12-16 23:49:34      	3 fields found: client_infraction_id, active, client_id, 
+2019-12-16 23:49:34      2,005 lines fetched
+2019-12-16 23:49:34 0016 Client_Infraction:
+2019-12-16 23:49:34 0017 NOCONCATENATE
+2019-12-16 23:49:34 0018 LOAD
+2019-12-16 23:49:34 0019 	client_infraction_id,
+2019-12-16 23:49:34 0020 	client_id
+2019-12-16 23:49:34 0021 RESIDENT Client_Infraction_tmp
+2019-12-16 23:49:34 0022 WHERE match(active, 1)
+2019-12-16 23:49:34      	2 fields found: client_infraction_id, client_id, 
+2019-12-16 23:49:34      2,005 lines fetched
+2019-12-16 23:49:34 0024 DROP TABLE Client_Infraction_tmp
+2019-12-16 23:49:34 0026 client_infraction_visibility_tmp:
+2019-12-16 23:49:34 0027 INNER JOIN (Client_Infraction)
+2019-12-16 23:49:34 0028 LOAD
+2019-12-16 23:49:34 0029     client_infraction_id,
+2019-12-16 23:49:34 0030     visibility_group_id,
+2019-12-16 23:49:34 0031     visible
+2019-12-16 23:49:34 0032 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_CLIENT_INFRACTIONVISIBILITY.qvd]
+2019-12-16 23:49:34 0033 (qvd)
+2019-12-16 23:49:34      	3 fields found: client_infraction_id, visibility_group_id, visible, 
+2019-12-16 23:49:34      2,083 lines fetched
+2019-12-16 23:49:34      Joining/Keeping
+2019-12-16 23:49:34 0036 LEFT JOIN (Client_Infraction_Group)
+2019-12-16 23:49:34 0037 LOAD DISTINCT
+2019-12-16 23:49:34 0038     visibility_group_id,
+2019-12-16 23:49:34 0039     visible,
+2019-12-16 23:49:34 0040     client_infraction_id,
+2019-12-16 23:49:34 0041 	client_id
+2019-12-16 23:49:34 0042 RESIDENT Client_Infraction
+2019-12-16 23:49:34      	4 fields found: visibility_group_id, visible, client_infraction_id, client_id, 
+2019-12-16 23:49:34      1,814 lines fetched
+2019-12-16 23:49:34      Joining/Keeping
+2019-12-16 23:49:34 0044 DROP TABLE Client_Infraction
+2019-12-16 23:49:34 0046 Visible:
+2019-12-16 23:49:34 0047 Load DISTINCT
+2019-12-16 23:49:34 0048 	provider_id,
+2019-12-16 23:49:34 0049     client_infraction_id,
+2019-12-16 23:49:34 0050     1 AS Visible,
+2019-12-16 23:49:34 0051 	client_id
+2019-12-16 23:49:34 0052 RESIDENT Client_Infraction_Group
+2019-12-16 23:49:34 0053 WHERE visible = 1
+2019-12-16 23:49:35      	4 fields found: provider_id, client_infraction_id, Visible, client_id, 
+2019-12-16 23:49:35      822,408 lines fetched
+2019-12-16 23:49:35 0055 not_Visible:
+2019-12-16 23:49:35 0056 LEFT JOIN(Visible)
+2019-12-16 23:49:35 0057 Load DISTINCT
+2019-12-16 23:49:35 0058 	provider_id,
+2019-12-16 23:49:35 0059     client_infraction_id,
+2019-12-16 23:49:35 0060     1 AS not_Visible,
+2019-12-16 23:49:35 0061 	client_id
+2019-12-16 23:49:35 0062 RESIDENT Client_Infraction_Group
+2019-12-16 23:49:35 0063 WHERE visible = 0
+2019-12-16 23:49:36      	4 fields found: provider_id, client_infraction_id, not_Visible, client_id, 
+2019-12-16 23:49:36      39,655 lines fetched
+2019-12-16 23:49:36      Joining/Keeping
+2019-12-16 23:49:36 0065 DROP TABLE Client_Infraction_Group
+2019-12-16 23:49:36 0067 Client_Infraction_visibility:
+2019-12-16 23:49:36 0068 NOCONCATENATE
+2019-12-16 23:49:36 0069 LOAD DISTINCT
+2019-12-16 23:49:36 0070 	provider_id,
+2019-12-16 23:49:36 0071 	client_infraction_id AS [Client Incident Id],
+2019-12-16 23:49:36 0072 	client_id AS %clientinfractionclientid
+2019-12-16 23:49:36 0073 RESIDENT Visible
+2019-12-16 23:49:36 0074 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2019-12-16 23:49:37      	3 fields found: provider_id, Client Incident Id, %clientinfractionclientid, 
+2019-12-16 23:49:37      818,056 lines fetched
+2019-12-16 23:49:37 0076 DROP TABLE Visible
+2019-12-16 23:49:37 0079 LEFT JOIN(Client_Infraction_visibility)
+2019-12-16 23:49:37 0080 LOAD
+2019-12-16 23:49:37 0081     [Client Incident Id]
+2019-12-16 23:49:37 0082 RESIDENt DIM_Client_Infraction
+2019-12-16 23:49:37      	1 fields found: Client Incident Id, 
+2019-12-16 23:49:37      2,005 lines fetched
+2019-12-16 23:49:37      Joining/Keeping
+2019-12-16 23:49:37 0013 Matrix_Group_Group:
+2019-12-16 23:49:37 0014 LOAD DISTINCT 
+2019-12-16 23:49:37 0015  	provider_id,
+2019-12-16 23:49:37 0016     visibility_group_id
+2019-12-16 23:49:37 0017 RESIDENT USER_GROUP
+2019-12-16 23:49:38      	2 fields found: provider_id, visibility_group_id, 
+2019-12-16 23:49:38      36,026 lines fetched
+2019-12-16 23:49:38 0007 Matrix_Group_tmp:
+2019-12-16 23:49:38 0008 LOAD
+2019-12-16 23:49:38 0009     matrix_group_id,
+2019-12-16 23:49:38 0010 	client_id
+2019-12-16 23:49:38 0011 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_MATRIX_GROUP.qvd]
+2019-12-16 23:49:38 0012 (qvd)
+2019-12-16 23:49:38 0013 WHERE num(date_created) >= '42005'
+2019-12-16 23:49:38      	2 fields found: matrix_group_id, client_id, 
+2019-12-16 23:49:38      1,529 lines fetched
+2019-12-16 23:49:38 0015 Matrix_Group:
+2019-12-16 23:49:38 0016 NOCONCATENATE
+2019-12-16 23:49:38 0017 LOAD
+2019-12-16 23:49:38 0018 	matrix_group_id,
+2019-12-16 23:49:38 0019 	client_id
+2019-12-16 23:49:38 0020 RESIDENT Matrix_Group_tmp
+2019-12-16 23:49:38      	2 fields found: matrix_group_id, client_id, 
+2019-12-16 23:49:38      1,529 lines fetched
+2019-12-16 23:49:38 0023 DROP TABLE Matrix_Group_tmp
+2019-12-16 23:49:38 0025 INNER JOIN (Matrix_Group)
+2019-12-16 23:49:38 0026 LOAD
+2019-12-16 23:49:38 0027     matrix_group_id,
+2019-12-16 23:49:38 0028     visibility_group_id,
+2019-12-16 23:49:38 0029     visible
+2019-12-16 23:49:38 0030 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_MATRIX_GROUPVISIBILITY.qvd]
+2019-12-16 23:49:38 0031 (qvd)
+2019-12-16 23:49:38      	3 fields found: matrix_group_id, visibility_group_id, visible, 
+2019-12-16 23:49:38      2,683 lines fetched
+2019-12-16 23:49:38      Joining/Keeping
+2019-12-16 23:49:38 0033 Matrix_Group_visibility:
+2019-12-16 23:49:38 0034 LEFT JOIN (Matrix_Group_Group)
+2019-12-16 23:49:38 0035 LOAD DISTINCT
+2019-12-16 23:49:38 0036     visibility_group_id,
+2019-12-16 23:49:38 0037     visible,
+2019-12-16 23:49:38 0038     matrix_group_id,
+2019-12-16 23:49:38 0039 	client_id
+2019-12-16 23:49:38 0040 RESIDENT Matrix_Group
+2019-12-16 23:49:38      	4 fields found: visibility_group_id, visible, matrix_group_id, client_id, 
+2019-12-16 23:49:38      50 lines fetched
+2019-12-16 23:49:38      Joining/Keeping
+2019-12-16 23:49:38 0042 DROP TABLE Matrix_Group
+2019-12-16 23:49:38 0044 Visible:
+2019-12-16 23:49:38 0045 Load DISTINCT
+2019-12-16 23:49:38 0046 	provider_id,
+2019-12-16 23:49:38 0047     matrix_group_id,
+2019-12-16 23:49:38 0048     1 AS Visible,
+2019-12-16 23:49:38 0049 	client_id
+2019-12-16 23:49:38 0050 RESIDENT Matrix_Group_Group
+2019-12-16 23:49:38 0051 WHERE visible = 1
+2019-12-16 23:49:38      	4 fields found: provider_id, matrix_group_id, Visible, client_id, 
+2019-12-16 23:49:38      3,474 lines fetched
+2019-12-16 23:49:38 0053 not_Visible:
+2019-12-16 23:49:38 0054 LEFT JOIN(Visible)
+2019-12-16 23:49:38 0055 Load DISTINCT
+2019-12-16 23:49:38 0056 	provider_id,
+2019-12-16 23:49:38 0057     matrix_group_id,
+2019-12-16 23:49:38 0058     1 AS not_Visible,
+2019-12-16 23:49:38 0059 	client_id
+2019-12-16 23:49:38 0060 RESIDENT Matrix_Group_Group
+2019-12-16 23:49:38 0061 WHERE visible = 0
+2019-12-16 23:49:39      	4 fields found: provider_id, matrix_group_id, not_Visible, client_id, 
+2019-12-16 23:49:39      0 lines fetched
+2019-12-16 23:49:39      Joining/Keeping
+2019-12-16 23:49:39 0063 DROP TABLE Matrix_Group_Group
+2019-12-16 23:49:39 0065 Matrix_Group_visibility:
+2019-12-16 23:49:39 0066 NOCONCATENATE
+2019-12-16 23:49:39 0067 LOAD DISTINCT
+2019-12-16 23:49:39 0068 	provider_id,
+2019-12-16 23:49:39 0069 	matrix_group_id AS [Matrix Group Id],
+2019-12-16 23:49:39 0070 	client_id AS %matrixgroupclientid
+2019-12-16 23:49:39 0071 RESIDENT Visible
+2019-12-16 23:49:39 0072 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2019-12-16 23:49:39      	3 fields found: provider_id, Matrix Group Id, %matrixgroupclientid, 
+2019-12-16 23:49:39      3,474 lines fetched
+2019-12-16 23:49:39 0074 DROP TABLE Visible
+2019-12-16 23:49:39 0076 Matrix_Group_visibility_tmp:
+2019-12-16 23:49:39 0077 LEFT JOIN(Matrix_Group_visibility)
+2019-12-16 23:49:39 0078 LOAD
+2019-12-16 23:49:39 0079     [Measurement Group Id] AS [Matrix Group Id]
+2019-12-16 23:49:39 0080 RESIDENT DIM_Measurement_Answer
+2019-12-16 23:49:39      	1 fields found: Matrix Group Id, 
+2019-12-16 23:49:39      154,091 lines fetched
+2019-12-16 23:49:39      Joining/Keeping
+2019-12-16 23:49:39 0014 Call_Record_Group:
+2019-12-16 23:49:39 0015 LOAD DISTINCT 
+2019-12-16 23:49:39 0016  	provider_id,
+2019-12-16 23:49:39 0017     visibility_group_id
+2019-12-16 23:49:39 0018 RESIDENT USER_GROUP
+2019-12-16 23:49:39      	2 fields found: provider_id, visibility_group_id, 
+2019-12-16 23:49:39      36,026 lines fetched
+2019-12-16 23:49:40 0007 Call_Record_tmp:
+2019-12-16 23:49:40 0008 LOAD
+2019-12-16 23:49:40 0009     call_record_id,
+2019-12-16 23:49:40 0010     active,
+2019-12-16 23:49:40 0011 	client_id
+2019-12-16 23:49:40 0012 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_CALL_RECORD.qvd]
+2019-12-16 23:49:40 0013 (qvd)
+2019-12-16 23:49:40 0014 WHERE (isNull(num(end_date)) OR (num(end_date) >= '42005'))
+2019-12-16 23:49:40      	3 fields found: call_record_id, active, client_id, 
+2019-12-16 23:49:40      162,490 lines fetched
+2019-12-16 23:49:40 0016 Call_Record:
+2019-12-16 23:49:40 0017 NOCONCATENATE
+2019-12-16 23:49:40 0018 LOAD
+2019-12-16 23:49:40 0019 	call_record_id,
+2019-12-16 23:49:40 0020 	client_id
+2019-12-16 23:49:40 0021 RESIDENT Call_Record_tmp
+2019-12-16 23:49:40 0022 WHERE match(active, 1)
+2019-12-16 23:49:41      	2 fields found: call_record_id, client_id, 
+2019-12-16 23:49:41      162,490 lines fetched
+2019-12-16 23:49:41 0024 DROP TABLE Call_Record_tmp
+2019-12-16 23:49:41 0027 call_record_visibility_tmp:
+2019-12-16 23:49:41 0028 INNER JOIN (Call_Record)
+2019-12-16 23:49:41 0029 LOAD
+2019-12-16 23:49:41 0030     callrecord_id AS call_record_id,
+2019-12-16 23:49:41 0031     visibility_group_id,
+2019-12-16 23:49:41 0032     visible
+2019-12-16 23:49:41 0033 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_CALLRECORDVISIBILITY.qvd]
+2019-12-16 23:49:41 0034 (qvd)
+2019-12-16 23:49:41      	3 fields found: call_record_id, visibility_group_id, visible, 
+2019-12-16 23:49:41      331,682 lines fetched
+2019-12-16 23:49:41      Joining/Keeping
+2019-12-16 23:49:41 0036 Call_Record_visibility:
+2019-12-16 23:49:41 0037 LEFT JOIN (Call_Record_Group)
+2019-12-16 23:49:41 0038 LOAD DISTINCT
+2019-12-16 23:49:41 0039     visibility_group_id,
+2019-12-16 23:49:41 0040     visible,
+2019-12-16 23:49:41 0041     call_record_id,
+2019-12-16 23:49:41 0042 	client_id
+2019-12-16 23:49:41 0043 RESIDENT Call_Record
+2019-12-16 23:49:41      	4 fields found: visibility_group_id, visible, call_record_id, client_id, 
+2019-12-16 23:49:41      161,056 lines fetched
+2019-12-16 23:49:41      Joining/Keeping
+2019-12-16 23:49:51 0045 DROP TABLE Call_Record
+2019-12-16 23:49:51 0047 Visible:
+2019-12-16 23:49:51 0048 Load DISTINCT
+2019-12-16 23:49:51 0049 	provider_id,
+2019-12-16 23:49:51 0050     call_record_id,
+2019-12-16 23:49:51 0051     1 AS Visible,
+2019-12-16 23:49:51 0052 	client_id
+2019-12-16 23:49:51 0053 RESIDENT Call_Record_Group
+2019-12-16 23:49:51 0054 WHERE visible = 1
+2019-12-16 23:50:17      	4 fields found: provider_id, call_record_id, Visible, client_id, 
+2019-12-16 23:50:17      139,853,018 lines fetched
+2019-12-16 23:50:17 0056 not_Visible:
+2019-12-16 23:50:17 0057 LEFT JOIN(Visible)
+2019-12-16 23:50:17 0058 Load DISTINCT
+2019-12-16 23:50:17 0059 	provider_id,
+2019-12-16 23:50:17 0060     call_record_id,
+2019-12-16 23:50:17 0061     1 AS not_Visible,
+2019-12-16 23:50:17 0062 	client_id
+2019-12-16 23:50:17 0063 RESIDENT Call_Record_Group
+2019-12-16 23:50:17 0064 WHERE visible = 0
+2019-12-16 23:51:44      	4 fields found: provider_id, call_record_id, not_Visible, client_id, 
+2019-12-16 23:51:44      0 lines fetched
+2019-12-16 23:51:44      Joining/Keeping
+2019-12-16 23:52:17 0066 DROP TABLE Call_Record_Group
+2019-12-16 23:52:17 0068 Call_Record_visibility:
+2019-12-16 23:52:17 0069 NOCONCATENATE
+2019-12-16 23:52:17 0070 LOAD DISTINCT
+2019-12-16 23:52:17 0071 	provider_id,
+2019-12-16 23:52:17 0072 	call_record_id AS [Call Record Id],
+2019-12-16 23:52:17 0073 	client_id AS %callrecordclientid
+2019-12-16 23:52:17 0074 RESIDENT Visible
+2019-12-16 23:52:17 0075 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2019-12-16 23:52:41      	3 fields found: provider_id, Call Record Id, %callrecordclientid, 
+2019-12-16 23:52:41      139,853,018 lines fetched
+2019-12-16 23:52:41 0077 DROP TABLE Visible
+2019-12-16 23:52:41 0080 LEFT JOIN(Call_Record_visibility)
+2019-12-16 23:52:41 0081 LOAD
+2019-12-16 23:52:41 0082     [Call Record Id]
+2019-12-16 23:52:41 0083 FROM [lib://SPData_Beta/Transform/sp5_il_nil_qlik/E_FACT_Call_Record.qvd]
+2019-12-16 23:52:41 0084 (qvd)
+2019-12-16 23:52:42      	1 fields found: Call Record Id, 
+2019-12-16 23:52:42      162,446 lines fetched
+2019-12-16 23:52:42      Joining/Keeping
+2019-12-16 23:53:25 0015 Call_Record_Answer_Group:
+2019-12-16 23:53:25 0016 LOAD DISTINCT 
+2019-12-16 23:53:25 0017  	provider_id,
+2019-12-16 23:53:25 0018     visibility_group_id
+2019-12-16 23:53:25 0019 RESIDENT USER_GROUP
+2019-12-16 23:53:25      	2 fields found: provider_id, visibility_group_id, 
+2019-12-16 23:53:25      36,026 lines fetched
+2019-12-16 23:53:25 0007 Call_Record_Answer_tmp:
+2019-12-16 23:53:25 0008 LOAD
+2019-12-16 23:53:25 0009     call_answer_id,
+2019-12-16 23:53:25 0010     active,
+2019-12-16 23:53:25 0011 	call_record_id
+2019-12-16 23:53:25 0012 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_CALL_ANSWER.qvd]
+2019-12-16 23:53:25 0013 (qvd)
+2019-12-16 23:53:25 0014 WHERE num(date_effective) >= '42005'
+2019-12-16 23:53:29      	3 fields found: call_answer_id, active, call_record_id, 
+2019-12-16 23:53:29      2,075,297 lines fetched
+2019-12-16 23:53:29 0016 Call_Record_Answer:
+2019-12-16 23:53:29 0017 NOCONCATENATE
+2019-12-16 23:53:29 0018 LOAD
+2019-12-16 23:53:29 0019 	call_answer_id,
+2019-12-16 23:53:29 0020 	call_record_id
+2019-12-16 23:53:29 0021 RESIDENT Call_Record_Answer_tmp
+2019-12-16 23:53:29 0022 WHERE match(active, 1)
+2019-12-16 23:53:29      	2 fields found: call_answer_id, call_record_id, 
+2019-12-16 23:53:29      2,075,297 lines fetched
+2019-12-16 23:53:29 0024 DROP TABLE Call_Record_Answer_tmp
+2019-12-16 23:53:29 0026 INNER JOIN (Call_Record_Answer)
+2019-12-16 23:53:29 0027 LOAD
+2019-12-16 23:53:29 0028     call_answer_id,
+2019-12-16 23:53:29 0029     visibility_group_id,
+2019-12-16 23:53:29 0030     visible
+2019-12-16 23:53:29 0031 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_CALL_ANSWERVISIBILITY.qvd]
+2019-12-16 23:53:29 0032 (qvd)
+2019-12-16 23:53:32      	3 fields found: call_answer_id, visibility_group_id, visible, 
+2019-12-16 23:53:32      3,381,412 lines fetched
+2019-12-16 23:53:32      Joining/Keeping
+2019-12-16 23:53:33 0034 Call_Record_Answer_visibility:
+2019-12-16 23:53:33 0035 LEFT JOIN (Call_Record_Answer_Group)
+2019-12-16 23:53:33 0036 LOAD DISTINCT
+2019-12-16 23:53:33 0037     visibility_group_id,
+2019-12-16 23:53:33 0038     visible,
+2019-12-16 23:53:33 0039     call_record_id,
+2019-12-16 23:53:33 0040 	call_answer_id
+2019-12-16 23:53:33 0041 RESIDENT Call_Record_Answer
+2019-12-16 23:53:35      	4 fields found: visibility_group_id, visible, call_record_id, call_answer_id, 
+2019-12-16 23:53:35      1,946,442 lines fetched
+2019-12-16 23:53:35      Joining/Keeping
+2019-12-16 23:55:49 0043 DROP TABLE Call_Record_Answer
+2019-12-16 23:55:52 0045 Visible:
+2019-12-16 23:55:52 0046 Load DISTINCT
+2019-12-16 23:55:52 0047 	provider_id,
+2019-12-16 23:55:52 0048     call_answer_id,
+2019-12-16 23:55:52 0049     1 AS Visible,
+2019-12-16 23:55:52 0050 	call_record_id
+2019-12-16 23:55:52 0051 RESIDENT Call_Record_Answer_Group
+2019-12-16 23:55:52 0052 WHERE visible = 1
+2019-12-17 00:01:07      	4 fields found: provider_id, call_answer_id, Visible, call_record_id, 
+2019-12-17 00:01:07      1,950,781,327 lines fetched
+2019-12-17 00:01:07 0054 not_Visible:
+2019-12-17 00:01:07 0055 LEFT JOIN(Visible)
+2019-12-17 00:01:07 0056 Load DISTINCT
+2019-12-17 00:01:07 0057 	provider_id,
+2019-12-17 00:01:07 0058     call_answer_id,
+2019-12-17 00:01:07 0059     1 AS not_Visible,
+2019-12-17 00:01:07 0060 	call_record_id
+2019-12-17 00:01:07 0061 RESIDENT Call_Record_Answer_Group
+2019-12-17 00:01:07 0062 WHERE visible = 0
+2019-12-17 00:22:28      	4 fields found: provider_id, call_answer_id, not_Visible, call_record_id, 
+2019-12-17 00:22:28      0 lines fetched
+2019-12-17 00:22:28      Joining/Keeping
+2019-12-17 00:27:59 0064 DROP TABLE Call_Record_Answer_Group
+2019-12-17 00:28:02 0066 Call_Record_Answer_visibility:
+2019-12-17 00:28:02 0067 NOCONCATENATE
+2019-12-17 00:28:02 0068 LOAD DISTINCT
+2019-12-17 00:28:02 0069 	provider_id,
+2019-12-17 00:28:02 0070 	call_answer_id,
+2019-12-17 00:28:02 0071 	call_record_id
+2019-12-17 00:28:02 0072 RESIDENT Visible
+2019-12-17 00:28:02 0073 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2019-12-17 00:31:45      	3 fields found: provider_id, call_answer_id, call_record_id, 
+2019-12-17 00:31:45      1,950,781,327 lines fetched
+2019-12-17 00:31:45 0075 DROP TABLE Visible
+2019-12-17 00:31:49 0016 Call_Recordset_Group:
+2019-12-17 00:31:49 0017 LOAD DISTINCT 
+2019-12-17 00:31:49 0018  	provider_id,
+2019-12-17 00:31:49 0019     visibility_group_id
+2019-12-17 00:31:49 0020 RESIDENT USER_GROUP
+2019-12-17 00:31:49      	2 fields found: provider_id, visibility_group_id, 
+2019-12-17 00:31:49      36,026 lines fetched
+2019-12-17 00:31:49 0007 Call_Recordset_tmp:
+2019-12-17 00:31:49 0008 LOAD
+2019-12-17 00:31:49 0009     call_recordset_id,
+2019-12-17 00:31:49 0010     active,
+2019-12-17 00:31:49 0011 	call_record_id
+2019-12-17 00:31:49 0012 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_CALL_RECORDSET.qvd]
+2019-12-17 00:31:49 0013 (qvd)
+2019-12-17 00:31:49      	3 fields found: call_recordset_id, active, call_record_id, 
+2019-12-17 00:31:49      25,247 lines fetched
+2019-12-17 00:31:49 0016 Call_Recordset:
+2019-12-17 00:31:49 0017 NOCONCATENATE
+2019-12-17 00:31:49 0018 LOAD
+2019-12-17 00:31:49 0019 	call_recordset_id,
+2019-12-17 00:31:49 0020 	call_record_id
+2019-12-17 00:31:49 0021 RESIDENT Call_Recordset_tmp
+2019-12-17 00:31:49 0022 WHERE match(active, 1)
+2019-12-17 00:31:49      	2 fields found: call_recordset_id, call_record_id, 
+2019-12-17 00:31:49      25,247 lines fetched
+2019-12-17 00:31:49 0024 DROP TABLE Call_Recordset_tmp
+2019-12-17 00:31:50 0026 INNER JOIN (Call_Recordset)
+2019-12-17 00:31:50 0027 LOAD
+2019-12-17 00:31:50 0028     recordset_id as call_recordset_id,
+2019-12-17 00:31:50 0029     visibility_group_id,
+2019-12-17 00:31:50 0030     visible
+2019-12-17 00:31:50 0031 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_CALL_RECORDSETVISIBILITY.qvd]
+2019-12-17 00:31:50 0032 (qvd)
+2019-12-17 00:31:50      	3 fields found: call_recordset_id, visibility_group_id, visible, 
+2019-12-17 00:31:50      190,049 lines fetched
+2019-12-17 00:31:50      Joining/Keeping
+2019-12-17 00:31:52 0034 Call_Recordset_visibility:
+2019-12-17 00:31:52 0035 LEFT JOIN (Call_Recordset_Group)
+2019-12-17 00:31:52 0036 LOAD DISTINCT
+2019-12-17 00:31:52 0037     visibility_group_id,
+2019-12-17 00:31:52 0038     visible,
+2019-12-17 00:31:52 0039     call_record_id,
+2019-12-17 00:31:52 0040 	call_recordset_id
+2019-12-17 00:31:52 0041 RESIDENT Call_Recordset
+2019-12-17 00:31:52      	4 fields found: visibility_group_id, visible, call_record_id, call_recordset_id, 
+2019-12-17 00:31:52      24,989 lines fetched
+2019-12-17 00:31:52      Joining/Keeping
+2019-12-17 00:31:55 0043 DROP TABLE Call_Recordset
+2019-12-17 00:31:56 0045 Visible:
+2019-12-17 00:31:56 0046 Load DISTINCT
+2019-12-17 00:31:56 0047 	provider_id,
+2019-12-17 00:31:56 0048     call_recordset_id,
+2019-12-17 00:31:56 0049     1 AS Visible,
+2019-12-17 00:31:56 0050 	call_record_id
+2019-12-17 00:31:56 0051 RESIDENT Call_Recordset_Group
+2019-12-17 00:31:56 0052 WHERE visible = 1
+2019-12-17 00:32:01      	4 fields found: provider_id, call_recordset_id, Visible, call_record_id, 
+2019-12-17 00:32:01      26,741,028 lines fetched
+2019-12-17 00:32:01 0054 not_Visible:
+2019-12-17 00:32:01 0055 LEFT JOIN(Visible)
+2019-12-17 00:32:01 0056 Load DISTINCT
+2019-12-17 00:32:01 0057 	provider_id,
+2019-12-17 00:32:01 0058     call_recordset_id,
+2019-12-17 00:32:01 0059     1 AS not_Visible,
+2019-12-17 00:32:01 0060 	call_record_id
+2019-12-17 00:32:01 0061 RESIDENT Call_Recordset_Group
+2019-12-17 00:32:01 0062 WHERE visible = 0
+2019-12-17 00:32:19      	4 fields found: provider_id, call_recordset_id, not_Visible, call_record_id, 
+2019-12-17 00:32:19      0 lines fetched
+2019-12-17 00:32:19      Joining/Keeping
+2019-12-17 00:32:27 0064 DROP TABLE Call_Recordset_Group
+2019-12-17 00:32:28 0066 Call_Recordset_visibility:
+2019-12-17 00:32:28 0067 NOCONCATENATE
+2019-12-17 00:32:28 0068 LOAD DISTINCT
+2019-12-17 00:32:28 0069 	provider_id,
+2019-12-17 00:32:28 0070 	call_recordset_id AS [Call Recordset Id],
+2019-12-17 00:32:28 0071 	call_record_id AS %callrecordid
+2019-12-17 00:32:28 0072 RESIDENT Visible
+2019-12-17 00:32:28 0073 WHERE match(Visible, 1)  AND isNull(not_Visible)
+2019-12-17 00:32:32      	3 fields found: provider_id, Call Recordset Id, %callrecordid, 
+2019-12-17 00:32:32      26,741,028 lines fetched
+2019-12-17 00:32:33 0075 DROP TABLE Visible
+2019-12-17 00:32:34 0017 SP_SETTING_DIRECTORY:
+2019-12-17 00:32:34 0018 NOCONCATENATE
+2019-12-17 00:32:34 0019 LOAD 
+2019-12-17 00:32:34 0020     val_varchar
+2019-12-17 00:32:34 0021 FROM [lib://SPData_Beta/Extract/sp5_il_nil_qlik/E_SP5_IL_NIL_QLIK_SP_SETTING.qvd](qvd)
+2019-12-17 00:32:34 0022 WHERE name = 'QLIK_TICKET_HOMEDIR'
+2019-12-17 00:32:34      	1 fields found: val_varchar, 
+2019-12-17 00:32:34      1 lines fetched
+2019-12-17 00:32:34 0013 LET vSiteDirectory = Peek('val_varchar',0,'SP_SETTING_DIRECTORY')
+2019-12-17 00:32:34 0014 SET vUserDirectory = nil_qlik
+2019-12-17 00:32:34 0015 SET vBowmanDirectory = 'BOWMANSYSTEMS'
+2019-12-17 00:32:34 0017 DROP TABLE SP_SETTING_DIRECTORY
+2019-12-17 00:32:34 0020 USER_ACCESS:
+2019-12-17 00:32:34 0021 LOAD * INLINE [
+2019-12-17 00:32:34 0022     ACCESS, USERID
+2019-12-17 00:32:34 0023     ADMIN, QLIK-PILOT\QSERVICE
+2019-12-17 00:32:34 0024     ADMIN, INTERNAL\SA_SCHEDULER
+2019-12-17 00:32:34 0025 	ADMIN, BOWMANSYSTEMS\LREMALA
+2019-12-17 00:32:34 0026 	ADMIN, BOWMANSYSTEMS\TPIDGEON
+2019-12-17 00:32:34 0027 	ADMIN, BOWMANSYSTEMS\JMILLER
+2019-12-17 00:32:34 0028 	ADMIN, BOWMANSYSTEMS\KSOBERS
+2019-12-17 00:32:34 0029 ]
+2019-12-17 00:32:34      	2 fields found: ACCESS, USERID, 
+2019-12-17 00:32:34      6 lines fetched
+2019-12-17 00:32:34 0018 USER_ACCESS_tmp:
+2019-12-17 00:32:34 0019 SELECT
+2019-12-17 00:32:34 0020 u.user_id, u.username, u.provider_id,
+2019-12-17 00:32:34 0021 CASE WHEN (SELECT true
+2019-12-17 00:32:34 0022            FROM sp_action_in_role AS ar2
+2019-12-17 00:32:34 0023            JOIN "action" AS a2 ON ar2.action_id = a2.action_id
+2019-12-17 00:32:34 0024            JOIN sp_role AS r2 ON ar2.role_id = r2.role_id
+2019-12-17 00:32:34 0025            JOIN sp_user AS u2 ON r2.role_id = u2.role_id 
+2019-12-17 00:32:34 0026            WHERE (u2.user_id = u.user_id) AND (a2.name = 'VISIBILITY_BYPASSSECURITY')) THEN 1
+2019-12-17 00:32:34 0027      WHEN (SELECT true
+2019-12-17 00:32:34 0028            FROM sp_action_in_role AS ar2
+2019-12-17 00:32:34 0029            JOIN "action" AS a2 ON ar2.action_id = a2.action_id
+2019-12-17 00:32:34 0030            JOIN sp_role AS r2 ON ar2.role_id = r2.role_id
+2019-12-17 00:32:34 0031            JOIN sp_user AS u2 ON r2.role_id = u2.role_id 
+2019-12-17 00:32:34 0032            WHERE (u2.user_id = u.user_id) AND (a2.name = 'VISIBILITY_BYPASSSECURITY_TREE')) THEN 2
+2019-12-17 00:32:34 0033      ELSE 3
+2019-12-17 00:32:34 0034 END as user_access_tier
+2019-12-17 00:32:34 0035 , r.name
+2019-12-17 00:32:34 0036 FROM sp_user u
+2019-12-17 00:32:34 0037 INNER JOIN sp_role r on r.role_id = u.role_id
+2019-12-17 00:32:34 0038 UNION
+2019-12-17 00:32:34 0039 select DISTINCT e.user_id,u1.username,p.provider_id, 
+2019-12-17 00:32:34 0040 CASE WHEN (SELECT true
+2019-12-17 00:32:34 0041            FROM sp_action_in_role AS ar2
+2019-12-17 00:32:34 0042            JOIN "action" AS a2 ON ar2.action_id = a2.action_id
+2019-12-17 00:32:34 0043            JOIN sp_role AS r2 ON ar2.role_id = r2.role_id
+2019-12-17 00:32:34 0044            JOIN sp_user AS u2 ON r2.role_id = u2.role_id 
+2019-12-17 00:32:34 0045            WHERE (u2.user_id = u1.user_id) AND (a2.name = 'VISIBILITY_BYPASSSECURITY')) THEN 1
+2019-12-17 00:32:34 0046      WHEN (SELECT true
+2019-12-17 00:32:34 0047            FROM sp_action_in_role AS ar2
+2019-12-17 00:32:34 0048            JOIN "action" AS a2 ON ar2.action_id = a2.action_id
+2019-12-17 00:32:34 0049            JOIN sp_role AS r2 ON ar2.role_id = r2.role_id
+2019-12-17 00:32:34 0050            JOIN sp_user AS u2 ON r2.role_id = u2.role_id 
+2019-12-17 00:32:34 0051            WHERE (u2.user_id = u1.user_id) AND (a2.name = 'VISIBILITY_BYPASSSECURITY_TREE')) THEN 2
+2019-12-17 00:32:34 0052      ELSE 3
+2019-12-17 00:32:34 0053 END as user_access_tier
+2019-12-17 00:32:34 0054 ,r1.name 
+2019-12-17 00:32:34 0055 from sp_user_eda_group e JOIN sp_eda_group_provider_tree p ON (e.eda_group_id = p.eda_group_id)
+2019-12-17 00:32:34 0056 join sp_user u1 on e.user_id = u1.user_id
+2019-12-17 00:32:34 0057 INNER JOIN sp_role r1 on r1.role_id = u1.role_id
+2019-12-17 00:32:34 0058 WHERE u1.active = true
+2019-12-17 00:32:34 0059 ORDER BY 1,2,3
+2019-12-17 00:32:44      	5 fields found: user_id, username, provider_id, user_access_tier, name, 
+2019-12-17 00:32:44      177,567 lines fetched
+2019-12-17 00:32:44 0046 CONCATENATE(USER_ACCESS)
+2019-12-17 00:32:44 0047 LOAD DISTINCT 
+2019-12-17 00:32:44 0048 	'USER' AS ACCESS,
+2019-12-17 00:32:44 0049 	user_id AS %_USER_ID,
+2019-12-17 00:32:44 0050 	UPPER('nil_qlik' & '\' & username & '_' & user_id & '_' & provider_id) AS USERID,
+2019-12-17 00:32:44 0051 	
+2019-12-17 00:32:44 0052     user_access_tier & '|' & provider_id AS TIER_LINK
+2019-12-17 00:32:44 0053 RESIDENT USER_ACCESS_tmp
+2019-12-17 00:32:44      	4 fields found: ACCESS, %_USER_ID, USERID, TIER_LINK, 
+2019-12-17 00:32:44      177,573 lines fetched
+2019-12-17 00:32:44 0056 DROP TABLE USER_ACCESS_tmp
+2019-12-17 00:32:44 0019 SECURITY_TABLE:
+2019-12-17 00:32:44 0020 NOCONCATENATE
+2019-12-17 00:32:44 0021 LOAD *
+2019-12-17 00:32:44 0022 RESIDENT USER_ACCESS
+2019-12-17 00:32:44      	4 fields found: ACCESS, USERID, %_USER_ID, TIER_LINK, 
+2019-12-17 00:32:44      177,573 lines fetched
+2019-12-17 00:32:44 0020 DROP TABLE USER_ACCESS
+2019-12-17 00:32:44 0021 INHERENT_SECURITY_tmp:
+2019-12-17 00:32:44 0022 
+2019-12-17 00:32:44 0023 	SELECT DISTINCT 1 as user_access_tier, u.provider_id as user_provider_id, p.provider_id as provider_id
+2019-12-17 00:32:44 0024   FROM sp_action_in_role AS ar
+2019-12-17 00:32:44 0025   JOIN "action" AS a ON ar.action_id = a.action_id
+2019-12-17 00:32:44 0026   JOIN sp_role AS r ON ar.role_id = r.role_id
+2019-12-17 00:32:44 0027 	  JOIN sp_user AS u ON r.role_id = u.role_id
+2019-12-17 00:32:44 0028           inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:32:44 0029           inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:32:44 0030           inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id,
+2019-12-17 00:32:44 0031   sp_provider p
+2019-12-17 00:32:44 0032 	WHERE (u.active = true) AND(a.name = 'VISIBILITY_BYPASSSECURITY') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:32:44 0033 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:32:45      	3 fields found: user_access_tier, user_provider_id, provider_id, 
+2019-12-17 00:32:45      22,660 lines fetched
+2019-12-17 00:32:45 0018 CONCATENATE(INHERENT_SECURITY_tmp)
+2019-12-17 00:32:45 0019 
+2019-12-17 00:32:45 0020 
+2019-12-17 00:32:45 0021 SELECT distinct 2 as user_access_tier, uap.user_provider_id, dp.provider_id as provider_id
+2019-12-17 00:32:45 0022 FROM
+2019-12-17 00:32:45 0023 (
+2019-12-17 00:32:45 0024   SELECT DISTINCT u.provider_id as user_provider_id, egpt.provider_id as provider_id
+2019-12-17 00:32:45 0025   FROM sp_user_eda_group ueg
+2019-12-17 00:32:45 0026     JOIN sp_user AS u ON ueg.user_id=u.user_id
+2019-12-17 00:32:45 0027     JOIN sp_eda_group_provider_tree egpt ON egpt.eda_group_id = ueg.eda_group_id
+2019-12-17 00:32:45 0028     JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2019-12-17 00:32:45 0029     JOIN action a ON a.action_id = aic.action_id
+2019-12-17 00:32:45 0030             inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:32:45 0031             inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:32:45 0032             inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2019-12-17 00:32:45 0033     WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:32:45 0034 	    and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:32:45 0035 ) uap
+2019-12-17 00:32:45 0036 JOIN sp_provider_tree dp ON ancestor_provider_id = uap.provider_id
+2019-12-17 00:32:45 0037 WHERE ancestor_provider_id = uap.user_provider_id
+2019-12-17 00:32:45      	3 fields found: user_access_tier, user_provider_id, provider_id, 
+2019-12-17 00:32:45      23,536 lines fetched
+2019-12-17 00:32:45 0040 CONCATENATE(INHERENT_SECURITY_tmp)
+2019-12-17 00:32:45 0041 
+2019-12-17 00:32:45 0042 
+2019-12-17 00:32:45 0043 SELECT distinct 2 as user_access_tier, u.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id
+2019-12-17 00:32:45 0044 FROM sp_user u
+2019-12-17 00:32:45 0045 JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2019-12-17 00:32:45 0046 JOIN action a ON a.action_id = aic.action_id
+2019-12-17 00:32:45 0047 INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+2019-12-17 00:32:45 0048         inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:32:45 0049         inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:32:45 0050         inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2019-12-17 00:32:45 0051 	WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:32:45 0052 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:32:45      	3 fields found: user_access_tier, user_provider_id, provider_id, 
+2019-12-17 00:32:45      23,553 lines fetched
+2019-12-17 00:32:45 0056 CONCATENATE(INHERENT_SECURITY_tmp)
+2019-12-17 00:32:45 0057 
+2019-12-17 00:32:45 0058 
+2019-12-17 00:32:45 0059 
+2019-12-17 00:32:45 0060 SELECT distinct 3 as user_access_tier, u.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id
+2019-12-17 00:32:45 0061 FROM sp_user u
+2019-12-17 00:32:45 0062 JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2019-12-17 00:32:45 0063 JOIN action a ON a.action_id = aic.action_id
+2019-12-17 00:32:45 0064 INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+2019-12-17 00:32:45 0065         inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:32:45 0066         inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:32:45 0067         inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2019-12-17 00:32:45 0068 WHERE (u.active = true) AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:32:45 0069 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:32:45 0070 AND u.user_id NOT IN (SELECT DISTINCT u2.user_id
+2019-12-17 00:32:45 0071                       FROM sp_user u2
+2019-12-17 00:32:45 0072                       JOIN sp_action_in_role aic2 ON aic2.role_id = u2.role_id
+2019-12-17 00:32:45 0073                       JOIN action a2 ON a2.action_id = aic2.action_id
+2019-12-17 00:32:45 0074                       WHERE (u2.active = true) AND (a2.name in ( 'VISIBILITY_BYPASSSECURITY_TREE', 'VISIBILITY_BYPASSSECURITY')) AND ((u2.last_login > (now()::DATE + interval '-6 months')) or (u2.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:32:45 0075 )
+2019-12-17 00:32:45 0076 	ORDER BY 1,2
+2019-12-17 00:32:46      	3 fields found: user_access_tier, user_provider_id, provider_id, 
+2019-12-17 00:32:46      23,555 lines fetched
+2019-12-17 00:32:46 0078 CONCATENATE(INHERENT_SECURITY_tmp)	
+2019-12-17 00:32:46 0079 	SELECT DISTINCT 1 as user_access_tier, p1.provider_id as user_provider_id, p.provider_id as provider_id
+2019-12-17 00:32:46 0080   FROM sp_action_in_role AS ar
+2019-12-17 00:32:46 0081   JOIN "action" AS a ON ar.action_id = a.action_id
+2019-12-17 00:32:46 0082   JOIN sp_role AS r ON ar.role_id = r.role_id
+2019-12-17 00:32:46 0083 	  JOIN sp_user AS u ON r.role_id = u.role_id
+2019-12-17 00:32:46 0084 	  join sp_user_eda_group e1 on u.user_id = e1.user_id
+2019-12-17 00:32:46 0085 	  JOIN sp_eda_group_provider_tree p1 ON (e1.eda_group_id = p1.eda_group_id)
+2019-12-17 00:32:46 0086           inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:32:46 0087           inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:32:46 0088           inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id,        
+2019-12-17 00:32:46 0089           sp_provider p
+2019-12-17 00:32:46 0090 	WHERE (u.active = true) AND(a.name = 'VISIBILITY_BYPASSSECURITY') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:32:46 0091 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:32:46 0092  
+2019-12-17 00:32:46 0093  UNION
+2019-12-17 00:32:46 0094 --CONCATENATE(INHERENT_SECURITY_tmp)
+2019-12-17 00:32:46 0095 
+2019-12-17 00:32:46 0096 SELECT distinct 2 as user_access_tier, uap.user_provider_id, dp.provider_id as provider_id
+2019-12-17 00:32:46 0097 FROM
+2019-12-17 00:32:46 0098 (
+2019-12-17 00:32:46 0099   SELECT DISTINCT egpt.provider_id as user_provider_id, egpt.provider_id as provider_id
+2019-12-17 00:32:46 0100   FROM sp_user_eda_group ueg
+2019-12-17 00:32:46 0101     JOIN sp_user AS u ON ueg.user_id=u.user_id
+2019-12-17 00:32:46 0102     JOIN sp_eda_group_provider_tree egpt ON egpt.eda_group_id = ueg.eda_group_id
+2019-12-17 00:32:46 0103     JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2019-12-17 00:32:46 0104     JOIN action a ON a.action_id = aic.action_id
+2019-12-17 00:32:46 0105             inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:32:46 0106             inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:32:46 0107             inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2019-12-17 00:32:46 0108     WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:32:46 0109 	    and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:32:46 0110 ) uap
+2019-12-17 00:32:46 0111 JOIN sp_provider_tree dp ON ancestor_provider_id = uap.provider_id
+2019-12-17 00:32:46 0112 WHERE ancestor_provider_id = uap.user_provider_id
+2019-12-17 00:32:46 0113  
+2019-12-17 00:32:46 0114 UNION
+2019-12-17 00:32:46 0115 
+2019-12-17 00:32:46 0116 
+2019-12-17 00:32:46 0117 SELECT distinct 2 as user_access_tier, p2.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id
+2019-12-17 00:32:46 0118 FROM sp_user u
+2019-12-17 00:32:46 0119   join sp_user_eda_group e2 on u.user_id = e2.user_id
+2019-12-17 00:32:46 0120 	  JOIN sp_eda_group_provider_tree p2 ON (e2.eda_group_id = p2.eda_group_id)
+2019-12-17 00:32:46 0121 JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2019-12-17 00:32:46 0122 JOIN action a ON a.action_id = aic.action_id
+2019-12-17 00:32:46 0123 INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+2019-12-17 00:32:46 0124         inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:32:46 0125         inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:32:46 0126         inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2019-12-17 00:32:46 0127 	WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:32:46 0128 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:32:46 0129  
+2019-12-17 00:32:46 0130 UNION
+2019-12-17 00:32:46 0131 
+2019-12-17 00:32:46 0132 SELECT distinct 3 as user_access_tier, p3.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id
+2019-12-17 00:32:46 0133 FROM sp_user u
+2019-12-17 00:32:46 0134   join sp_user_eda_group e3 on u.user_id = e3.user_id
+2019-12-17 00:32:46 0135 	  JOIN sp_eda_group_provider_tree p3 ON (e3.eda_group_id = p3.eda_group_id)
+2019-12-17 00:32:46 0136 JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2019-12-17 00:32:46 0137 JOIN action a ON a.action_id = aic.action_id
+2019-12-17 00:32:46 0138 INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+2019-12-17 00:32:46 0139         inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:32:46 0140         inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:32:46 0141         inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2019-12-17 00:32:46 0142 WHERE (u.active = true) AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:32:46 0143 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:32:46 0144 AND u.user_id NOT IN (SELECT DISTINCT u2.user_id
+2019-12-17 00:32:46 0145                       FROM sp_user u2
+2019-12-17 00:32:46 0146                       JOIN sp_action_in_role aic2 ON aic2.role_id = u2.role_id
+2019-12-17 00:32:46 0147                       JOIN action a2 ON a2.action_id = aic2.action_id
+2019-12-17 00:32:46 0148                       WHERE (u2.active = true) AND (a2.name in ( 'VISIBILITY_BYPASSSECURITY_TREE', 'VISIBILITY_BYPASSSECURITY')) AND ((u2.last_login > (now()::DATE + interval '-6 months')) or (u2.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:32:46 0149 )
+2019-12-17 00:32:46 0150 	ORDER BY 1,2
+2019-12-17 00:40:30      	3 fields found: user_access_tier, user_provider_id, provider_id, 
+2019-12-17 00:40:30      32,119,343 lines fetched
+2019-12-17 00:40:30 0152 INHERENT_SECURITY:
+2019-12-17 00:40:30 0153 NOCONCATENATE
+2019-12-17 00:40:30 0154 LOAD 
+2019-12-17 00:40:30 0155 	user_access_tier & '|' & user_provider_id AS TIER_LINK,
+2019-12-17 00:40:30 0156     user_provider_id AS provider_id,
+2019-12-17 00:40:30 0157     user_access_tier,
+2019-12-17 00:40:30 0158 
+2019-12-17 00:40:30 0159     provider_id AS [Client Provider Created By Id]
+2019-12-17 00:40:30 0160 RESIDENT INHERENT_SECURITY_tmp
+2019-12-17 00:40:40      	4 fields found: TIER_LINK, provider_id, user_access_tier, Client Provider Created By Id, 
+2019-12-17 00:40:40      32,119,343 lines fetched
+2019-12-17 00:40:41 0162 DROP TABLE INHERENT_SECURITY_tmp
+2019-12-17 00:40:41 0164 USER_ACCESS:
+2019-12-17 00:40:41 0165 LOAD 0 as %_Access_Key
+2019-12-17 00:40:41 0166 AutoGenerate 0
+2019-12-17 00:40:41      	1 fields found: %_Access_Key, 
+2019-12-17 00:40:41      0 lines fetched
+2019-12-17 00:40:41 0022 Client_Access:
+2019-12-17 00:40:41 0023 NOCONCATENATE
+2019-12-17 00:40:41 0024 LOAD DISTINCT
+2019-12-17 00:40:41 0025 	TIER_LINK,
+2019-12-17 00:40:41 0026     [Client Provider Created By Id]
+2019-12-17 00:40:41 0027 RESIDENT INHERENT_SECURITY
+2019-12-17 00:40:45      	2 fields found: TIER_LINK, Client Provider Created By Id, 
+2019-12-17 00:40:45      32,095,788 lines fetched
+2019-12-17 00:40:45 0008 client_security:
+2019-12-17 00:40:45 0009 LOAD
+2019-12-17 00:40:45 0010     [Client Id],
+2019-12-17 00:40:45 0011     [Client Is Active],
+2019-12-17 00:40:45 0012     [Client Provider Created By Id]
+2019-12-17 00:40:45 0013 FROM [lib://SPData_Beta/Transform/sp5_il_nil_qlik/E_DIM_Client.qvd]
+2019-12-17 00:40:45 0014 (qvd)
+2019-12-17 00:40:45      	3 fields found: Client Id, Client Is Active, Client Provider Created By Id, 
+2019-12-17 00:40:45      254,201 lines fetched
+2019-12-17 00:40:45 0018 keep_only_recent_clients_tmp:
+2019-12-17 00:40:45 0019 INNER JOIN (client_security)
+2019-12-17 00:40:45 0020 LOAD
+2019-12-17 00:40:45 0021 	client_id AS [Client Id]
+2019-12-17 00:40:45 0022 RESIDENT RECENT_CLIENT_tmp
+2019-12-17 00:40:45      	1 fields found: Client Id, 
+2019-12-17 00:40:45      102,206 lines fetched
+2019-12-17 00:40:45      Joining/Keeping
+2019-12-17 00:40:45 0024 DROP TABLE RECENT_CLIENT_tmp
+2019-12-17 00:40:45 0027 INNER JOIN(Client_Access)
+2019-12-17 00:40:45 0028 LOAD DISTINCT
+2019-12-17 00:40:45 0029     'Client' AS %_Access_Type,
+2019-12-17 00:40:45 0030     'Client' & ' | ' & [Client Id] AS %_Access_Key,
+2019-12-17 00:40:45 0031     [Client Id] AS %DIM_CLIENT_KEY,
+2019-12-17 00:40:45 0032     [Client Provider Created By Id],
+2019-12-17 00:40:45 0033     1 AS [INHERENT SECURITY]
+2019-12-17 00:40:45 0034 RESIDENT client_security
+2019-12-17 00:40:45 0035 WHERE match([Client Is Active], 'Yes')
+2019-12-17 00:40:46      	5 fields found: %_Access_Type, %_Access_Key, %DIM_CLIENT_KEY, Client Provider Created By Id, INHERENT SECURITY, 
+2019-12-17 00:40:46      101,663 lines fetched
+2019-12-17 00:40:46      Joining/Keeping
+2019-12-17 00:41:30 0038 DROP TABLE client_security
+2019-12-17 00:41:30 0023 explicit_client_security:
+2019-12-17 00:41:30 0024 NOCONCATENATE
+2019-12-17 00:41:30 0025 LOAD DISTINCT
+2019-12-17 00:41:30 0026 	TIER_LINK,
+2019-12-17 00:41:30 0027     provider_id
+2019-12-17 00:41:30 0028 
+2019-12-17 00:41:30 0029 
+2019-12-17 00:41:30 0030 RESIDENT INHERENT_SECURITY
+2019-12-17 00:41:35      	2 fields found: TIER_LINK, provider_id, 
+2019-12-17 00:41:35      6,331 lines fetched
+2019-12-17 00:41:36 0010 client_security:
+2019-12-17 00:41:36 0011 LOAD
+2019-12-17 00:41:36 0012     [Client Id],
+2019-12-17 00:41:36 0013     provider_id
+2019-12-17 00:41:36 0014 
+2019-12-17 00:41:36 0015 RESIDENT client_visibility
+2019-12-17 00:41:43      	2 fields found: Client Id, provider_id, 
+2019-12-17 00:41:43      96,708,752 lines fetched
+2019-12-17 00:41:43 0018 JOIN(explicit_client_security)
+2019-12-17 00:41:43 0019 LOAD 
+2019-12-17 00:41:43 0020     'Client' AS %_Access_Type,
+2019-12-17 00:41:43 0021     'Client' & ' | ' & [Client Id] AS %_Access_Key,
+2019-12-17 00:41:43 0022     [Client Id],
+2019-12-17 00:41:43 0023     provider_id,
+2019-12-17 00:41:43 0024 
+2019-12-17 00:41:43 0025     1 AS [EXPLICIT SECURITY]
+2019-12-17 00:41:43 0026 RESIDENT client_security
+2019-12-17 00:41:56      	5 fields found: %_Access_Type, %_Access_Key, Client Id, provider_id, EXPLICIT SECURITY, 
+2019-12-17 00:41:56      96,708,752 lines fetched
+2019-12-17 00:41:56      Joining/Keeping
+2019-12-17 00:42:37 0028 DROP TABLE client_security
+2019-12-17 00:42:37 0030 CONCATENATE(Client_Access)
+2019-12-17 00:42:37 0031 LOAD
+2019-12-17 00:42:37 0032 	TIER_LINK,
+2019-12-17 00:42:37 0033     %_Access_Type,
+2019-12-17 00:42:37 0034     %_Access_Key,
+2019-12-17 00:42:37 0035     [Client Id] AS %DIM_CLIENT_KEY,
+2019-12-17 00:42:37 0036     provider_id,
+2019-12-17 00:42:37 0037 
+2019-12-17 00:42:37 0038     [EXPLICIT SECURITY]
+2019-12-17 00:42:37 0039 RESIDENT explicit_client_security
+2019-12-17 00:44:06      	6 fields found: TIER_LINK, %_Access_Type, %_Access_Key, %DIM_CLIENT_KEY, provider_id, EXPLICIT SECURITY, 
+2019-12-17 00:44:06      732,411,393 lines fetched
+2019-12-17 00:44:06 0041 DROP TABLE explicit_client_security
+2019-12-17 00:44:07 0024 INHERENT_SECURITY_tmp_EE:
+2019-12-17 00:44:07 0025 SELECT DISTINCT entry_date,exit_date,user_access_tier, user_provider_id, client_id, entry_exit_id, sec.provider_id AS provider_id
+2019-12-17 00:44:07 0026 FROM sp_entry_exit ee
+2019-12-17 00:44:07 0027 JOIN (
+2019-12-17 00:44:07 0028 	SELECT DISTINCT 1 as user_access_tier, u.provider_id as user_provider_id, p.provider_id as provider_id --, null::integer as eda_provider_id
+2019-12-17 00:44:07 0029   FROM sp_action_in_role AS ar
+2019-12-17 00:44:07 0030   JOIN "action" AS a ON ar.action_id = a.action_id
+2019-12-17 00:44:07 0031   JOIN sp_role AS r ON ar.role_id = r.role_id
+2019-12-17 00:44:07 0032 	  JOIN sp_user AS u ON r.role_id = u.role_id
+2019-12-17 00:44:07 0033           inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:44:07 0034           inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:44:07 0035           inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id,
+2019-12-17 00:44:07 0036   sp_provider p
+2019-12-17 00:44:07 0037 	WHERE (u.active = true) AND(a.name = 'VISIBILITY_BYPASSSECURITY') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:44:07 0038 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:44:07 0039  
+2019-12-17 00:44:07 0040 UNION
+2019-12-17 00:44:07 0041 
+2019-12-17 00:44:07 0042 SELECT distinct 2 as user_access_tier, uap.user_provider_id, dp.provider_id as provider_id --, uap.provider_id as eda_provider_id,user_id
+2019-12-17 00:44:07 0043 FROM
+2019-12-17 00:44:07 0044 (
+2019-12-17 00:44:07 0045   SELECT DISTINCT u.provider_id as user_provider_id, egpt.provider_id as provider_id,u.user_id
+2019-12-17 00:44:07 0046   FROM sp_user_eda_group ueg
+2019-12-17 00:44:07 0047     JOIN sp_user AS u ON ueg.user_id=u.user_id
+2019-12-17 00:44:07 0048     JOIN sp_eda_group_provider_tree egpt ON egpt.eda_group_id = ueg.eda_group_id
+2019-12-17 00:44:07 0049     JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2019-12-17 00:44:07 0050     JOIN action a ON a.action_id = aic.action_id
+2019-12-17 00:44:07 0051             inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:44:07 0052             inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:44:07 0053             inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2019-12-17 00:44:07 0054     WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:44:07 0055 	    and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:44:07 0056 ) uap
+2019-12-17 00:44:07 0057 JOIN sp_provider_tree dp ON ancestor_provider_id = uap.provider_id 
+2019-12-17 00:44:07 0058 WHERE ancestor_provider_id = uap.user_provider_id
+2019-12-17 00:44:07 0059 
+2019-12-17 00:44:07 0060 UNION
+2019-12-17 00:44:07 0061 
+2019-12-17 00:44:07 0062 
+2019-12-17 00:44:07 0063 SELECT distinct 2 as user_access_tier, u.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id --, null::integer as eda_provider_id
+2019-12-17 00:44:07 0064 FROM sp_user u
+2019-12-17 00:44:07 0065 JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2019-12-17 00:44:07 0066 JOIN action a ON a.action_id = aic.action_id
+2019-12-17 00:44:07 0067 INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+2019-12-17 00:44:07 0068         inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:44:07 0069         inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:44:07 0070         inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2019-12-17 00:44:07 0071 	WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:44:07 0072 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:44:07 0073  
+2019-12-17 00:44:07 0074 UNION
+2019-12-17 00:44:07 0075 
+2019-12-17 00:44:07 0076 
+2019-12-17 00:44:07 0077 SELECT distinct 3 as user_access_tier, u.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id --, null::integer as eda_provider_id
+2019-12-17 00:44:07 0078 FROM sp_user u
+2019-12-17 00:44:07 0079 JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2019-12-17 00:44:07 0080 JOIN action a ON a.action_id = aic.action_id
+2019-12-17 00:44:07 0081 INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+2019-12-17 00:44:07 0082         inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:44:07 0083         inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:44:07 0084         inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2019-12-17 00:44:07 0085 WHERE (u.active = true) AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:44:07 0086 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:44:07 0087 AND u.user_id NOT IN (SELECT DISTINCT u2.user_id
+2019-12-17 00:44:07 0088                       FROM sp_user u2
+2019-12-17 00:44:07 0089                       JOIN sp_action_in_role aic2 ON aic2.role_id = u2.role_id
+2019-12-17 00:44:07 0090                       JOIN action a2 ON a2.action_id = aic2.action_id
+2019-12-17 00:44:07 0091                       WHERE (u2.active = true) AND (a2.name in ( 'VISIBILITY_BYPASSSECURITY_TREE', 'VISIBILITY_BYPASSSECURITY')) AND ((u2.last_login > (now()::DATE + interval '-6 months')) or (u2.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:44:07 0092 )
+2019-12-17 00:44:07 0093 ) AS sec ON ((ee.provider_id = sec.provider_id) OR (ee.provider_creating_id = sec.provider_id))
+2019-12-17 00:58:35      	7 fields found: entry_date, exit_date, user_access_tier, user_provider_id, client_id, entry_exit_id, provider_id, 
+2019-12-17 00:58:35      2,052,552 lines fetched
+2019-12-17 00:58:35 0074 CONCATENATE(INHERENT_SECURITY_tmp_EE)
+2019-12-17 00:58:35 0075 SELECT DISTINCT entry_date,exit_date,user_access_tier, user_provider_id, client_id, entry_exit_id, sec.provider_id AS provider_id
+2019-12-17 00:58:35 0076 FROM sp_entry_exit ee
+2019-12-17 00:58:35 0077 JOIN (
+2019-12-17 00:58:35 0078 	SELECT DISTINCT 1 as user_access_tier, p1.provider_id as user_provider_id, p.provider_id as provider_id --, null::integer as eda_provider_id
+2019-12-17 00:58:35 0079   FROM sp_action_in_role AS ar
+2019-12-17 00:58:35 0080   JOIN "action" AS a ON ar.action_id = a.action_id
+2019-12-17 00:58:35 0081   JOIN sp_role AS r ON ar.role_id = r.role_id
+2019-12-17 00:58:35 0082 	  JOIN sp_user AS u ON r.role_id = u.role_id
+2019-12-17 00:58:35 0083 	  join sp_user_eda_group e1 on u.user_id = e1.user_id
+2019-12-17 00:58:35 0084 	  JOIN sp_eda_group_provider_tree p1 ON (e1.eda_group_id = p1.eda_group_id)
+2019-12-17 00:58:35 0085           inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:58:35 0086           inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:58:35 0087           inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id,
+2019-12-17 00:58:35 0088   sp_provider p
+2019-12-17 00:58:35 0089 	WHERE (u.active = true) AND(a.name = 'VISIBILITY_BYPASSSECURITY') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:58:35 0090 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:58:35 0091  
+2019-12-17 00:58:35 0092 UNION
+2019-12-17 00:58:35 0093 SELECT distinct 2 as user_access_tier, uap.user_provider_id, dp.provider_id as provider_id --, uap.provider_id as eda_provider_id,user_id
+2019-12-17 00:58:35 0094 FROM
+2019-12-17 00:58:35 0095 (
+2019-12-17 00:58:35 0096   SELECT DISTINCT p2.provider_id as user_provider_id, egpt.provider_id as provider_id,u.user_id
+2019-12-17 00:58:35 0097   FROM sp_user_eda_group ueg
+2019-12-17 00:58:35 0098     JOIN sp_user AS u ON ueg.user_id=u.user_id
+2019-12-17 00:58:35 0099 	join sp_user_eda_group e2 on u.user_id = e2.user_id
+2019-12-17 00:58:35 0100 	  JOIN sp_eda_group_provider_tree p2 ON (e2.eda_group_id = p2.eda_group_id)
+2019-12-17 00:58:35 0101     JOIN sp_eda_group_provider_tree egpt ON egpt.eda_group_id = ueg.eda_group_id
+2019-12-17 00:58:35 0102     JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2019-12-17 00:58:35 0103     JOIN action a ON a.action_id = aic.action_id
+2019-12-17 00:58:35 0104             inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:58:35 0105             inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:58:35 0106             inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2019-12-17 00:58:35 0107     WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:58:35 0108 	    and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:58:35 0109 ) uap
+2019-12-17 00:58:35 0110 JOIN sp_provider_tree dp ON ancestor_provider_id = uap.provider_id 
+2019-12-17 00:58:35 0111 WHERE ancestor_provider_id = uap.user_provider_id
+2019-12-17 00:58:35 0112 
+2019-12-17 00:58:35 0113 UNION
+2019-12-17 00:58:35 0114 --
+2019-12-17 00:58:35 0115 
+2019-12-17 00:58:35 0116 SELECT distinct 2 as user_access_tier, p3.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id --, null::integer as eda_provider_id
+2019-12-17 00:58:35 0117 FROM sp_user u
+2019-12-17 00:58:35 0118 join sp_user_eda_group e3 on u.user_id = e3.user_id
+2019-12-17 00:58:35 0119 	  JOIN sp_eda_group_provider_tree p3 ON (e3.eda_group_id = p3.eda_group_id)
+2019-12-17 00:58:35 0120 JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2019-12-17 00:58:35 0121 JOIN action a ON a.action_id = aic.action_id
+2019-12-17 00:58:35 0122 INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+2019-12-17 00:58:35 0123         inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:58:35 0124         inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:58:35 0125         inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2019-12-17 00:58:35 0126 	WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:58:35 0127 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:58:35 0128  
+2019-12-17 00:58:35 0129 UNION
+2019-12-17 00:58:35 0130 --
+2019-12-17 00:58:35 0131 
+2019-12-17 00:58:35 0132 SELECT distinct 3 as user_access_tier, p4.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id --, null::integer as eda_provider_id
+2019-12-17 00:58:35 0133 FROM sp_user u
+2019-12-17 00:58:35 0134 join sp_user_eda_group e4 on u.user_id = e4.user_id
+2019-12-17 00:58:35 0135 	  JOIN sp_eda_group_provider_tree p4 ON (e4.eda_group_id = p4.eda_group_id)
+2019-12-17 00:58:35 0136 JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+2019-12-17 00:58:35 0137 JOIN action a ON a.action_id = aic.action_id
+2019-12-17 00:58:35 0138 INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+2019-12-17 00:58:35 0139         inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+2019-12-17 00:58:35 0140         inner join sp_boxi_license bl on bl.license_id = bla.license_id
+2019-12-17 00:58:35 0141         inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+2019-12-17 00:58:35 0142 WHERE (u.active = true) AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:58:35 0143 	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+2019-12-17 00:58:35 0144 AND u.user_id NOT IN (SELECT DISTINCT u2.user_id
+2019-12-17 00:58:35 0145                       FROM sp_user u2
+2019-12-17 00:58:35 0146                       JOIN sp_action_in_role aic2 ON aic2.role_id = u2.role_id
+2019-12-17 00:58:35 0147                       JOIN action a2 ON a2.action_id = aic2.action_id
+2019-12-17 00:58:35 0148                       WHERE (u2.active = true) AND (a2.name in ( 'VISIBILITY_BYPASSSECURITY_TREE', 'VISIBILITY_BYPASSSECURITY')) AND ((u2.last_login > (now()::DATE + interval '-6 months')) or (u2.date_added > (now()::DATE + interval '-1 months')))
+2019-12-17 00:58:35 0149 )
+2019-12-17 00:58:35 0150 ) AS sec ON ((ee.provider_id = sec.provider_id) OR (ee.provider_creating_id = sec.provider_id))
+2019-12-17 15:02:03      Execution Failed
+2019-12-24 16:12:15      Execution finished.
