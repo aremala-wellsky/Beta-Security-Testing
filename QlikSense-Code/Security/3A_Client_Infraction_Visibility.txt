@@ -1,0 +1,92 @@
+Client_Infraction_Group:
+LOAD DISTINCT 
+ 	provider_id,
+    visibility_group_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT USER_GROUP; 
+
+Client_Infraction_tmp:
+LOAD
+    client_infraction_id,
+    active,
+	client_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT_INFRACTION.qvd]
+(qvd)
+WHERE (isNull(num(bar_end_date)) OR (num(bar_end_date) >= '$(vNumDateSet)'));
+
+Client_Infraction:
+NOCONCATENATE
+LOAD
+	client_infraction_id,
+	client_id
+RESIDENT Client_Infraction_tmp
+WHERE match(active, 1);
+
+DROP TABLE Client_Infraction_tmp;
+
+//client_infraction_visibility_tmp:
+INNER JOIN (Client_Infraction)
+LOAD
+    client_infraction_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT_INFRACTIONVISIBILITY.qvd]
+(qvd);
+
+//Client_Infraction_visibility:
+LEFT JOIN (Client_Infraction_Group)
+LOAD DISTINCT
+    visibility_group_id,
+    visible,
+    client_infraction_id,
+	client_id
+RESIDENT Client_Infraction;
+
+DROP TABLE Client_Infraction;
+
+Visible:
+Load DISTINCT
+	provider_id,
+    client_infraction_id,
+    1 AS Visible,
+	client_id
+RESIDENT Client_Infraction_Group
+WHERE visible = 1;
+
+not_Visible:
+LEFT JOIN(Visible)
+Load DISTINCT
+	provider_id,
+    client_infraction_id,
+    1 AS not_Visible,
+	client_id
+RESIDENT Client_Infraction_Group
+WHERE visible = 0;
+
+DROP TABLE Client_Infraction_Group;
+
+Client_Infraction_visibility:
+NOCONCATENATE
+LOAD DISTINCT
+	provider_id,
+	client_infraction_id AS [Client Incident Id],
+	client_id AS %clientinfractionclientid
+RESIDENT Visible
+WHERE match(Visible, 1)  AND isNull(not_Visible);
+
+DROP TABLE Visible;
+
+
+LEFT JOIN(Client_Infraction_visibility)
+LOAD
+    [Client Incident Id]
+RESIDENt DIM_Client_Infraction;
+
+
+STORE Client_Infraction_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Client_Infraction_visibility.qvd];
+Drop table Client_Infraction_visibility;
+
+
+

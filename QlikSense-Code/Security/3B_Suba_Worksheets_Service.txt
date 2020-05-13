@@ -1,0 +1,86 @@
+DROP_ANSWER_VIEWS:                     
+SELECT qlik_remove_all_qlik_view();     
+DROP TABLE DROP_ANSWER_VIEWS; 
+
+BUILD_WORKSHEET_VIEWS:                 
+SELECT qlik_flatten_all_ws_suba_view('1/01/2015');   
+DROP TABLE BUILD_WORKSHEET_VIEWS;
+
+
+WORKSHEET_SERVICE_LIST:
+SELECT table_name AS sp_table_name, 'needs_' || SUBSTRING(table_name, 21, CHAR_LENGTH(table_name))  AS qlik_table_name,  SUBSTRING(table_name, 21, CHAR_LENGTH(table_name)) AS table_name_only
+FROM information_schema.tables
+WHERE table_name ILIKE 'qlik_wsrv_worksheet_%'
+ORDER BY table_name;
+
+LET NumRows=NoOfRows('WORKSHEET_SERVICE_LIST');
+FOR i=0 to $(NumRows)-1
+
+  LET varRecordSetTableName=Peek('sp_table_name',$(i),'WORKSHEET_SERVICE_LIST');
+  LET varRecordSetQlikName=Peek('qlik_table_name',$(i),'WORKSHEET_SERVICE_LIST');
+  LET varRecordSetTableNameOnly=Peek('table_name_only',$(i),'WORKSHEET_SERVICE_LIST');
+  LET varRecordSetQlikName_Ucase_Entry=Upper(right('$(varRecordSetQlikName)', (len('$(varRecordSetQlikName)'))-5));
+  LET varRecordSetQlikName_Service= '$(varRecordSetQlikName)'& '_wsrv';
+  
+$(varRecordSetQlikName):
+SELECT *
+FROM $(varRecordSetTableName);
+  
+
+
+SERVICE_WS_LINKAGE:
+SELECT wr.recordset_id,
+n.need_service_id as need_worksheets_link
+FROM ws_recordset wr 
+JOIN ws_worksheet_type wt on wt.worksheet_type_id = wr.worksheet_type_id 
+JOIN sp_need_service n ON n.need_service_group_id = wr.entity_id 
+WHERE wt.code = 'SERVICEWORKSHEET';
+  
+  INNER JOIN($(varRecordSetQlikName))
+  LOAD DISTINCT
+  need_worksheets_link as %need_worksheets_link,
+  recordset_id
+  RESIDENT SERVICE_WS_LINKAGE;
+  
+  $(varRecordSetQlikName_Service):
+  Noconcatenate
+  LOAD DISTINCT
+  *,
+  recordset_id AS 'needs$(varRecordSetQlikName_Ucase_Entry)RECORDSET_ID_wsrv'
+  RESIDENT $(varRecordSetQlikName);
+  
+  
+  DROP TABLE SERVICE_WS_LINKAGE;
+  
+  DROP FIELDS client_id FROM $(varRecordSetQlikName_Service);
+  DROP FIELDS recordset_id FROM $(varRecordSetQlikName_Service);
+  DROP TABLE $(varRecordSetQlikName);
+
+
+  FieldMapWsService:
+  Mapping SQL
+   SELECT  lower(dq.virt_field_name) AS oldnames,   'needs_'||dq.virt_field_name || '_wsrv'  AS newnames
+    FROM ws_question dq
+    INNER JOIN ws_question dq_p ON (dq_p.question_id = dq.parent_id)
+    UNION   
+ SELECT  lower(dq.virt_field_name)|| 'date' AS oldnames,   'needs_'||dq.virt_field_name || 'DATE_wsrv'  AS newnames
+    FROM ws_question dq
+    INNER JOIN ws_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE  ((dq.virt_field_name <> (dq_p.virt_field_name || 'ENDDATE'))) AND ((dq.virt_field_name <> (dq_p.virt_field_name || 'STARTDATE')));
+	Rename Fields using FieldMapWsService;
+  
+   // DROP TABLE $(varRecordSetQlikName);
+
+  LET varStepName='STEPENTRY_' & $(i) & '_of_' & $(NumRows);
+  $(varStepName): select 1;
+  DROP TABLE $(varStepName);
+
+
+NEXT;
+
+DROP TABLE WORKSHEET_SERVICE_LIST;
+
+DROP_ANSWER_VIEWS:
+SELECT qlik_remove_all_qlik_view();
+
+DROP TABLE DROP_ANSWER_VIEWS;

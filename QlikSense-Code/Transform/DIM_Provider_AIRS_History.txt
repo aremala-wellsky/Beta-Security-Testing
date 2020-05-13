@@ -1,0 +1,58 @@
+FACT_sp_provider_official_update_TMP: //RUNNING TOTAL: Rows/Fields 197/60
+NoConcatenate
+Load 
+	provider_id,
+	date_officialchange,
+	who_officialchange_id,
+	who_requestingchange,
+	org_officialchange_id,
+	org_requestingchange_id,
+	description_officialchange,
+	provider_official_update_id,
+	official 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_OFFICIAL_UPDATE.qvd](qvd);
+DIM_Provider_AIRS_History:
+LOAD 
+    "provider_id"											AS %ProviderId, 
+	"provider_official_update_id"							AS [AIRS Update History Id],
+	if ( official = 1, 'Yes', 'No' ) 						AS [AIRS Official Update],
+  	 (date(floor( date_officialchange ) ) )			AS [AIRS Update Date],
+ 	applymap ('MapUserName', who_officialchange_id, NULL() )	AS [AIRS Person Making Change],	
+  	"who_requestingchange" 									AS [AIRS Person Requesting Change],  
+    applymap ('MapProviderName', org_officialchange_id, NULL() )	AS [AIRS Organization Making Change],
+    applymap ('MapProviderName', org_requestingchange_id, NULL() )	AS [AIRS Organization Requesting Change],
+	left(description_officialchange,200) 							AS [AIRS Change Description],
+	provider_official_update_id								AS %POUpdate_id
+Resident FACT_sp_provider_official_update_TMP;
+Drop Table FACT_sp_provider_official_update_TMP;
+
+//=============================================
+
+FACT_sp_provider_communitypoint_TMP:
+NoConcatenate
+SELECT  distinct p.provider_id, 
+(CASE WHEN EXISTS (SELECT 1 FROM sp_provider_approval_bin ab
+            left JOIN type_approval_bin_originating_app t ON t.type_approval_bin_originating_app_id = ab.originating_app_id
+            WHERE ab.provider_approval_bin_id = ou.provider_approval_bin_id
+            AND t.code = 'COMMUNITYPOINT'
+            ) THEN 'Yes' ELSE 'No' END) as change_request_from_communitypoint,
+            ab.requesting_user_email as communitypoint_user_email,  ou.provider_official_update_id    
+FROM  sp_provider p 
+LEFT JOIN sp_provider_official_update ou ON ou.provider_id = p.provider_id
+LEFT JOIN  sp_provider_approval_bin ab on ab.provider_approval_bin_id = ou.provider_approval_bin_id
+group by  p.provider_id, ou.provider_approval_bin_id, ab.requesting_user_email, ou.provider_official_update_id 
+order by p.provider_id; 
+
+LEFT JOIN (DIM_Provider_AIRS_History)
+LOAD
+provider_id AS %ProviderId,
+provider_official_update_id AS %POUpdate_id,
+change_request_from_communitypoint AS [AIRS Change Request From CommunityPoint],
+communitypoint_user_email AS [AIRS CommunityPoint User Email]
+RESIDENT FACT_sp_provider_communitypoint_TMP;
+DROP TABLE FACT_sp_provider_communitypoint_TMP;
+ 
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE DIM_Provider_AIRS_History INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Provider_AIRS_History.qvd];
+DROP Table DIM_Provider_AIRS_History;

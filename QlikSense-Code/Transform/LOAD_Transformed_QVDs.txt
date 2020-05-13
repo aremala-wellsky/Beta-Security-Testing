@@ -1,0 +1,111 @@
+//******************************************************************//
+//******** Load all date into memory from Transformed QVDs. ********//
+//******************************************************************//
+
+
+//=============================================
+// DIM_Client
+//=============================================
+DIM_Client:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Client.qvd](qvd);
+
+//=============================================
+// DIM_Provider_AIRS_License
+//=============================================
+DIM_Provider_AIRS_License:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Provider_AIRS_License.qvd](qvd);
+
+//=============================================
+// DIM_Provider_AIRS_History
+//=============================================
+DIM_Provider_AIRS_History:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Provider_AIRS_History.qvd](qvd);
+
+// DIM_Assessment / Matrix / Worksheets
+//=============================================
+DIM_Measurement_Admin:
+NoConcatenate
+LOAD 
+*
+FROM [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Measurement_Admin.qvd](qvd); 
+
+//=============================================
+// FACT_Need_Service
+//=============================================
+FACT_Need_Service:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_FACT_Need_Service.qvd](qvd);
+
+//=============================================
+// DIM_Provider
+//=============================================
+DIM_Provider:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Provider.qvd](qvd);
+
+
+
+//=============================================
+// DIM_Provider_Details
+//=============================================
+DIM_Bedlist:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Provider_Details.qvd](qvd);
+
+
+
+//=============================================
+// DIM_Entry_Exit
+//=============================================
+DIM_Entry_Exit:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Entry_Exit.qvd](qvd);
+
+//=============================================
+// DIM_Fund
+//=============================================
+DIM_Fund:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Fund.qvd](qvd); 
+
+//=============================================
+// DIM_Vendor
+//=============================================
+DIM_Vendor:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Vendor.qvd](qvd); 
+
+
+DIM_Activity_Volunteer:
+NoConcatenate
+Load
+    *
+FROM [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Activity_Volunteer.qvd](qvd);
+
+
+
+
+		
+
+

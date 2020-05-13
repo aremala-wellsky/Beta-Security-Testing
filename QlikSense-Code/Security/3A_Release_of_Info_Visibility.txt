@@ -1,0 +1,91 @@
+Release_of_Info_Group:
+LOAD DISTINCT 
+ 	provider_id,
+    visibility_group_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT USER_GROUP; 
+
+Release_of_Info_tmp:
+LOAD
+    release_of_info_id,
+    active,
+	client_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_RELEASE_OF_INFO.qvd]
+(qvd)
+WHERE num(date_ended) >= '$(vNumDateSet)';
+
+Release_of_Info:
+NOCONCATENATE
+LOAD
+	release_of_info_id,
+	client_id
+RESIDENT Release_of_Info_tmp
+WHERE match(active, 1);
+
+DROP TABLE Release_of_Info_tmp;
+
+INNER JOIN (Release_of_Info)
+LOAD
+    release_of_info_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_RELEASE_OF_INFOVISIBILITY.qvd]
+(qvd);
+
+Release_of_Info_visibility:
+LEFT JOIN (Release_of_Info_Group)
+LOAD DISTINCT
+    visibility_group_id,
+    visible,
+    release_of_info_id,
+	client_id
+RESIDENT Release_of_Info;
+
+DROP TABLE Release_of_Info;
+
+Visible:
+Load DISTINCT
+	provider_id,
+    release_of_info_id,
+    1 AS Visible,
+	client_id
+RESIDENT Release_of_Info_Group
+WHERE visible = 1;
+
+not_Visible:
+LEFT JOIN(Visible)
+Load DISTINCT
+	provider_id,
+    release_of_info_id,
+    1 AS not_Visible,
+	client_id
+RESIDENT Release_of_Info_Group
+WHERE visible = 0;
+
+DROP TABLE Release_of_Info_Group;
+
+Release_of_Info_visibility:
+NOCONCATENATE
+LOAD DISTINCT
+	provider_id,
+	release_of_info_id AS [Release of Info Id],
+	client_id AS %releaseofinfoclientid
+RESIDENT Visible
+WHERE match(Visible, 1)  AND isNull(not_Visible);
+
+DROP TABLE Visible;
+
+//sRelease_of_Info_visibility_tmp:
+LEFT JOIN(Release_of_Info_visibility)
+LOAD
+    [ROI Id] AS [Release of Info Id]
+RESIDENt ROI;
+
+//STORE Release_of_Info_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)Release_of_Info_visibility.qvd];
+
+
+STORE Release_of_Info_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Release_of_Info_visibility.qvd];
+Drop table Release_of_Info_visibility;
+

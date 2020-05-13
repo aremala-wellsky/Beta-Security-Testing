@@ -1,0 +1,152 @@
+// --SAII tier
+INHERENT_SECURITY_tmp:
+
+	SELECT DISTINCT 1 as user_access_tier, u.provider_id as user_provider_id, p.provider_id as provider_id
+  FROM sp_action_in_role AS ar
+  JOIN "action" AS a ON ar.action_id = a.action_id
+  JOIN sp_role AS r ON ar.role_id = r.role_id
+	  JOIN sp_user AS u ON r.role_id = u.role_id
+          inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+          inner join sp_boxi_license bl on bl.license_id = bla.license_id
+          inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id,
+  sp_provider p
+	WHERE (u.active = true) AND p.active = true AND(a.name = 'VISIBILITY_BYPASSSECURITY') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'));
+// --ORDER BY 1,2,3
+ 
+// UNION
+CONCATENATE(INHERENT_SECURITY_tmp)
+
+// --AA tier part 1
+SELECT distinct 2 as user_access_tier, uap.user_provider_id, dp.provider_id as provider_id
+FROM
+(
+  SELECT DISTINCT u.provider_id as user_provider_id, egpt.provider_id as provider_id
+  FROM sp_user_eda_group ueg
+    JOIN sp_user AS u ON ueg.user_id=u.user_id
+		join sp_user_eda_group e5 on u.user_id = e5.user_id  
+    JOIN sp_eda_group_provider_tree egpt ON egpt.eda_group_id = ueg.eda_group_id
+    JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+    JOIN action a ON a.action_id = aic.action_id
+            inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+            inner join sp_boxi_license bl on bl.license_id = bla.license_id
+            inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+    WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+	    and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+) uap
+JOIN sp_provider_tree dp ON ancestor_provider_id = uap.provider_id
+WHERE ancestor_provider_id = uap.user_provider_id;
+ 
+// UNION
+CONCATENATE(INHERENT_SECURITY_tmp)
+
+// --AA tier part 2
+SELECT distinct 2 as user_access_tier, u.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id
+FROM sp_user u
+JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+JOIN action a ON a.action_id = aic.action_id
+INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+        inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+        inner join sp_boxi_license bl on bl.license_id = bla.license_id
+        inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+	WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'));
+// --ORDER BY 1,2,3
+ 
+// UNION
+CONCATENATE(INHERENT_SECURITY_tmp)
+
+
+// --CM tier
+SELECT distinct 3 as user_access_tier, u.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id
+FROM sp_user u
+JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+JOIN action a ON a.action_id = aic.action_id
+INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+        inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+        inner join sp_boxi_license bl on bl.license_id = bla.license_id
+        inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+WHERE (u.active = true) AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+AND u.user_id NOT IN (SELECT DISTINCT u2.user_id
+                      FROM sp_user u2
+                      JOIN sp_action_in_role aic2 ON aic2.role_id = u2.role_id
+                      JOIN action a2 ON a2.action_id = aic2.action_id
+                      WHERE (u2.active = true) AND (a2.name in ( 'VISIBILITY_BYPASSSECURITY_TREE', 'VISIBILITY_BYPASSSECURITY')) AND ((u2.last_login > (now()::DATE + interval '-6 months')) or (u2.date_added > (now()::DATE + interval '-1 months')))
+)
+	ORDER BY 1,2; 
+	
+CONCATENATE(INHERENT_SECURITY_tmp)	
+
+SELECT distinct 2 as user_access_tier, uap.user_provider_id, dp.provider_id as provider_id
+FROM
+(
+  SELECT DISTINCT egpt.provider_id as user_provider_id, egpt.provider_id as provider_id
+  FROM sp_user_eda_group ueg
+    JOIN sp_user AS u ON ueg.user_id=u.user_id
+    JOIN sp_eda_group_provider_tree egpt ON egpt.eda_group_id = ueg.eda_group_id
+    JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+    JOIN action a ON a.action_id = aic.action_id
+            inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+            inner join sp_boxi_license bl on bl.license_id = bla.license_id
+            inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+    WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+	    and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+) uap
+JOIN sp_provider_tree dp ON ancestor_provider_id = uap.provider_id
+WHERE ancestor_provider_id = uap.user_provider_id
+ 
+UNION
+
+
+SELECT distinct 2 as user_access_tier, p2.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id
+FROM sp_user u
+  join sp_user_eda_group e2 on u.user_id = e2.user_id
+	  JOIN sp_eda_group_provider_tree p2 ON (e2.eda_group_id = p2.eda_group_id)
+JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+JOIN action a ON a.action_id = aic.action_id
+INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+        inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+        inner join sp_boxi_license bl on bl.license_id = bla.license_id
+        inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+	WHERE (u.active = true) AND (a.name = 'VISIBILITY_BYPASSSECURITY_TREE') AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+ 
+UNION
+
+SELECT distinct 3 as user_access_tier, p3.provider_id as user_provider_id, spt.ancestor_provider_id as provider_id
+FROM sp_user u
+  join sp_user_eda_group e3 on u.user_id = e3.user_id
+	  JOIN sp_eda_group_provider_tree p3 ON (e3.eda_group_id = p3.eda_group_id)
+JOIN sp_action_in_role aic ON aic.role_id = u.role_id
+JOIN action a ON a.action_id = aic.action_id
+INNER JOIN sp_provider_tree spt on (spt.provider_id = u.provider_id)
+        inner join sp_boxi_license_allocation bla on bla.user_id = u.user_id
+        inner join sp_boxi_license bl on bl.license_id = bla.license_id
+        inner join boxi_license_type blt on blt.license_type_id = bl.license_type_id
+WHERE (u.active = true) AND ((u.last_login > (now()::DATE + interval '-6 months')) or (u.date_added > (now()::DATE + interval '-1 months')))
+	and ((bla.active = true) and (bl.active = true) and (blt.name = 'ART-AR'))
+AND u.user_id NOT IN (SELECT DISTINCT u2.user_id
+                      FROM sp_user u2
+                      JOIN sp_action_in_role aic2 ON aic2.role_id = u2.role_id
+                      JOIN action a2 ON a2.action_id = aic2.action_id
+                      WHERE (u2.active = true) AND (a2.name in ( 'VISIBILITY_BYPASSSECURITY_TREE', 'VISIBILITY_BYPASSSECURITY')) AND ((u2.last_login > (now()::DATE + interval '-6 months')) or (u2.date_added > (now()::DATE + interval '-1 months')))
+)
+	ORDER BY 1,2; 
+
+INHERENT_SECURITY:
+NOCONCATENATE
+LOAD 
+	user_access_tier & '|' & user_provider_id AS TIER_LINK,
+    user_provider_id AS provider_id,
+    user_access_tier,
+// 	UPPER(user_access_tier) AS USER_ACCESS_TIER,
+    provider_id AS [Client Provider Created By Id]
+RESIDENT INHERENT_SECURITY_tmp;
+
+//DROP TABLE INHERENT_SECURITY_tmp;
+STORE INHERENT_SECURITY INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd];
+DROP TABLE INHERENT_SECURITY;
+
+
+

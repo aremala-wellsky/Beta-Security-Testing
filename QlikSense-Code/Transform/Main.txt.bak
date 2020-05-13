@@ -1,0 +1,109 @@
+/*********************
+Environment Variables
+DO NOT CHANGE
+*********************/
+SET ThousandSep=',';
+SET DecimalSep='.';
+SET MoneyThousandSep=',';
+SET MoneyDecimalSep='.';
+SET MoneyFormat='$#,##0.00;($#,##0.00)';
+SET TimeFormat='h:mm:ss TT';
+SET DateFormat='M/D/YYYY';
+SET TimestampFormat='M/D/YYYY h:mm:ss[.fff] TT';
+SET MonthNames='Jan;Feb;Mar;Apr;May;Jun;Jul;Aug;Sep;Oct;Nov;Dec';
+SET DayNames='Mon;Tue;Wed;Thu;Fri;Sat;Sun';
+SET LongMonthNames='January;February;March;April;May;June;July;August;September;October;November;December';
+SET LongDayNames='Monday;Tuesday;Wednesday;Thursday;Friday;Saturday;Sunday';
+SET FirstWeekDay=6;
+SET BrokenWeeks=1;
+SET ReferenceDay=0;
+SET FirstMonthOfYear=1;
+SET CollationLocale='en-US'; 
+SET HidePrefix = '%';
+SET vNullValue = 'NOT ANSWERED';
+
+LET vNullValue = '$(vNullValue)';
+LET vCurrentDate = Now();
+LET vPromptDate = NULL();
+
+
+/********************
+SITE Variables
+Please Update As Needed
+*********************/
+//***UPDATE the APP ID in comments. It is in the QMC APP section.
+//   This is so we will have track of the original
+//   app if we lose or duplicate by accident.
+//   APP ID: REPLACE_QMC_APP_ID
+
+
+//***UDPATE with the SP DB name for each new site.
+//   EXAMPLE: SET vDBname = 'ps_bootcamp2017';
+//SET vDBname = 'SITE_SP_DB_NAME';
+
+
+
+/********************
+Connection Variables
+Please Update As Needed.
+
+The spreadsheets are a
+manual process for
+tracking SP tables
+with active and
+inactive data separately.
+
+This process will be
+replaced after initial
+launch of sites. These
+should not change unless
+we add new tables
+or move the file path.
+*********************/
+SET vConnection = 'SPData_Beta';
+SET vQVDType = 'Extract';
+LET vQVDTypePrefix = left(vQVDType, 1);
+LET vFilenamePrefix = vQVDTypePrefix & '_' & upper(vDBname);
+SET vStoreConnection = 'SPData_Beta';
+SET vStoreQVDType = 'Transform';
+LET vStoreQVDTypePrefix = left(vQVDType, 1);
+
+
+//===============================
+//SITE VARIABLES
+//===============================
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////// SECURITY_LINK created based on sp_setting flag of roi_active true or false///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// IF  (select val_bool from sp_setting where name = 'roi_active) = true 
+// THEN if the column, covered_by_roi, is true in the DB we respect the relationships in sp_provider_tree, 
+//but ignore the sp_visibility_group, sp_visibility_group_provider and sp_visibility_group_provider_tree
+// ELSE follow normal visibility rules and ignore covered_by_roi flag on the records.
+
+//remove any previous values of this variable
+Set vROI_active = ;
+
+//read sp_setting table to determine roi_active flag for this site
+sp_setting:
+LOAD
+    val_bool
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_sp_setting.qvd](qvd)
+where name = 'roi_active';
+
+// use for live
+//LET vROI_active = Num(floor(Peek('val_bool', 0, 'sp_setting'))); //test
+
+//use for testing only!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//SET vROI_active = 0;
+
+//drop sp_setting once we have vROI_active 
+Drop Table sp_setting;
+
+
+//Practicing code push from pilot to live.
+
+

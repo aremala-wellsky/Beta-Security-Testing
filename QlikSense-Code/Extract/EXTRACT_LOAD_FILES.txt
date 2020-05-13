@@ -1,0 +1,8 @@
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNSiteFolder)/$(vSiteName).txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/StartTime.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Main.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/QVD_Extract_VisTrim.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/EndTime.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/ExitScript.txt]);

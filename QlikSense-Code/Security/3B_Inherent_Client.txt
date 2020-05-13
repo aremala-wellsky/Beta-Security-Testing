@@ -1,0 +1,43 @@
+Client_Access:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+client_security:
+LOAD
+    [Client Id],
+    [Client Is Active],
+    [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDTransformType)/$(vDBname)/$(vQVDTypePrefix)_DIM_Client.qvd]
+(qvd);
+
+
+
+keep_only_recent_clients_tmp:
+INNER JOIN (client_security)
+LOAD
+	client_id AS [Client Id]
+RESIDENT RECENT_CLIENT_tmp;
+
+DROP TABLE RECENT_CLIENT_tmp;
+
+
+INNER JOIN(Client_Access)
+LOAD DISTINCT
+    'Client' AS %_Access_Type,
+    'Client' & ' | ' & [Client Id] AS %_Access_Key,
+    [Client Id] AS %DIM_CLIENT_KEY,
+    [Client Provider Created By Id],
+    1 AS [INHERENT SECURITY]
+RESIDENT client_security
+WHERE match([Client Is Active], 'Yes');
+//   AND [Client Id] > 0;
+
+DROP TABLE client_security;
+
+
+

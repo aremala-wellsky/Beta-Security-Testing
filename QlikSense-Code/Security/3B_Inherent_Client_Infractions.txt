@@ -1,0 +1,35 @@
+CLIENT_INFRACTION_ACCESS:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+//     provider_id,
+// 	user_access_tier,
+    [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+client_infraction_security:
+LOAD
+    client_infraction_id,
+    active,
+    client_id,
+//     provider_id,
+    provider_creating_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT_INFRACTION.qvd]
+(qvd)
+WHERE (isNull(num(bar_end_date)) OR (num(bar_end_date) >= '$(vNumDateSet)'));
+
+INNER JOIN(CLIENT_INFRACTION_ACCESS)
+LOAD
+    client_id AS [Client Id],
+    client_infraction_id AS [Client Infraction Id],
+//     provider_id,
+    provider_creating_id AS [Client Provider Created By Id],
+    1 AS [INHERENT SECURITY]
+RESIDENT client_infraction_security
+WHERE match(active, 1)
+  AND client_id > 0
+  AND client_infraction_id > 0;
+
+DROP TABLE client_infraction_security;

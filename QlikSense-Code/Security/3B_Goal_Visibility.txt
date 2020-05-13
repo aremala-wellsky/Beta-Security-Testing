@@ -1,0 +1,54 @@
+CLIENT_GOAL_ACCESS:
+LOAD DISTINCT 
+    [Goal Id] AS %GOAL_KEY_SEC,
+	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST,	
+	//[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST_TIER1,
+	[TIER_LINK] & '|' & [Goal Id] AS %SA_GOAL_ACTIONSTEP
+RESIDENT GOAL_ACCESS;
+
+DROP TABLE GOAL_ACCESS;
+
+	
+explicit_goal_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+goal_security:
+NOCONCATENATE
+LOAD
+    [Goal Id],
+    provider_id,
+	%goalclientid
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Goal_visibility.qvd]
+(qvd);
+
+//RESIDENT Goal_visibility;
+//DROP TABLE Goal_visibility;
+
+
+LEFT JOIN(explicit_goal_security)
+LOAD 
+    [Goal Id],
+    provider_id,
+	%goalclientid
+RESIDENT goal_security;
+
+DROP TABLE goal_security;
+
+CONCATENATE(CLIENT_GOAL_ACCESS)
+LOAD
+	[Goal Id] AS %GOAL_KEY_SEC,
+	[TIER_LINK] & '|' & %goalclientid AS %SA_CLIENT_TEST,
+	//[TIER_LINK] & '|' & %goalclientid AS %SA_CLIENT_TEST_TIER1,
+	[TIER_LINK] & '|' & [Goal Id] AS %SA_GOAL_ACTIONSTEP
+RESIDENT explicit_goal_security;
+
+DROP TABLE explicit_goal_security;
+
+STORE CLIENT_GOAL_ACCESS INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_GOAL_ACCESS.qvd];
+DROP TABLE CLIENT_GOAL_ACCESS;

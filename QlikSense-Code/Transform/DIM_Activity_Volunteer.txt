@@ -1,0 +1,89 @@
+FACT_sp_activity_volunteer_history_TMP:
+NoConcatenate
+Load *
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ACTIVITY_VOLUNTEER_HISTORY.qvd]
+(qvd);
+
+DIM_Activity_Volunteer:
+Load
+    volunteer_id                   AS %VolunteerId,
+    session_id                     AS %SessionId,
+    activity_volunteer_history_id  AS [Activity Volunteer History Id],
+    provider_id                    AS [Activity Volunteer History Provider Id],
+    group_size                     AS [Activity Volunteer History Group Size],
+    total_hours_worked             AS [Activity Volunteer History Hours]
+Resident FACT_sp_activity_volunteer_history_TMP;
+Drop Table FACT_sp_activity_volunteer_history_TMP;
+
+FACT_sp_volunteer_TMP:
+NoConcatenate
+Load *
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_VOLUNTEER.qvd]
+(qvd);
+
+LEFT JOIN (DIM_Activity_Volunteer)
+LOAD
+    "volunteer_id"                                                AS %VolunteerId,
+    volunteer_id                                                  AS [Activity Volunteer Id],
+    trim(first_name & ' ' & last_name)                            AS [Activity Volunteer Name],
+    applymap ('MapProviderName', provider_id, NULL())             AS [Activity Volunteer Provider],
+    applymap ('MapPickList',type_id, NULL())                      AS [Activity Volunteer Type],
+    primary_contact_name                                          AS [Activity Volunteer Primary Contact],
+    volunteer_program_id                                          AS %VolunteerProgramID,
+    contact_number                                                AS [Activity Volunteer Phone Number],
+    contact_email                                                 AS [Activity Volunteer Email],
+    applymap ('MapPickList', cleared_background_check_id, NULL()) AS [Activity Volunteer Cleared Background Check],
+    date_cleared_background_check                                 AS [Activity Volunteer Date Cleared Background Check],
+    applymap ('MapPickList', passed_tb_test_id, NULL())           AS [Activity Volunteer Passed TB Test],
+    date_tb_test_expires                                          AS [Activity Volunteer TB Test Expiration Date],
+    applymap ('MapPickList', has_physical_limitations_id, NULL()) AS [Activity Volunteer Has Physical Limitations],
+    other_requirements                                            AS [Activity Volunteer Other Agency Checks],
+    applymap ('MapPickList', can_work_with_children_id, NULL())   AS [Activity Volunteer Allowed to work with Children],
+    interest_expiration_date                                      AS [Activity Volunteer Interest Expiration Date],
+    service_interests                                             AS [Activity Volunteer Service Interests],
+    notes                                                         AS [Activity Volunteer Notes],
+    if (available_january = 1, 'Yes', 'No')                       AS [Activity Volunteer Months Available January],
+    if (available_february = 1, 'Yes', 'No')                      AS [Activity Volunteer Months Available February],
+    if (available_march = 1, 'Yes', 'No')                         AS [Activity Volunteer Months Available March],
+    if (available_april = 1, 'Yes', 'No')                         AS [Activity Volunteer Months Available April],
+    if (available_may = 1, 'Yes', 'No')                           AS [Activity Volunteer Months Available May],
+    if (available_june = 1, 'Yes', 'No')                          AS [Activity Volunteer Months Available June],
+    if (available_july = 1, 'Yes', 'No')                          AS [Activity Volunteer Months Available July],
+    if (available_august = 1, 'Yes', 'No')                        AS [Activity Volunteer Months Available August],
+    if (available_september = 1, 'Yes', 'No')                     AS [Activity Volunteer Months Available September],
+    if (available_october = 1, 'Yes', 'No')                       AS [Activity Volunteer Months Available October],
+    if (available_november = 1, 'Yes', 'No')                      AS [Activity Volunteer Months Available November],
+    if (available_december = 1, 'Yes', 'No')                      AS [Activity Volunteer Months Available December]
+Resident FACT_sp_volunteer_TMP;
+Drop Table FACT_sp_volunteer_TMP;
+
+FACT_sp_volunteer_program_TMP:
+NoConcatenate
+Load
+    provider_volunteer_program_id AS %VolunteerProgramID,
+    name                          AS [Activity Volunteer Program]
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_VOLUNTEER_PROGRAM.qvd]
+(qvd);
+
+LEFT JOIN (DIM_Activity_Volunteer)
+Load
+    *
+Resident FACT_sp_volunteer_program_TMP;
+Drop Table FACT_sp_volunteer_program_TMP;
+
+FACT_sp_activity_session_TMP:
+NoConcatenate
+Load
+    activity_session_id AS %SessionId,
+    session_date        AS [Activity Volunteer History Date]
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ACTIVITY_SESSION.qvd]
+(qvd);
+
+LEFT JOIN (DIM_Activity_Volunteer)
+Load
+    *
+Resident FACT_sp_activity_session_TMP;
+Drop Table FACT_sp_activity_session_TMP;
+
+Store DIM_Activity_Volunteer Into [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Activity_Volunteer.qvd];
+Drop Table DIM_Activity_Volunteer;

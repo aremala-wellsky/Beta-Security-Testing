@@ -1,0 +1,25 @@
+DROP TABLE Call_Followups_To_Rebuild_Answers_For;
+
+DROP TABLE Call_Followups_To_Remove_From_Current_QVD;
+
+LET varTempCallFollowupAnswerQVDExists = not isnull(QvdCreateTime('lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CALL_FOLLOWUP_ANSWER_V0.qvd'));
+
+IF $(varTempCallFollowupAnswerQVDExists) THEN
+Concatenate(Temp_Call_Followup_Answer_Table)
+LOAD
+	*
+	RESIDENT Call_Followup_Answer;
+	 DROP TABLE Call_Followup_Answer;
+
+ELSE
+  Temp_Call_Followup_Answer_Table:
+  Noconcatenate
+  LOAD
+    *
+  RESIDENT Call_Followup_Answer; 
+  DROP TABLE Call_Followup_Answer;
+END IF;
+ 
+RENAME TABLE Temp_Call_Followup_Answer_Table to Call_Followup_Answer;
+STORE Call_Followup_Answer INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CALL_FOLLOWUP_ANSWER_V0.qvd];	
+

@@ -1,0 +1,11 @@
+SECTION ACCESS;
+
+SECURITY_ACCESS:
+LOAD
+    "ACCESS",
+    "USERID",
+    %_USER_ID,
+    TIER_LINK
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_SECURITY_ACCESS.qvd]
+(qvd)
+WHERE 1=1;

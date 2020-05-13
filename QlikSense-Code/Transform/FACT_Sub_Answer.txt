@@ -1,0 +1,131 @@
+FACT_da_recordset_answer_TMP:
+NoConcatenate
+Load * 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_RECORDSET_ANSWER.qvd]
+(qvd);
+
+FACT_Subassessment_Answer:
+NoConcatenate   
+Load
+	 *,
+     'Subassessment'												AS [Subassessment Answer Type],
+//	 'Assessment' & '|' & [Question Id]								AS %ASSESSMENTQUESTIONTYPE_KEY,
+    //[Answer Client Id] & '|' & [Question Id]									AS %MaxAnswerKey,
+//	[Provider Id]														AS %PROVIDERID_KEY,
+    AnswerTemp3														AS [Subassessment Answer],
+    //if ( %coveredByRoi = 1, 'Yes', 'No' ) 	AS [Subassessment Answer Is Covered By ROI];
+	if ( %coveredByRoi = 0, 'No', 'Yes' ) 	AS [Subassessment Answer Is Covered By ROI]; //Test
+LOAD    
+    *,
+    //Counter for Answers
+    if (len(AnswerTemp2)>0,1,0)										AS [Subassessment Count Answer],       
+    //Inserting Null Value for NULLs
+    if (Len(AnswerTemp2)>0, AnswerTemp2, '$(vNullValue)' )			AS AnswerTemp3;    
+LOAD *,
+     if ( isYesNo and AnswerTemp <> null(),
+     if ( AnswerTemp = 1, 'Yes', 'No'), AnswerTemp )				AS AnswerTemp2;                                                                    
+LOAD  
+	 *,
+	 if (isLookup, applymap ('MapPickList', val_int, NULL() ), val_int & date(val_date) & val_textfield & val_float) 
+     																AS AnswerTemp,
+    applymap ('MapPickListValueCode', val_int, NULL())              AS [Subassessment Picklist Code];
+LOAD  
+    date_added														AS date_effective,
+    //(date(floor( date_added ) ) )							AS %DateKey,
+  //  active,   WM Think this is what is being set in the next line??? 
+	applymap ( 'MapRecordsetAnswerActive', recordset_id, NULL())	AS [Subassessment Recordset Active],                                                                
+   // applymap ( 'MapRecordsetAnswerClientId', recordset_id, NULL()) AS [Subassessment Client Id], 
+    recordset_id  													AS %DIM_RECORDSET_KEY,
+    recordset_answer_id							                    AS [Subassessment Answer Id],
+    question_id														AS [Subassessment Question Id],
+	//question_id														AS %QuestionId,
+    applymap ('MapQuestionIsLookup', question_id, 0 ) 				AS isLookup,
+    applymap ('MapQuestionIsYesNo', question_id, 0 ) 				AS isYesNo,
+    applymap ('MapQuestion', question_id, 0 ) 						AS [Subassessment Question],
+    applymap ('MapQuestionParentId', question_id, NULL()) 			AS [Subassessment Id],
+    applymap ('MapQuestionVFN', applymap ('MapQuestionParentId', question_id, NULL()), NULL())				
+    																AS [Subassessment Virt Field Name],
+    (date(floor( date_added ) ) )	         						AS [Subassessment Added Date],
+    time ( date_added )             								AS [Subassessment Added Time],
+    (date(floor( date_added ) ) )	        						AS [Subassessment Effective Date],
+    time ( date_added )              								AS [Subassessment Effective Time],
+    (date(floor( date_added ) ) )			        				AS [Subassessment Updated Date],
+    time ( date_added ) 			            					AS [Subassessment Updated Time],
+    if ( len ( user_inactive_id ) > 0, 
+     	applymap ('MapUserName', user_inactive_id, NULL() ), 
+     	applymap ('MapUserName', user_creating_id, NULL() ) ) 		AS [Subassessment User],	
+    //if ( len ( provider_inactive_id ) > 0, provider_inactive_id, provider_creating_id )  AS [Subassessment Provider Id],
+	(date(floor( date_inactive ) ) )	        					AS [Subassessment Inactive Date],
+    time ( date_inactive )        									AS [Subassessment Inactive Time],
+    //provider_inactive_id 											AS [Subassessment Provider Updated By Id],
+    //applymap ('MapProviderName', provider_inactive_id, NULL() ) 	AS [Subassessment Provider Updated By],
+	provider_inactive_id 											AS [Subassessment Provider Inactive By Id],
+    applymap ('MapProviderName', provider_inactive_id, NULL() ) 	AS [Subassessment Provider Inactive By],
+	provider_creating_id											AS [Subassessment Provider Created By Id],
+	applymap ('MapProviderName', provider_creating_id, NULL() ) 	AS [Subassessment Provider Created By],
+	provider_creating_id											AS [Subassessment Provider Id],  	
+    val_int,
+    val_date,
+    val_textfield,
+    val_float,
+    applymap ('MapRecordsetRecordsetIdRoi', recordset_id, NULL() )	AS [%coveredByRoi]
+  //  applymap ('MapSubAssessmentAnswerVisibility', recordset_id, NULL() ) AS [Client Recordset Visibility Group],
+	//if ( applymap ('MapSubAssessmentAnswerVisibleVisibility', recordset_id, NULL() ) = 1, 'Yes', 'No' ) AS [Client Recordset Visible]
+	//if ( applymap ('MapSubAssessmentAnswerVisibleVisibility', recordset_id, NULL() ) = 0, 'No', 'Yes' ) AS [Client Recordset Visible],   //Testing new security logic   	  	
+  //  applymap ('MapRecordsetSubStartDate', recordset_id, NULL() ) 	AS [Subassessment Start Date],
+	//applymap ('MapRecordsetSubEndDate', recordset_id, NULL() ) 		AS [Subassessment End Date],
+	//applymap ('MapRecordsetSubStartTime', recordset_id, NULL() ) 	AS [Subassessment Start Time],
+	//applymap ('MapRecordsetSubEndTime', recordset_id, NULL() ) 		AS [Subassessment End Time]	
+Resident FACT_da_recordset_answer_TMP;
+Drop Table FACT_da_recordset_answer_TMP;
+
+
+
+
+FACT_da_recordset_TMP:
+NoConcatenate
+Load 
+  recordset_id,
+  provider_creating_id, 
+  client_id,
+  question_id, 
+  date_added, 
+  active, 
+  covered_by_roi,
+  user_creating_id,
+  user_inactive_id,
+  provider_inactive_id,
+  date_inactive,
+  call_recordset_id,
+  date_effective 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_RECORDSET.qvd](qvd);
+
+
+FACT_da_recordset:
+LOAD
+	client_id  														AS %DIM_CLIENT_KEY_RECORDSET,
+	recordset_id													AS %CLIENT_RECORDSET_KEY_SEC,
+	recordset_id  													AS %DIM_RECORDSET_KEY,	
+Resident FACT_da_recordset_TMP;
+Drop Table FACT_da_recordset_TMP;
+
+
+DROP Fields       
+	date_effective, 
+    AnswerTemp,
+    AnswerTemp2,
+    AnswerTemp3,
+	isLookup,
+   	isYesNo,
+    //[Answer Updated Date],
+    //[Answer Inactive Date],
+    val_int,
+    val_date,
+    val_textfield,
+    val_float;
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE FACT_Subassessment_Answer INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_FACT_Subassessment_Answer.qvd];
+//DROP Table FACT_Subassessment_Answer; 
+
+

@@ -1,0 +1,29 @@
+//***************************************************************************
+//***************************************************************************
+//ALLOW ADMIN AND TEST USERS
+//***************************************************************************
+//***************************************************************************
+
+SP_SETTING_DIRECTORY:
+NOCONCATENATE
+LOAD 
+    val_varchar
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_SETTING.qvd](qvd)
+WHERE name = 'QLIK_TICKET_HOMEDIR';
+LET vSiteDirectory = Peek('val_varchar',0,'SP_SETTING_DIRECTORY');
+SET vUserDirectory = $(vSiteDirectory); 
+SET vBowmanDirectory = 'BOWMANSYSTEMS';
+
+DROP TABLE SP_SETTING_DIRECTORY;
+
+// SECURITY_TABLE:
+USER_ACCESS:
+LOAD * INLINE [
+    ACCESS, USERID
+    ADMIN, QLIK-PILOT\QSERVICE
+    ADMIN, INTERNAL\SA_SCHEDULER
+	ADMIN, BOWMANSYSTEMS\LREMALA
+	ADMIN, BOWMANSYSTEMS\TPIDGEON
+	ADMIN, BOWMANSYSTEMS\JMILLER
+	ADMIN, BOWMANSYSTEMS\KSOBERS
+];

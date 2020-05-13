@@ -1,0 +1,33 @@
+RELEASE_OF_INFO_ACCESS:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+//WHERE match(user_access_tier, 1);
+
+release_of_info_security:
+LOAD
+    client_id,
+    release_of_info_id,
+    active,
+    provider_creating_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)\E_$(vDBname)_SP_RELEASE_OF_INFO.qvd]
+(qvd)
+WHERE num(date_ended) >= '$(vNumDateSet)';
+
+Release_of_Info:
+INNER JOIN(RELEASE_OF_INFO_ACCESS)
+LOAD
+    client_id AS [Client Id],
+	release_of_info_id AS [Release of Info Id],
+    provider_creating_id AS [Client Provider Created By Id],
+    1 AS [INHERENT SECURITY]
+RESIDENT release_of_info_security
+WHERE match(active, 1)
+  AND client_id > 0
+  AND release_of_info_id > 0;
+
+DROP TABLE release_of_info_security;

@@ -1,0 +1,353 @@
+FACT_sp_activity_TMP:
+NoConcatenate
+Load 
+	activity_id,	
+	name, 
+	provider_id, 	
+	start_date,
+	start_time,	
+	end_date,	
+	end_time,	
+	type_id,
+	date_added,  
+	date_updated,
+	teacher_id,		
+	location_id, 	
+	category_id,
+	apply_service_id, 
+	enrollment_type_id, 
+	frequency_id,
+	legacy_time_offered_id,  
+	provider_creating_id,   
+    provider_updating_id, 										
+	user_updating_id,	
+    user_creating_id,
+    weekly_schedule,
+    min_age,
+    max_age,
+	location_other,
+	teacher_other,
+    max_enrollment,
+    assign_service,
+    assign_service_code_id,
+    enrollment_moderator_id,
+    time_offered	
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ACTIVITY.qvd]
+(qvd);
+
+DIM_Activity:
+Load
+*,
+if( ([Activity Assign Service] = 'Yes'), %Activity_Apply_Service_Code, NULL()) AS   [Activity Apply Service Code] ;
+
+LOAD
+	activity_id															AS [Activity Id],
+	activity_id  														AS %DIM_ACTIVITY_SESSION_KEY,
+	name 																AS [Activity Name],
+	provider_id 														AS [Activity Provider Id],
+	applymap ('MapProviderName', provider_id, NULL() )                  AS [Activity Provider Name],
+	"provider_id" 														AS %PROVIDER_ACTIVITY_KEY,
+	(date(floor( start_date ) ) )										AS [Activity Start Date],
+	if((len(start_time) >3) , time(left(start_time,2) & ':' & right(start_time,2)), time(left(start_time,1) & ':' & right(start_time,2))) 														
+																		AS [Activity Start Time],																		
+	(date(floor( end_date ) ) )											AS [Activity End Date],
+	if((len(end_time) >3) , time(left(end_time,2) & ':' & right(end_time,2)),time(left(end_time,1) & ':' & right(end_time,2)))	 														
+																		AS [Activity End Time],																	
+	applymap ('MapPickList', type_id, NULL())							AS [ Activity Type],
+	teacher_id															AS [Activity Teacher Id],
+	"location_id"														AS %provideractivitylocationid,
+	teacher_id															AS %provideractivityteacherid,
+	location_id 														AS [Activity Location Id],
+	applymap ('MapPickList', category_id, NULL())							AS [ Activity Category],
+	applymap ('MapPickList', apply_service_id, NULL())				AS %Activity_Apply_Service_Code,
+	applymap ('MapPickList', enrollment_type_id, NULL())			AS [ Activity Enrollment Type],
+	applymap ('MapPickList', frequency_id, NULL())					AS [ Activity Frequency],
+	//applymap ('MapPickList', legacy_time_offered_id, NULL())		AS [Activity Legacy Time Offered],
+	weekly_schedule													AS [Activity Weekly Schedule],
+	min_age															AS [Activity Minimum Age],
+	max_age															AS [Activity Maximum Age],
+	location_other													AS [Activity Location - Other],
+	teacher_other													AS [Activity Teacher - Other],
+	max_enrollment													AS [Activity Maximum Enrollments],
+	if ( assign_service = 1, 'Yes', 'No' ) 
+    																AS [Activity Assign Service],
+    applymap ( 'MapNeedServiceDescription', assign_service_code_id, NULL() ) 	AS [Activity Service Code Description],
+    applymap ('MapUserName', enrollment_moderator_id, NULL()) 					AS [Activity Enrollment Moderator],	
+	time_offered															AS [Activity Times Offered]
+Resident FACT_sp_activity_TMP
+WHERE (start_date >= '1/1/2015' OR end_date>= '1/1/2015');
+Drop Table FACT_sp_activity_TMP;
+
+FACT_sp_activity_session_TMP:
+NoConcatenate
+Load 
+  activity_session_id,
+  activity_id, 				
+  provider_id, 		
+  session_date,		
+  description 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ACTIVITY_SESSION.qvd]
+(qvd);
+
+DIM_Activity_Session:
+LOAD
+  activity_session_id												AS [Activity Session Id],
+  activity_id  														AS [Activity Id],
+  //provider_id 													AS [Activity Session Provider Id],
+  (date(floor( session_date ) ) )									AS [Activity Session Date],
+  left(description,200) 										    AS [Activity Session Description]
+Resident FACT_sp_activity_session_TMP;
+Drop Table FACT_sp_activity_session_TMP;
+
+FACT_sp_activity_attendance_TMP:
+NoConcatenate
+Load 
+ activity_attendance_id, 
+  activity_id,	
+  provider_id,	
+  attendance_status_id,
+ activity_enrollment_id,  
+  session_id,	
+  household_id,
+  need_service_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ACTIVITY_ATTENDANCE.qvd]
+(qvd);
+
+LEFT JOIN(DIM_Activity_Session)
+LOAD
+	activity_attendance_id											AS [Activity Attendance Id], 
+	//provider_id														AS [Activity Attendance Provider Id],
+	applymap ('MapPickList', attendance_status_id, '$(vNullAbsentValue)')		
+																	AS [Activity Attendance Status],
+	session_id														AS [Activity Session Id],
+	//household_id													AS [Activity Household Id],
+	//need_service_id													AS [Activity Enrollment Need Service Id],
+	activity_enrollment_id											AS %ActivityAttendanceEnrollmentId
+Resident FACT_sp_activity_attendance_TMP;
+Drop Table FACT_sp_activity_attendance_TMP;
+
+FACT_sp_provider_activity_location_TMP: //RUNNING TOTAL: Rows/Fields 98/32 
+NoConcatenate
+Load 
+	provider_activity_location_id,
+	name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_ACTIVITY_LOCATION.qvd](qvd);
+
+LEFT JOIN(DIM_Activity)
+LOAD 
+    "provider_activity_location_id"							AS %provideractivitylocationid,
+    "name"													AS [Activity Location Name]
+Resident FACT_sp_provider_activity_location_TMP;
+Drop Table FACT_sp_provider_activity_location_TMP;
+
+//=============================================
+
+FACT_sp_provider_activity_teacher_TMP: //RUNNING TOTAL: Rows/Fields 98/33 
+NoConcatenate
+Load 
+	name,
+	provider_activity_teacher_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_ACTIVITY_TEACHER.qvd](qvd);
+
+LEFT JOIN(DIM_Activity)
+LOAD 
+	provider_activity_teacher_id							AS %provideractivityteacherid,
+    "name"													AS [Activity Teacher Name]
+Resident FACT_sp_provider_activity_teacher_TMP;
+Drop Table FACT_sp_provider_activity_teacher_TMP;
+
+
+FACT_sp_activity_partner_TMP:
+NoConcatenate
+Load 
+  activity_partner_id,
+  activity_id,
+  provider_id,
+  name 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ACTIVITY_PARTNER.qvd]
+(qvd);
+LEFT JOIN(DIM_Activity)
+LOAD
+  activity_partner_id												AS [Activity Partner Id],
+  activity_id														AS [Activity Id],
+  //provider_id 													AS [Activity Partner Provider Id],
+  name 																AS [Activity Partner Name]
+Resident FACT_sp_activity_partner_TMP;
+Drop Table FACT_sp_activity_partner_TMP;
+
+
+FACT_sp_activity_subject_TMP:
+NoConcatenate
+Load 
+  activity_subject_id,
+  activity_id, 	
+  provider_id, 	
+  subject_id 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ACTIVITY_SUBJECT.qvd]
+(qvd);
+LEFT JOIN(DIM_Activity)
+LOAD
+  subject_id														AS [Activity Subject Id],
+  activity_id 														AS [Activity Id],
+  //provider_id 														AS [Activity Subject Provider Id],
+  applymap ('MapPickList', subject_id, NULL())						AS [Activity Subject]
+Resident FACT_sp_activity_subject_TMP;
+Drop Table FACT_sp_activity_subject_TMP;
+
+FACT_sp_activity_target_group_TMP:
+NoConcatenate
+Load 
+ activity_target_group_id,
+  activity_id,
+  provider_id,
+  target_group_id 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ACTIVITY_TARGET_GROUP.qvd]
+(qvd);
+LEFT JOIN(DIM_Activity)
+LOAD
+  target_group_id													AS [Activity Target Group Id],
+  activity_id 														AS [Activity Id],
+  //provider_id 													AS [Activity Target Group Provider Id],
+  applymap ('MapPickList', target_group_id, NULL())						AS [Activity Target Group]
+Resident FACT_sp_activity_target_group_TMP;
+Drop Table FACT_sp_activity_target_group_TMP;
+
+FACT_sp_activity_volunteer_history:
+NoConcatenate
+Load 
+  activity_volunteer_history_id,
+  activity_id,
+  provider_id 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ACTIVITY_VOLUNTEER_HISTORY.qvd]
+(qvd);
+LEFT JOIN(DIM_Activity)
+LOAD
+  activity_volunteer_history_id										AS [Activity Volunteer History Id],
+  activity_id 														AS [Activity Id]
+ // provider_id 														AS [Activity Volunteer History Provider Id]
+Resident FACT_sp_activity_volunteer_history;
+Drop Table FACT_sp_activity_volunteer_history;
+
+FACT_sp_activity_enrollment_TMP:
+NoConcatenate
+Load 
+activity_enrollment_id, 
+  activity_id, 
+  provider_id,
+  client_id, 	
+  need_id,	
+  household_id,	
+  group_id,
+  enrollment_status_id, 
+  date_enrolled, 
+  date_denied,
+  date_referred, 
+  reason_denied_id, 								
+  need_service_id,	
+  referral_need_id,
+  date_waitlisted,  
+  date_dropped
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ACTIVITY_ENROLLMENT.qvd]
+(qvd);
+
+//LEFT JOIN (DIM_Activity)
+DIM_Activity_Enrollment:
+LOAD
+ activity_enrollment_id											    AS [Activity Enrollment Id], 
+ activity_id														AS [Activity Id],
+  //provider_id														AS [Activity Enrollment Provider Id] ,
+  client_id 														AS [Activity Enrollment Client Id],
+  //need_id															AS [Activity Enrollment Need Id],
+  //"need_id" 														AS %NEED_ACTIVITY_KEY,
+  //household_id													AS [Activity Enrollment Household Id],
+  //group_id															AS [Activity Enrollment Group Id],
+  applymap ('MapPickList', enrollment_status_id, NULL())			AS [Activity Enrollment Status],
+ (date(floor(date_enrolled )))										AS [Activity Enrolled Date],
+   (date(floor(date_denied	)))										AS [Activity Denied Date],
+   (date(floor(date_referred )))									AS [Activity Referred Date],
+  applymap ('MapPickList', reason_denied_id, NULL())				AS [Activity Enrollment Denied Reason],										
+  //need_service_id													AS [Activity Referral Service Id], 
+  //referral_need_id 													AS [Activity Referral Need Id],
+  (date(floor(date_waitlisted)))									AS [Activity Waitlisted Date],  
+  (date(floor(date_dropped)))										AS [Activity Dropped Date],
+  activity_enrollment_id											 AS %activityenrollmentid
+Resident FACT_sp_activity_enrollment_TMP;
+Drop Table FACT_sp_activity_enrollment_TMP;
+
+FACT_sp_activity_attendance_TMP:
+NoConcatenate
+Load 
+ activity_attendance_id, 
+  activity_id,	
+  provider_id,	
+  attendance_status_id,
+  activity_enrollment_id,  
+  session_id,	
+  household_id,
+  need_service_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ACTIVITY_ATTENDANCE.qvd]
+(qvd);
+
+LEFT JOIN(DIM_Activity_Enrollment)
+LOAD
+	activity_enrollment_id											 AS %activityenrollmentid
+Resident FACT_sp_activity_attendance_TMP;
+Drop Table FACT_sp_activity_attendance_TMP;
+
+LEFT JOIN (DIM_Activity)
+Load	
+	*
+Resident DIM_Activity_Enrollment;
+Drop Table DIM_Activity_Enrollment;
+
+FACT_sp_activity_nonenrollment_TMP:
+NoConcatenate
+Load 
+  activity_id,	
+  provider_id, 
+  session_id, 
+  num_adult,	
+  num_youth,
+  num_asian,
+  num_multiracial,
+  num_black, 
+  num_caucasian,
+  num_hawaiian, 
+  num_hispanic,
+  num_native_american,
+  num_unreported
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ACTIVITY_NONENROLLMENT.qvd]
+(qvd);
+LEFT JOIN(DIM_Activity_Session)
+LOAD
+  //provider_id 														AS [Activity Nonenrollment Provider Id],
+  session_id 														AS [Activity Session Id],
+  num_adult															AS [Activity Nonenrollment Adult Attendance],
+  num_youth															AS [Activity Nonenrollment Youth Attendance],
+  num_asian															AS [Activity Nonenrollment Asian/Indian Attendance],
+  num_multiracial													AS [Activity Nonenrollment Bi-Racial/Multi-Racial Attendance ],
+  num_black															AS [Activity Nonenrollment Black/African American Attendance],
+  num_caucasian														AS [Activity Nonenrollment Caucasian Attendance],
+  num_hawaiian														AS [Activity Nonenrollment Hawaiian/Pacific Islander Attendance],
+  num_hispanic														AS [Activity Nonenrollment Hispanic/Latino Attendance],
+  num_native_american												AS [Activity Nonenrollment Native American/Alaskan Attendance],
+  num_unreported													AS [Activity Nonenrollment Unreported Attendance]
+Resident FACT_sp_activity_nonenrollment_TMP;
+Drop Table FACT_sp_activity_nonenrollment_TMP;
+
+
+LEFT JOIN (DIM_Activity)
+Load	
+	*
+Resident DIM_Activity_Session;
+Drop Table DIM_Activity_Session;
+
+DIM_Activity_1:
+Load
+*,
+IF(%ActivityAttendanceEnrollmentId = %activityenrollmentid,%activityenrollmentid, NULL())    AS [Activity Attendance Enrollment Id]
+Resident DIM_Activity;
+Drop Table DIM_Activity;
+Rename table DIM_Activity_1 to DIM_Activity;
+
+

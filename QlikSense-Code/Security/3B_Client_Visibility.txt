@@ -1,0 +1,46 @@
+explicit_client_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+// 	user_access_tier
+//     [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+client_security:
+LOAD
+    [Client Id],
+    provider_id
+//     [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_client_visibility.qvd]
+(qvd);
+//RESIDENT client_visibility;
+//DROP TABLE client_visibility;
+
+LEFT JOIN(explicit_client_security)
+LOAD 
+    'Client' AS %_Access_Type,
+    'Client' & ' | ' & [Client Id] AS %_Access_Key,
+    [Client Id],
+    provider_id,
+//     [Client Provider Created By Id],
+    1 AS [EXPLICIT SECURITY]
+RESIDENT client_security;
+
+DROP TABLE client_security;
+
+CONCATENATE(Client_Access)
+LOAD
+	TIER_LINK,
+    %_Access_Type,
+    %_Access_Key,
+    [Client Id] AS %DIM_CLIENT_KEY,
+    provider_id,
+//     [Client Provider Created By Id],
+    [EXPLICIT SECURITY]
+RESIDENT explicit_client_security;
+
+DROP TABLE explicit_client_security;
+

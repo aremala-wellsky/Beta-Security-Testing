@@ -1,0 +1,76 @@
+DROP TABLE EERs_To_Rebuild_Answers_For;
+
+DROP TABLE EERs_To_Remove_From_Current_QVD;
+
+LET varTempClientInterimQVDExists = not isnull(QvdCreateTime('lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_REVIEW_ANSWER_V5.qvd'));
+
+IF $(varTempClientInterimQVDExists) THEN
+Concatenate(Temp_Client_Interim_Answer_Table)
+LOAD
+	*
+	RESIDENT Client_Review_Answer;
+	 DROP TABLE Client_Review_Answer;
+
+ELSE
+  Temp_Client_Interim_Answer_Table:
+  Noconcatenate
+  LOAD
+    *
+  RESIDENT Client_Review_Answer; 
+  DROP TABLE Client_Review_Answer;
+END IF;
+ 
+FACT_Entry_Exit_Review:
+Noconcatenate
+Load Distinct
+[Entry Exit Review Id]
+RESIDENT Temp_Client_Interim_Answer_Table;
+
+
+
+Temp_FACT_Entry_Exit_Review:
+SELECT
+eer.entry_exit_review_id,
+plv(eer.point_in_time_type_id) as entry_exit_review_pit_type,
+plv(eer.review_type_id) as entry_exit_review_type,
+eer.review_date::DATE as entry_exit_review_date,
+eer.entry_exit_id
+FROM
+sp_entry_exit_review eer
+WHERE active =true;
+
+inner join(FACT_Entry_Exit_Review)
+LOAD
+	entry_exit_review_id				 AS [Entry Exit Review Id],
+	entry_exit_id 						 AS [Entry Exit Id],
+	entry_exit_review_pit_type 			 AS [Entry Exit Review PIT Type],
+	entry_exit_review_type 				 AS [Entry Exit Review Type],
+	entry_exit_review_date 			     AS [Entry Exit Review Date],
+	entry_exit_review_id				 AS  match_review_id
+RESIDENT  Temp_FACT_Entry_Exit_Review;
+DROP TABLE Temp_FACT_Entry_Exit_Review;
+ 
+ 
+RENAME TABLE Temp_Client_Interim_Answer_Table to Client_Review_Answer;
+STORE Client_Review_Answer INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_REVIEW_ANSWER_V5.qvd];	
+
+
+LET varNewDeltaDate = Date(Today() -1);  
+
+//LET varNewDeltaDate = '02/27/2018';
+
+//DROP TABLE DeltaDate;
+
+DeltaDate:
+Noconcatenate
+LOAD * INLINE
+[
+DeltaDateVal
+$(varNewDeltaDate)
+];
+
+
+STORE DeltaDate INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_DELTA_EER_RUNDATE_V5.qvd];
+Drop table DeltaDate;
+
+

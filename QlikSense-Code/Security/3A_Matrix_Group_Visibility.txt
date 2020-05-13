@@ -1,0 +1,90 @@
+Matrix_Group_Group:
+LOAD DISTINCT 
+ 	provider_id,
+    visibility_group_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT USER_GROUP; 
+
+Matrix_Group_tmp:
+LOAD
+    matrix_group_id,
+	client_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_MATRIX_GROUP.qvd]
+(qvd)
+WHERE num(date_created) >= '$(vNumDateSet)';
+
+Matrix_Group:
+NOCONCATENATE
+LOAD
+	matrix_group_id,
+	client_id
+RESIDENT Matrix_Group_tmp;
+//WHERE match(active, 1);
+
+DROP TABLE Matrix_Group_tmp;
+
+INNER JOIN (Matrix_Group)
+LOAD
+    matrix_group_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_MATRIX_GROUPVISIBILITY.qvd]
+(qvd);
+
+Matrix_Group_visibility:
+LEFT JOIN (Matrix_Group_Group)
+LOAD DISTINCT
+    visibility_group_id,
+    visible,
+    matrix_group_id,
+	client_id
+RESIDENT Matrix_Group;
+
+DROP TABLE Matrix_Group;
+
+Visible:
+Load DISTINCT
+	provider_id,
+    matrix_group_id,
+    1 AS Visible,
+	client_id
+RESIDENT Matrix_Group_Group
+WHERE visible = 1;
+
+not_Visible:
+LEFT JOIN(Visible)
+Load DISTINCT
+	provider_id,
+    matrix_group_id,
+    1 AS not_Visible,
+	client_id
+RESIDENT Matrix_Group_Group
+WHERE visible = 0;
+
+DROP TABLE Matrix_Group_Group;
+
+Matrix_Group_visibility:
+NOCONCATENATE
+LOAD DISTINCT
+	provider_id,
+	matrix_group_id AS [Matrix Group Id],
+	client_id AS %matrixgroupclientid
+RESIDENT Visible
+WHERE match(Visible, 1)  AND isNull(not_Visible);
+
+DROP TABLE Visible;
+
+//Matrix_Group_visibility_tmp:
+LEFT JOIN(Matrix_Group_visibility)
+LOAD
+    [Measurement Group Id] AS [Matrix Group Id]
+RESIDENT DIM_Measurement_Answer;
+
+//STORE Matrix_Group_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)Matrix_Group_visibility.qvd];
+
+
+STORE Matrix_Group_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Matrix_Group_visibility.qvd];
+Drop table Matrix_Group_visibility;
+

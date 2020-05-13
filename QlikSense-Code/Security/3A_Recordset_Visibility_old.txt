@@ -1,0 +1,88 @@
+Recordset_Group:
+LOAD DISTINCT 
+ 	provider_id,
+    visibility_group_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT USER_GROUP; 
+
+Recordset_tmp:
+LOAD
+    recordset_id,
+    active,
+	client_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_RECORDSET.qvd]
+(qvd)
+WHERE num(date_effective) >= '$(vNumDateSet)';
+
+Recordset:
+NOCONCATENATE
+LOAD
+	recordset_id,
+	client_id
+RESIDENT Recordset_tmp
+WHERE match(active, 1);
+
+DROP TABLE Recordset_tmp;
+
+INNER JOIN (Recordset)
+LOAD
+    recordset_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT_RECORDSETVISIBILITY.qvd]
+(qvd);
+
+Recordset_visibility:
+LEFT JOIN (Recordset_Group)
+LOAD DISTINCT
+    visibility_group_id,
+    visible,
+    recordset_id,
+	client_id
+RESIDENT Recordset;
+
+DROP TABLE Recordset;
+
+Visible:
+Load DISTINCT
+	provider_id,
+    recordset_id,
+    1 AS Visible,
+	client_id
+RESIDENT Recordset_Group
+WHERE visible = 1;
+
+not_Visible:
+LEFT JOIN(Visible)
+Load DISTINCT
+	provider_id,
+    recordset_id,
+    1 AS not_Visible,
+	client_id
+RESIDENT Recordset_Group
+WHERE visible = 0;
+
+DROP TABLE Recordset_Group;
+
+Recordset_visibility:
+NOCONCATENATE
+LOAD DISTINCT
+	provider_id,
+	recordset_id AS [Recordset Id],
+	client_id AS %recordsetclientid
+RESIDENT Visible
+WHERE match(Visible, 1)  AND isNull(not_Visible);
+
+DROP TABLE Visible;
+
+//Recordset_visibility_tmp:
+LEFT JOIN(Recordset_visibility)
+LOAD
+    [Recordset Id]
+RESIDENT FACT_Subassessment_Answer;
+
+
+
+

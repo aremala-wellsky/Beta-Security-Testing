@@ -1,0 +1,417 @@
+FACT_sp_provider_TMP:
+NoConcatenate
+Load 
+	provider_id,
+    parent_provider_id,
+    name,
+    program_fees,										
+   	active,   																
+	program_type_code_value_id, 
+    aka,	
+    date_added, 
+    date_updated, 
+ 	primary_contact_id, 
+    primary_telephone_id, 		
+   	principal_site,  
+    airs_designation_id,
+    geocode,		
+    hud_housing_type_id,
+    site_information_id,
+    hud_tracking_method_id,
+    target_pop_value_id, 
+    hud_organization_id,                     
+    airs_compliant, 
+    affiliated_residential_project, 
+    continuum_flag, 
+    operational, 
+    spuser,  
+    provider_level,
+	last_update_request_date,
+	facility_type_value_id,
+	capacity_type,
+	service_capacity,
+	maintaining_provider_id,
+	year_corp,
+	current_update_requests,
+	employer_id_number,
+	provider_type_value_id,
+	operating_start_date,
+	operating_end_date,
+	direct_service_code,
+	hud_site_type_id,
+	victim_service_provider,
+	hud_grantee_id,
+	coc_code,
+	provider_grant_type_id,
+	service_transaction_workflow,
+	target_pop_a_value_id 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER.qvd]
+(qvd);
+
+
+DIM_Provider: //RUNNING TOTAL: Rows/Fields 98/28
+LOAD
+	provider_id & '|' & 'Yes' & '|' & 'Yes' 							AS %SECURITY_KEY,
+    "provider_id"														AS %PROVIDER_DETAILS_KEY,
+	"provider_id"														AS %PROVIDER_FUND_KEY,
+	"provider_id" 														AS %PROVIDER_ACTIVITY_KEY, 
+	"provider_id"														AS %ProviderId,
+	provider_id															AS [Provider Id],
+	applymap ('MapProviderName', parent_provider_id, NULL() )			AS [Provider Parent Provider], 
+    name																AS [Provider Name],
+    program_fees														AS [Provider Program Fees],
+   	if ( active = 1, 'Yes', 'No' ) 										AS [Provider Is Active],
+	applymap ('MapPickList', program_type_code_value_id, NULL() )		AS [Provider HUD Project Type],  
+	aka																	AS [Provider AKA],
+	applymap ('MapProviderContact', primary_contact_id, NULL() )		AS [Provider Contact], 
+	primary_telephone_id 										    	AS %primary_telephone_id,
+	if ( principal_site = 1, 'Yes', 'No' ) 								AS [Provider HUD Principal Site],	 
+	applymap ('MapAIRSDesignation', airs_designation_id, NULL() )		AS [Provider AIRS Designation],
+	geocode																AS [Provider Geo Code],
+	applymap ('MapPickList', hud_housing_type_id, NULL() )	        	AS [Provider HUD Housing Type],
+	applymap ('MapPickList', site_information_id, NULL() )	       	 	AS [Provider HUD Program Site Configuration Type (Retired)],
+	applymap ('MapPickList', hud_tracking_method_id, NULL() )	    	AS [Provider HUD Method for Tracking ESU],
+	applymap ('MapPickList', target_pop_value_id, NULL() )	        	AS [Provider HUD Target Population],
+	hud_organization_id                                              	AS [Provider HUD Organization Id],	
+	applymap ('MapProviderName', hud_organization_id, NULL() )			AS [Provider HUD Organization Name],
+	if ( airs_compliant = 1, 'Yes', 'No' )								AS [Provider AIRS Compliant],
+	if ( affiliated_residential_project = 1 , 'Yes', 'No' )				AS [Provider HUD Affiliated Residential Project],
+	if ( continuum_flag = 1, 'Yes', 'No' ) 								AS [Provider HUD Continuum Project],
+	if ( operational = 1, 'Yes', 'No' )									AS [Provider Operational],
+	if ( spuser = 1, 'Yes', 'No' )										AS [Provider Is Spuser],
+	provider_level														AS [Provider Level],
+	(date(floor(last_update_request_date) ) )							AS [AIRS Provider Last Update Request Date],
+	applymap ('MapPickList', facility_type_value_id, NULL() ) 			AS [AIRS Facility Type],
+	capacity_type														AS [AIRS Capacity Type],
+	service_capacity													AS [AIRS Service Capacity],
+	applymap ('MapProviderName',maintaining_provider_id, NULL() )		AS [AIRS Provider Maintaining],
+	year_corp															AS [AIRS Year of Incorporation],
+	current_update_requests 											AS [AIRS Number of Update Request sent since last Official Update],
+	employer_id_number													AS [AIRS Federal Employer ID Number],
+	applymap ('MapPickList',provider_type_value_id, NULL() ) 			AS [AIRS Legal Status],
+	date(floor(operating_start_date))							 		AS [Provider HUD Operating Start Date],
+	date(floor(operating_end_date))								 		AS [Provider HUD Operating End Date],
+	if ( direct_service_code = 1, 'Yes', 'No' )				    		AS [Provider HUD Direct Service Code (Retired)],
+	applymap ('MapPickList', hud_site_type_id, NULL() )					AS [Provider HUD Site Type (Retired)],
+	if ( victim_service_provider = 1, 'Yes', 'No' )			    		AS [Provider HUD Victim Services Provider],
+	hud_grantee_id														AS [Provider HUD Grantee Id (Retired)],
+	applymap ('MapPickList', provider_grant_type_id, NULL() )			AS [Provider HUD Grant Type],
+	if (service_transaction_workflow = 1, 'Yes', 'No' )		    		AS [Provider HUD Service Transaction Workflow],
+	applymap ('MapPickList', target_pop_a_value_id, NULL() )     		AS [Provider HUD Target Population A (OPTIONAL)],
+	coc_code															AS [Provider HUD CoC Code (Retired)]
+Resident FACT_sp_provider_TMP;
+Drop Table FACT_sp_provider_TMP;
+
+//=============================================
+
+FACT_sp_provider_telephone_TMP: //RUNNING TOTAL: Rows/Fields 98/30
+NoConcatenate
+Load 
+	provider_telephone_id,
+	name,
+	number
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_TELEPHONE.qvd]
+(qvd);
+LEFT JOIN(DIM_Provider)
+LOAD 
+	"provider_telephone_id"									AS %primary_telephone_id,
+    "name"													AS [Provider Telephone Name],
+    "number"                                                AS [Provider Telephone Number]
+Resident FACT_sp_provider_telephone_TMP;
+Drop Table FACT_sp_provider_telephone_TMP;
+
+//=============================================
+/*FACT_sp_provider_payment_TMP: //RUNNING TOTAL: Rows/Fields 98/31
+NoConcatenate
+Load 
+	provider_id,
+	payment_type_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_PAYMENT.qvd](qvd);
+
+LEFT JOIN(DIM_Provider)
+LOAD 
+    "provider_id"											AS %ProviderId,
+ 	applymap ('MapPickList', payment_type_id, NULL() )		AS [Provider Payment Type]     
+Resident FACT_sp_provider_payment_TMP;
+Drop Table FACT_sp_provider_payment_TMP;*/
+
+
+//RENAME TABLE FACT_sp_provider_communitypoint TO FACT_sp_provider_communitypoint_TMP;
+
+//=============================================
+
+FACT_sp_provider_payment_TMP:
+Noconcatenate
+SELECT  distinct p.provider_id, 
+string_agg(v.name , ', ')   AS payment_method_accept    
+FROM  sp_provider p 
+LEFT JOIN sp_provider_payment pp  ON pp.provider_id = p.provider_id
+LEFT JOIN sp_picklist_value v on v.picklist_value_id = pp.payment_type_id
+group by  p.provider_id
+order by p.provider_id; 
+
+LEFT JOIN(DIM_Provider)
+LOAD
+provider_id AS %ProviderId,
+payment_method_accept  AS [AIRS Payment Methods Accepted]
+RESIDENT FACT_sp_provider_payment_TMP;
+DROP TABLE FACT_sp_provider_payment_TMP;
+
+//RENAME TABLE FACT_sp_provider_payment TO FACT_sp_provider_payment_TMP;
+
+//=============================================
+
+FACT_sp_provider_address_TMP: //RUNNING TOTAL: Rows/Fields 117/46
+NoConcatenate
+Load 
+	provider_address_id,
+	provider_id,
+	address_type_id,
+	line1,
+	line2,
+	city,
+	province,
+	postal_code,
+	country,
+	latitude,
+	longitude,
+	county,
+	active
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_ADDRESS.qvd]
+(qvd);
+LEFT JOIN(DIM_Provider)
+LOAD
+   provider_address_id											AS [Provider Address Id],
+    provider_id													AS %ProviderId,
+    applymap ('MapPickList', address_type_id, NULL() )			AS [Provider Address Type],  
+    trim ( line1 & 
+    if ( len ( line2 ) > 0, ', ' & line2 ) &
+    if ( len ( line2 ) > 0, ', ' & city ) &
+    if ( len ( line2 ) > 0, ', ' & province ) &
+    if ( len ( line2 ) > 0, ', ' & postal_code ) &
+    if ( len ( line2 ) > 0, ', ' & country ) )					AS [Provider Address],
+    line1														AS [Provider Address 1],
+    line2														AS [Provider Address 2],
+    city														AS [Provider City],
+    province													AS [Provider State],
+    text ( postal_code )										AS [Provider ZIP],
+    country														AS [Provider Country],
+    county														AS [Provider County],
+    latitude													AS [Provider Latitude],
+	longitude													AS [Provider Longitude]
+Resident FACT_sp_provider_address_TMP;
+Drop Table FACT_sp_provider_address_TMP;
+
+//=============================================
+
+FACT_sp_provider_coc_code_TMP: //RUNNING TOTAL: Rows/Fields 117/51
+NoConcatenate
+Load 
+	provider_coc_code_id,
+	provider_id,
+	start_date,
+	end_date,
+	coc_code_id,
+	geocode,
+	postal_code,
+	geography_type_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_COC_CODE.qvd](qvd);
+
+//LEFT JOIN(DIM_Provider)
+DIM_Provider_CoC_Code:
+Noconcatenate
+LOAD 
+	provider_coc_code_id									AS [Provider CoC Code Id],
+    "provider_id"											AS %ProviderId,
+    (date(floor( start_date ) ) )	         				AS [Provider CoC Code Start Date],                                                                   
+    (date(floor( end_date ) ) )				         		AS [Provider CoC Code End Date],                                                                   
+ 	applymap ('MapPickList', coc_code_id, NULL() )			AS [Provider CoC Code],
+	geocode													AS [Provider CoC Geo Code],
+	postal_code												AS [Provider CoC ZIP Code],
+	applymap ('MapPickList',geography_type_id , NULL() )    AS [Provider CoC Geography Type]
+Resident FACT_sp_provider_coc_code_TMP;
+Drop Table FACT_sp_provider_coc_code_TMP;
+
+//=============================================
+
+FACT_sp_provider_contact_TMP: //RUNNING TOTAL: Rows/Fields 197/54
+NoConcatenate
+Load 
+	provider_id,
+	phone,
+	email,
+	website_address
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_CONTACT.qvd](qvd);
+
+LEFT JOIN(DIM_Provider)
+LOAD 
+    "provider_id"											AS %ProviderId, 
+    "phone"													AS [Provider Contact Phone Number],
+    "email"													AS [Provider Email],
+    "website_address"										AS [Provider Website Address]
+Resident FACT_sp_provider_contact_TMP;
+Drop Table FACT_sp_provider_contact_TMP;
+
+//=============================================
+
+
+
+//=============================================
+
+FACT_sp_provider_fed_partner_funding_source_TMP: //RUNNING TOTAL: Rows/Fields 197/65
+NoConcatenate
+Load 
+	federal_funding_source_id,
+	provider_id,
+	federal_partner_program_id,
+	grant_identifier,
+	grant_start_date,
+	grant_end_date
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_FED_PARTNER_FUNDING_SOURCE.qvd](qvd);
+
+DIM_Provider_Fed_Partner:
+//LEFT JOIN(DIM_Provider)
+NoConcatenate
+LOAD 
+	"federal_funding_source_id" 									AS [Provider Federal Partner Source Id],
+    "provider_id"													AS %ProviderId, 
+    applymap ('MapPickList', federal_partner_program_id, NULL() )	AS [Provider Federal Partner Program Name],
+  	"grant_identifier"												AS [Provider Federal Grant Identifier],
+  	 	date(floor(grant_start_date))								AS [Provider Federal Grant Start Date],
+     	date(floor(grant_end_date))						   			AS [Provider Federal Grant End Date]
+Resident FACT_sp_provider_fed_partner_funding_source_TMP;
+Drop Table FACT_sp_provider_fed_partner_funding_source_TMP;
+
+//=============================================
+
+FACT_sp_provider_project_identifier_TMP: //RUNNING TOTAL: Rows/Fields 197/66
+NoConcatenate
+Load 
+	project_identifier_provider_id,
+	provider_id,
+	provider_project_identifier_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_PROJECT_IDENTIFIER.qvd](qvd);
+
+DIM_Provider_Project:
+//LEFT JOIN(DIM_Provider)
+LOAD 
+	applymap ('MapProviderName', project_identifier_provider_id, NULL() )				AS [Provider Project Identifier Name],
+	project_identifier_provider_id														AS [Provider Project Identifier Name Id],
+    "provider_id"																		AS %ProviderId,
+    provider_project_identifier_id  													AS [Provider Project Identifier Record Id]
+Resident FACT_sp_provider_project_identifier_TMP;
+Drop Table FACT_sp_provider_project_identifier_TMP;
+
+//=============================================
+
+FACT_sp_provider_service_code_TMP: //RUNNING TOTAL: Rows/Fields 206/69
+NoConcatenate
+Load 
+	provider_service_code_id,
+	provider_id,
+	service_code_id,
+	type_service_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_SERVICE_CODE.qvd](qvd);
+
+FACT_sp_provider_service_code:
+LOAD 
+	"provider_service_code_id"											AS [Provider Service Code Id],
+    "provider_id"														As %ProviderId,
+ 	applymap ('MapNeedServiceCode', service_code_id, NULL() )			AS [Provider Service Code]
+Resident FACT_sp_provider_service_code_TMP;
+Drop Table FACT_sp_provider_service_code_TMP;
+
+
+//=============================================
+
+FACT_sp_provider_service_code_modifier_TMP: //RUNNING TOTAL: Rows/Fields 212/72
+NoConcatenate
+Load 
+	provider_service_code_id,
+	type_service_modifier_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_SERVICE_CODE_MODIFIER.qvd]
+(qvd);
+LEFT JOIN(FACT_sp_provider_service_code)
+LOAD 
+    "provider_service_code_id"													AS [Provider Service Code Id],
+ 	applymap ('MapTypeServiceModifer', type_service_modifier_id, NULL() )		AS [Provider Service Type Modifier]   
+Resident FACT_sp_provider_service_code_modifier_TMP;
+Drop Table FACT_sp_provider_service_code_modifier_TMP;
+
+LEFT JOIN (DIM_Provider)
+Load	
+	*
+Resident FACT_sp_provider_service_code;
+Drop Table FACT_sp_provider_service_code;
+
+//=============================================
+
+FACT_sp_provider_emergency_service_code_TMP: //RUNNING TOTAL: Rows/Fields 212/73
+NoConcatenate
+Load 
+	service_code_id,
+	provider_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_EMERGENCY_SERVICE_CODE.qvd]
+(qvd);
+LEFT JOIN(DIM_Provider)
+LOAD 
+    "provider_id"										AS %ProviderId,
+ 	applymap ('MapNeedServiceDescription', service_code_id, NULL() )			AS [Provider Emergency Service Code]
+Resident FACT_sp_provider_emergency_service_code_TMP;
+Drop Table FACT_sp_provider_emergency_service_code_TMP;
+
+//=============================================
+
+FACT_sp_provider_served_area_TMP: //RUNNING TOTAL: Rows/Fields 212/74
+NoConcatenate
+Load 	
+	provider_id,
+	area_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_SERVED_AREA.qvd]
+(qvd);
+LEFT JOIN(DIM_Provider)
+LOAD 
+    "provider_id"															AS %ProviderId,
+ 	applymap ('MapPickList', area_id, NULL() )								AS [Provider Served Area]
+Resident FACT_sp_provider_served_area_TMP;
+Drop Table FACT_sp_provider_served_area_TMP;
+
+//=============================================
+
+FACT_sp_reporting_group_provider_TMP: //RUNNING TOTAL: Rows/Fields 212/74
+NoConcatenate
+Load 	
+	provider_id,
+	reporting_group_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_REPORTING_GROUP_PROVIDER.qvd]
+(qvd);
+LEFT JOIN(DIM_Provider)
+LOAD 
+    "provider_id"															AS %ProviderId,
+ 	applymap ('MapReportingGroup', reporting_group_id, NULL() )				AS [Provider Reporting Group]
+Resident FACT_sp_reporting_group_provider_TMP;
+Drop Table FACT_sp_reporting_group_provider_TMP;
+
+// //=============================================
+
+
+FACT_sp_provider_geography_served_TMP: //RUNNING TOTAL: Rows/Fields 254/76
+NoConcatenate
+Load 
+	provider_id,
+	geography_level_id,
+	zip_code_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_GEOGRAPHY_SERVED.qvd](qvd);
+
+LEFT JOIN(DIM_Provider)
+LOAD 
+    "provider_id"															AS %ProviderId,
+ 	applymap ('MapTypeGeographyLevel', geography_level_id, NULL() )			AS [Provider Geography Served Level],
+	applymap ('MapZipCode', zip_code_id, NULL() )							AS [Provider Geography Served ZIP Code]  
+Resident FACT_sp_provider_geography_served_TMP;
+Drop Table FACT_sp_provider_geography_served_TMP;
+
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE DIM_Provider INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Provider.qvd];
+DROP Table DIM_Provider;

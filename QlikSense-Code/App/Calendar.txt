@@ -1,0 +1,28 @@
+Let vYears = 4;
+Let vMonth= Month(Today());
+LET vYearToday = IF(vMonth < 11, Year(Today(2)) , Year(Today(2)) + 1 ) ;
+LET vMinDate = num(MakeDate(2015, 01, 01));
+LET vMaxDate = num(MakeDate($(vYearToday), 12, 31));
+
+TempCalendar:
+LOAD
+  $(vMinDate) + IterNo() - 1 as Num,
+  Date($(vMinDate) + IterNo() - 1) as TempDate
+AutoGenerate 1
+WHILE $(vMinDate) + IterNo() -1 <= $(vMaxDate);
+
+LET vMinDate = ;
+LET vMaxDate = ;
+
+StartDate:
+LOAD
+  TempDate AS StartDate,
+  num(TempDate) AS %numStartDate
+RESIDENT TempCalendar;
+
+EndDate:
+LOAD
+  TempDate AS EndDate,
+  num(TempDate) AS %numEndDate
+RESIDENT TempCalendar;
+DROP Table TempCalendar;

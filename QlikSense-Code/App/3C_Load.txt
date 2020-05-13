@@ -1,0 +1,11 @@
+set CreateSearchIndexOnReload=0;
+
+DROP FIELDS [Entry Exit Id] FROM Client_Entry_Answer;
+DROP FIELDS [Entry Exit Id] FROM Client_Exit_Answer;
+
+DROP FIELDS %CallRecordJoinKey FROM FACT_Call_Record;
+
+
+DROP FIELDS %DIM_EE_KEY FROM DIM_Entry_Exit;
+
+DROP FIELDS %FACT_NEEDSERVICE_KEY FROM FACT_Need_Service;

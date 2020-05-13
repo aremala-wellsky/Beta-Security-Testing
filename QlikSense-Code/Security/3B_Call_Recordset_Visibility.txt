@@ -1,0 +1,46 @@
+CLIENT_CALL_RECORDSET_ACCESS:
+LOAD DISTINCT 
+    call_recordset_id AS %CALL_RECORDSET_KEY_SEC,
+    [TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_RECORD_CALL_RECORDSET
+RESIDENT CALL_RECORDSET_ACCESS;
+DROP TABLE CALL_RECORDSET_ACCESS;
+
+RENAME TABLE CLIENT_CALL_RECORDSET_ACCESS TO CALL_RECORDSET_ACCESS;
+
+explicit_call_recordset_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+
+LEFT JOIN(explicit_call_recordset_security)
+LOAD DISTINCT
+    [Call Recordset Id],
+    provider_id,
+	%callrecordid
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Call_Recordset_visibility.qvd]
+(qvd);
+
+CONCATENATE(CALL_RECORDSET_ACCESS)
+LOAD
+	[Call Recordset Id] AS %CALL_RECORDSET_KEY_SEC,
+	[TIER_LINK] & '|' & %callrecordid AS %SA_CALL_RECORD_CALL_RECORDSET
+RESIDENT explicit_call_recordset_security;
+
+DROP TABLE explicit_call_recordset_security;	
+
+STORE CALL_RECORDSET_ACCESS INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CALL_RECORDSET_ACCESS.qvd];
+DROP TABLE CALL_RECORDSET_ACCESS;
+
+
+
+
+
+
+
+
+	

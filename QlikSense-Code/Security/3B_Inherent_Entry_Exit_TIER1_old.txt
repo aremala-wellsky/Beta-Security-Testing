@@ -1,0 +1,67 @@
+INHERENT_SECURITY_tmp_EE_TIER1:
+NOCONCATENATE
+LOAD 
+	user_access_tier & '|' & user_provider_id AS TIER_LINK,
+    user_provider_id AS provider_id,
+	user_provider_id,
+    user_access_tier,
+    provider_id AS [Client Provider Created By Id]
+RESIDENT INHERENT_SECURITY_tmp
+WHERE user_access_tier = 1;
+
+
+INHERENT_SECURITY_tmp_EE_TIER1_1:
+NOCONCATENATE
+LOAD 
+	user_access_tier & '|' & user_provider_id AS TIER_LINK,
+    user_provider_id AS provider_id,
+	user_provider_id,
+    user_access_tier,
+    provider_id AS [Client Provider Created By Id]
+RESIDENT INHERENT_SECURITY_tmp
+WHERE user_access_tier = 1;
+
+
+DROP TABLE INHERENT_SECURITY_tmp;
+
+
+LEFT JOIN(INHERENT_SECURITY_tmp_EE_TIER1)
+LOAD
+    entry_exit_id,
+    provider_id,
+	client_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ENTRY_EXIT.qvd]
+(qvd)
+WHERE (isNull(num(exit_date)) OR (num(exit_date) >= '$(vNumDateSet)'));
+
+
+
+LEFT JOIN(INHERENT_SECURITY_tmp_EE_TIER1_1)
+LOAD
+    entry_exit_id,
+    provider_creating_id as provider_id,
+	client_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ENTRY_EXIT.qvd]
+(qvd)
+WHERE (isNull(num(exit_date)) OR (num(exit_date) >= '$(vNumDateSet)'));
+
+
+CONCATENATE(INHERENT_SECURITY_tmp_EE_TIER1)
+LOAD
+*
+RESIDENT INHERENT_SECURITY_tmp_EE_TIER1_1;
+DROP TABLE INHERENT_SECURITY_tmp_EE_TIER1_1;
+
+ENTRY_EXIT_ACCESS_TIER1:
+NOCONCATENATE
+LOAD 
+	client_id AS [Client Id],
+    entry_exit_id AS [Entry Exit Id],
+	user_access_tier & '|' & user_provider_id AS TIER_LINK
+RESIDENT INHERENT_SECURITY_tmp_EE_TIER1;
+
+
+DROP TABLE INHERENT_SECURITY_tmp_EE_TIER1;
+
+
+

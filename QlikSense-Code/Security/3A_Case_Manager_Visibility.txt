@@ -1,0 +1,91 @@
+Case_Manager_Group:
+LOAD DISTINCT 
+ 	provider_id,
+    visibility_group_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT USER_GROUP; 
+
+Case_Manager_tmp:
+LOAD
+    case_manager_id,
+    active,
+	client_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CASE_MANAGER.qvd]
+(qvd)
+WHERE (isNull(num(date_ended)) OR (num(date_ended) >= '$(vNumDateSet)'));
+
+Case_Manager:
+NOCONCATENATE
+LOAD
+	case_manager_id,
+	client_id
+RESIDENT Case_Manager_tmp
+WHERE match(active, 1);
+
+DROP TABLE Case_Manager_tmp;
+
+INNER JOIN (Case_Manager)
+LOAD
+    case_manager_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CASE_MANAGERVISIBILITY.qvd]
+(qvd);
+
+Case_Manager_visibility:
+LEFT JOIN (Case_Manager_Group)
+LOAD DISTINCT
+    visibility_group_id,
+    visible,
+    case_manager_id,
+	client_id
+RESIDENT Case_Manager;
+
+DROP TABLE Case_Manager;
+
+Visible:
+Load DISTINCT
+	provider_id,
+    case_manager_id,
+    1 AS Visible,
+	client_id
+RESIDENT Case_Manager_Group
+WHERE visible = 1;
+
+not_Visible:
+LEFT JOIN(Visible)
+Load DISTINCT
+	provider_id,
+    case_manager_id,
+    1 AS not_Visible,
+	client_id
+RESIDENT Case_Manager_Group
+WHERE visible = 0;
+
+DROP TABLE Case_Manager_Group;
+
+Case_Manager_visibility:
+NOCONCATENATE
+LOAD DISTINCT
+	provider_id,
+	case_manager_id AS [Case Manager Id],
+	client_id AS %casemanagerclientid
+RESIDENT Visible
+WHERE match(Visible, 1)  AND isNull(not_Visible);
+
+DROP TABLE Visible;
+
+//Case_Manager_visibility_tmp:
+LEFT JOIN(Case_Manager_visibility)
+LOAD
+    [Case Manager Id]
+RESIDENt DIM_Case_Manager;
+
+//STORE Case_Manager_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)Case_Manager_visibility.qvd];
+
+
+STORE Case_Manager_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Case_Manager_visibility.qvd];
+Drop table Case_Manager_visibility;
+

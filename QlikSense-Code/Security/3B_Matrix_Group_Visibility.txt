@@ -1,0 +1,50 @@
+CLIENT_MATRIX_ACCESS:
+LOAD DISTINCT 
+    [Matrix Group Id] AS %MATRIX_GROUP_KEY_SEC,
+	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST
+//	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST_TIER1
+RESIDENT MATRIX_GROUP_ACCESS;
+
+DROP TABLE MATRIX_GROUP_ACCESS;
+
+explicit_matrix_group_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+matrix_group_security:
+NOCONCATENATE
+LOAD
+    [Matrix Group Id],
+    provider_id,
+	%matrixgroupclientid
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Matrix_Group_visibility.qvd]
+(qvd);
+
+//RESIDENT Matrix_Group_visibility;
+//DROP TABLE Matrix_Group_visibility;
+
+LEFT JOIN(explicit_matrix_group_security)
+LOAD 
+    [Matrix Group Id],
+    provider_id,
+	%matrixgroupclientid
+RESIDENT matrix_group_security;
+
+DROP TABLE matrix_group_security;
+
+CONCATENATE(CLIENT_MATRIX_ACCESS)
+LOAD
+	[Matrix Group Id] AS %MATRIX_GROUP_KEY_SEC,
+	[TIER_LINK] & '|' & %matrixgroupclientid AS %SA_CLIENT_TEST
+	//[TIER_LINK] & '|' & %matrixgroupclientid AS %SA_CLIENT_TEST_TIER1
+RESIDENT explicit_matrix_group_security;
+
+DROP TABLE explicit_matrix_group_security;	
+
+STORE CLIENT_MATRIX_ACCESS INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_MATRIX_ACCESS.qvd];
+DROP TABLE CLIENT_MATRIX_ACCESS;

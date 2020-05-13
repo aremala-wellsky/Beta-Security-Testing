@@ -1,0 +1,69 @@
+INNER JOIN(CALL_ANSWER_ACCESS)
+LOAD 
+    TIER_LINK,
+    [Call Record Id]
+RESIDENT CALL_RECORD_ACCESS;
+
+
+INNER JOIN(CALL_ANSWER_ACCESS)
+LOAD 
+    [Client Id],
+    [Call Record Id]
+RESIDENT CALL_RECORD_ACCESS;
+
+
+CLIENT_CALL_ANSWER_ACCESS:
+LOAD DISTINCT 
+    //[Call Answer Id] AS %CALL_ANSWER_KEY_SEC,
+	 [Call Record Id] AS %CALL_ANSWER_KEY_SEC,
+	[TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_RECORD_CALL_ANSWER
+RESIDENT CALL_ANSWER_ACCESS;
+
+DROP TABLE CALL_ANSWER_ACCESS;
+
+
+
+explicit_call_record_answer_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT INHERENT_SECURITY; 
+
+
+
+LEFT JOIN(explicit_call_record_answer_security)
+LOAD DISTINCT
+    call_answer_id,
+    provider_id,
+	call_record_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Call_Record_Answer_visibility.qvd]
+(qvd);
+
+//DROP TABLE call_record_answer_security;
+
+CONCATENATE(CLIENT_CALL_ANSWER_ACCESS)
+LOAD
+	//call_answer_id AS %CALL_ANSWER_KEY_SEC,
+	call_record_id AS %CALL_ANSWER_KEY_SEC,
+	[TIER_LINK] & '|' & call_record_id AS %SA_CALL_RECORD_CALL_ANSWER
+RESIDENT explicit_call_record_answer_security;
+
+DROP TABLE explicit_call_record_answer_security;	
+
+
+
+
+
+
+
+
+	
+
+
+
+
+	

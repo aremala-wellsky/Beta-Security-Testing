@@ -1,0 +1,86 @@
+//---------------------------------------------------------------------------
+// Interim Answers
+//---------------------------------------------------------------------------
+
+//Date variable definition
+LET varDeltaDate = '1/01/2015';
+
+//Flag QVD exist
+LET varQVDExists = not isnull(QvdCreateTime('lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_DELTA_EER_RUNDATE_V5.qvd'));
+
+//If QVD exist get the DeltaDateVal
+IF $(varQVDExists) THEN
+  DeltaDate:
+  Noconcatenate
+  LOAD
+    DeltaDateVal
+  FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_DELTA_EER_RUNDATE_V5.qvd](qvd);
+  LET varDeltaDate=Peek('DeltaDateVal',0,'DeltaDate'); 
+ ELSE
+ DeltaDate:
+   LOAD * INLINE [
+    DeltaDateVal
+    '9/9/9999'];
+END IF;
+
+//Clean table
+DROP TABLE DeltaDate;
+
+//Get exit entry review Id modified
+
+EERs_To_Rebuild_Answers_For:
+Noconcatenate
+SELECT DISTINCT eer.entry_exit_review_id   //added/updated EERs
+FROM sp_entry_exit_review eer
+INNER JOIN sp_entry_exit ee ON (ee.entry_exit_id = eer.entry_exit_id)
+INNER JOIN sp_picklist_value pv ON (pv.picklist_value_id = eer.point_in_time_type_id)
+WHERE (eer.active = TRUE) AND (eer.date_updated > '$(varDeltaDate)')
+--AND (eer.review_date >= '1/01/2015')
+AND (ee.active = true) AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '1/01/2015'))
+AND pv.code NOT IN ('EEPOINTINTIME_EXIT','EEPOINTINTIME_ENTRY')
+UNION
+SELECT DISTINCT eer.entry_exit_review_id  //added/deleted Answers
+FROM sp_entry_exit_review eer
+INNER JOIN sp_entry_exit ee ON (ee.entry_exit_id = eer.entry_exit_id)
+INNER JOIN da_answer da ON (da.client_id = ee.client_id)
+INNER JOIN da_question dq ON (dq.question_id = da.question_id)
+INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+INNER JOIN sp_picklist_value pv ON (pv.picklist_value_id = eer.point_in_time_type_id)
+WHERE (dq.active = TRUE) AND (dq.parent_id IS NULL) AND (eer.active = TRUE) AND (ee.active = true)
+AND pv.code NOT IN ('EEPOINTINTIME_EXIT','EEPOINTINTIME_ENTRY')
+AND (dqt.code IN ('lookup','yes_no','date','int','money','textbox','textarea'))
+AND ((dq.reportable_flag = TRUE) OR (dq.ee_reportable_flag = TRUE) OR (dq.service_reportable_flag = TRUE))             
+AND
+(
+  ((da.date_added > '$(varDeltaDate)') AND (da.active = TRUE))   
+  OR
+  ((da.date_inactive > '$(varDeltaDate)') AND (da.active = FALSE))
+)
+AND ((da.date_effective::DATE <= eer.review_date::DATE) OR (ee.exit_date IS NULL))
+AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '1/01/2015'));
+//AND (eer.review_date >= '1/01/2015');
+
+//Remove inactive Exit Entry Review
+EERs_To_Remove_From_Current_QVD:
+Noconcatenate
+SELECT DISTINCT eer.entry_exit_review_id as match_eer_id  //deleted EERs
+FROM sp_entry_exit_review eer
+WHERE (eer.active = false) AND (eer.date_updated > '$(varDeltaDate)');
+//AND (eer.review_date >= '1/01/2015');
+
+
+CONCATENATE(EERs_To_Remove_From_Current_QVD)
+LOAD DISTINCT      //EERs with changes
+  entry_exit_review_id AS match_eer_id
+RESIDENT EERs_To_Rebuild_Answers_For;
+
+LET varTempClientInterimQVDExists = not isnull(QvdCreateTime('lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_REVIEW_ANSWER_V5.qvd'));
+
+IF $(varTempClientInterimQVDExists) THEN
+  Temp_Client_Interim_Answer_Table:
+  Noconcatenate
+  LOAD
+    *
+  FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_REVIEW_ANSWER_V5.qvd](qvd)
+  WHERE NOT EXISTS(match_eer_id, [Entry Exit Review Id]);
+ END IF;

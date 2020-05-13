@@ -1,0 +1,109 @@
+SUB InitializeEnvironment
+	SET ThousandSep=',';
+	SET DecimalSep='.';
+	SET MoneyThousandSep=',';
+	SET MoneyDecimalSep='.';
+	SET MoneyFormat='#,##0;-#,##0';
+	SET TimeFormat='h:mm:ss TT';
+	SET DateFormat='M/D/YYYY';
+	SET TimestampFormat='M/D/YYYY h:mm:ss[.fff] TT';
+	SET MonthNames='Jan;Feb;Mar;Apr;May;Jun;Jul;Aug;Sep;Oct;Nov;Dec';
+	SET DayNames='Mon;Tue;Wed;Thu;Fri;Sat;Sun';
+	SET LongDayNames='Monday;Tuesday;Wednesday;Thursday;Friday;Saturday;Sunday';
+
+
+//	SET HidePrefix = '%';
+//	SET HideSuffix = '%';
+
+
+	// Setup Relative Path Variables and use for all file references. This ensures that the application is self contained and portable
+	// as well as ensuring that any changes to relative directory structue can be controlled for a single place.
+//	SET lExternalData = 'lib://ExternalData/';
+//	SET lMetadataPath = '..\Metadata\';
+//	SET lPathQVD = 'lib://QVD/';
+//	SET lPathInclude = 'lib://Data-Files/';
+	SET lVariable = 'lib://$(vSVNConnection)/$(vSVNFolder)/Data Files/';
+//	LET lToday = Num(Today());
+
+	Let vYears = 3;
+
+	LET vYearToday = Year(Today(2));
+
+	LET vMinDate = num(MakeDate($(vYearToday) - $(vYears)));
+	LET vMaxDate = num(MakeDate($(vYearToday), 12, 31));
+
+END SUB
+
+// This subroutine will load in variables from an external Excel file
+// 	@param REQUIRED STRING:pFileName	- Name/Path of the Excel file to load the variables from
+// 	@param REQUIRED STRING:pSheetName	- Name of the sheet within the Excel file which contains the variables for this load
+//
+//	@reserved TABLE:TEMP_VARIABLES is create during this subroutine. No tables named TEMP_VARIABLES should be created elsewhere in load script
+//	@reserved VARIABLE:lNumRows is created and deleted during this subroutine.
+//	@reserved VARIABLE:lCounter is created and deleted during this subroutine.
+//	@reserved VARIABLE:lVariable is created and deleted during this subroutine.
+//	@reserved VARIABLE:lExpression is created and deleted during this subroutine.
+//	@reserved VARIABLE:lEvaluate is created and deleted during this subroutine.
+//
+//	@example CALL LoadVariablesFromExcel('$(lVariablePath)\All dates data.xlsx', 'Master Variables');
+//
+SUB LoadVariablesFromExcel(pFileName, pSheetName)
+
+	TRACE SUB: LoadVariablesFromExcel;
+
+	//Load the variables into a new table called Variables
+	TEMP_VARIABLES:
+	LOAD 
+	        Variable,
+	        Expression,
+	        Evaluate
+	FROM [$(pFileName)] 
+	(ooxml, embedded labels, table is [$(pSheetName)])
+	//the where clause below is added to provide the ability to turn on/off individual variables.
+	//make sure your Excel/SQL table has the ENABLED column
+	WHERE UPPER(ENABLED) = 'Y'
+	;
+	 
+	//Determine the number of variables to be loaded and iterate through them
+	FOR lCounter = 0 TO NoOfRows('TEMP_VARIABLES') - 1 
+
+		//Pull the variable name out so that we can use it to dynamically add the variable to the QVW.
+		LET lVariable = Peek('Variable', $(lCounter), 'TEMP_VARIABLES'); 
+	        
+   		//Pull the expression out so that we can use it to dynamically assign the variable value to the QVW.
+		LET lExpression = Peek('Expression', $(lCounter), 'TEMP_VARIABLES'); 
+
+		//Evaluate determines if we use Let or Set
+		LET lEvaluate = Ceil(Peek('Evaluate', $(lCounter), 'TEMP_VARIABLES'));
+//		if Ceil(Peek('Evaluate', $(lCounter), 'TEMP_VARIABLES')) THEN
+	        
+		//Using dollar sign expansion on lVariable we dynamically create a variable with the name from 
+		//the Excel document and assign it the value from the expression column	        
+		IF $(lEvaluate) THEN //Allow the entire expression to be evaluated in the load script
+
+			LET $(lVariable) = $(lExpression);
+
+		ELSE  //Prevent the load script from evaluating the statement. 
+
+			SET $(lVariable) = $(lExpression);
+
+			//Dollar sign expansion will always be evaluated if found, so use @@ instead of $ and 
+			//we'll replace it here to prevent the load script from evaluating.
+			LET $(lVariable) = replace($(lVariable), '@@', '$');
+
+		END IF 
+
+	NEXT 
+	
+	//Dropping the TEMP_VARIABLES table now that we've finished loading the variables.
+	DROP Table TEMP_VARIABLES;
+	
+	//Clean up all the load script only variables
+	SET lCounter =;
+	SET lVariable =;
+	SET lExpression =;
+
+END SUB
+
+CALL InitializeEnvironment;
+CALL LoadVariablesFromExcel('$(lVariable)All dates data.xlsx', 'Master Variables');

@@ -1,0 +1,59 @@
+// --for each user, establish their user_provider_id and user_access_tier
+USER_ACCESS_tmp:
+SELECT
+u.user_id, u.username, u.provider_id,
+CASE WHEN (SELECT true
+           FROM sp_action_in_role AS ar2
+           JOIN "action" AS a2 ON ar2.action_id = a2.action_id
+           JOIN sp_role AS r2 ON ar2.role_id = r2.role_id
+           JOIN sp_user AS u2 ON r2.role_id = u2.role_id 
+           WHERE (u2.user_id = u.user_id) AND (a2.name = 'VISIBILITY_BYPASSSECURITY')) THEN 1
+     WHEN (SELECT true
+           FROM sp_action_in_role AS ar2
+           JOIN "action" AS a2 ON ar2.action_id = a2.action_id
+           JOIN sp_role AS r2 ON ar2.role_id = r2.role_id
+           JOIN sp_user AS u2 ON r2.role_id = u2.role_id 
+           WHERE (u2.user_id = u.user_id) AND (a2.name = 'VISIBILITY_BYPASSSECURITY_TREE')) THEN 2
+     ELSE 3
+END as user_access_tier
+, r.name
+FROM sp_user u
+INNER JOIN sp_role r on r.role_id = u.role_id
+UNION
+select DISTINCT e.user_id,u1.username,p.provider_id, 
+CASE WHEN (SELECT true
+           FROM sp_action_in_role AS ar2
+           JOIN "action" AS a2 ON ar2.action_id = a2.action_id
+           JOIN sp_role AS r2 ON ar2.role_id = r2.role_id
+           JOIN sp_user AS u2 ON r2.role_id = u2.role_id 
+           WHERE (u2.user_id = u1.user_id) AND (a2.name = 'VISIBILITY_BYPASSSECURITY')) THEN 1
+     WHEN (SELECT true
+           FROM sp_action_in_role AS ar2
+           JOIN "action" AS a2 ON ar2.action_id = a2.action_id
+           JOIN sp_role AS r2 ON ar2.role_id = r2.role_id
+           JOIN sp_user AS u2 ON r2.role_id = u2.role_id 
+           WHERE (u2.user_id = u1.user_id) AND (a2.name = 'VISIBILITY_BYPASSSECURITY_TREE')) THEN 2
+     ELSE 3
+END as user_access_tier
+,r1.name 
+from sp_user_eda_group e JOIN sp_eda_group_provider_tree p ON (e.eda_group_id = p.eda_group_id)
+join sp_user u1 on e.user_id = u1.user_id
+INNER JOIN sp_role r1 on r1.role_id = u1.role_id
+WHERE u1.active = true
+ORDER BY 1,2,3;
+
+
+CONCATENATE(USER_ACCESS)
+LOAD DISTINCT 
+	'USER' AS ACCESS,
+	user_id AS %_USER_ID,
+	UPPER('$(vUserDirectory)' & '\' & username & '_' & user_id & '_' & provider_id) AS USERID,
+	//Upper('$(vUserDirectory)' & '\' & username & provider_id) AS USERID,
+    user_access_tier & '|' & provider_id AS TIER_LINK,
+	user_access_tier
+RESIDENT USER_ACCESS_tmp
+;
+
+DROP TABLE USER_ACCESS_tmp;
+
+

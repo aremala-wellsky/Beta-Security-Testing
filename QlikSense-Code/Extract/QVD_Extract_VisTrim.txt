@@ -1,0 +1,161 @@
+/********************
+SITE Variables
+Please Update As Needed
+*********************/
+//***UPDATE the APP ID in comments. It is in the QMC APP section.
+//   This is so we will have track of the original
+//   app if we lose or duplicate by accident.
+//   APP ID: 8e46abb2-8ce7-496e-ad92-a0ef3b3e0dfa
+
+
+//***UDPATE with the Qlik Data Connection, SP DB Name for each new site.
+//   EXAMPLE: SET vConnection = ['sp5_ps_bootcampnew_c'];
+//   EXAMPLE: SET vDBname = 'ps_bootcamp2017';
+//SET vConnection = ['SITE_QLIK_CONNECTION'];
+//SET vDBname = 'SITE_SP_DB_NAME';
+
+
+
+/********************
+Connection Variables
+Please Update As Needed.
+
+The spreadsheets are a
+manual process for
+tracking SP tables
+with active and
+inactive data separately.
+
+This process will be
+replaced after initial
+launch of sites. These
+should not change unless
+we add new tables
+or move the file path.
+*********************/
+SET vStoreConnection = 'SPData_Beta';
+SET vSpreadsheetConnection = 'SPData_Beta';
+SET vQVDType = 'Extract';
+LET vQVDTypePrefix = left(vQVDType, 1);
+LET vFilenamePrefix = vQVDTypePrefix & '_' & lower(vDBname);
+SET vFolder = 'DB';
+SET vDBListExcelName = 'sp_db.xlsx';
+SET vTableName = 'databases';
+SET vActiveExcelName = 'sp_tables_active_beta.xlsx';
+SET vActiveSheetName = 'Sheet1';
+SET vNoActiveExcelName = 'sp_tables_no_active_beta.xlsx';
+SET vNoActiveSheetName = 'Sheet1';
+
+
+DATABASES:
+LOAD
+    database_name
+FROM [lib://$(vSpreadsheetConnection)/$(vQVDType)\$(vFolder)\$(vDBListExcelName)]
+(ooxml, embedded labels, table is $(vTableName));
+
+
+SP_TABLES_ACTIVE:
+NoConcatenate
+LOAD
+    table_name,
+    qlik_table_name
+FROM [lib://$(vSpreadsheetConnection)/$(vQVDType)\$(vFolder)\$(vActiveExcelName)]
+(ooxml, embedded labels, table is $(vActiveSheetName))
+WHERE len(table_name)>0;
+
+
+SP_TABLES_NO_ACTIVE:
+NoConcatenate
+LOAD
+    table_name_no_active,
+    qlik_table_name_no_active
+FROM [lib://$(vSpreadsheetConnection)/$(vQVDType)\$(vFolder)\$(vNoActiveExcelName)]
+(ooxml, embedded labels, table is $(vNoActiveSheetName))
+WHERE len(table_name_no_active)>0;
+
+
+LIB CONNECT TO $(vConnection);
+
+
+//Get tables with active field and filter out inactive records
+For vCountTablesA = 0 To NoOfRows('SP_TABLES_ACTIVE')-1
+	Let tableIDA = Peek('table_name', $(vCountTablesA), 'SP_TABLES_ACTIVE');
+	Let qlikTableIDA = Peek('qlik_table_name', $(vCountTablesA), 'SP_TABLES_ACTIVE');
+
+	//CUSTOM CODE: Visibility Tables - file size large
+	if match('sp_goal_actionstep','$(tableIDA)') then
+			TempA:
+				SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), 'date_set', '2015-01-01', NULL);
+	elseif match('sp_goal','$(tableIDA)') then
+			TempA:
+				SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), 'date_set', '2015-01-01', NULL);
+	elseif match('da_answer','$(tableIDA)') then
+			TempA:
+				SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), 'date_effective', '2015-01-01', NULL);
+	elseif match('call_answer','$(tableIDA)') then
+			TempA:
+                SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), 'date_effective', '2015-01-01', NULL);				
+	elseif match('sp_call_record','$(tableIDA)') then
+			TempA:
+				SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), 'end_date', '2015-01-01', 'CHECK FOR NULL');
+	elseif match('call_recordset','$(tableIDA)') then
+			TempA:
+				SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), 'date_effective', '2015-01-01', NULL);
+	elseif match('sp_need','$(tableIDA)') then
+			TempA:
+				SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), 'date_set', '2015-01-01', NULL);
+	elseif match('da_recordset','$(tableIDA)') then
+			TempA:
+				SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), 'date_effective', '2015-01-01', NULL);
+	elseif match('sp_release_of_info','$(tableIDA)') then
+			TempA:
+                SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), 'date_ended', '2015-01-01', NULL);				
+    	elseif match('sp_case_manager','$(tableIDA)') then
+			TempA:
+				SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), 'date_ended', '2015-01-01', 'CHECK FOR NULL');
+	elseif match('sp_client_infraction','$(tableIDA)') then
+			TempA:
+				SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), 'bar_end_date', '2015-01-01', 'CHECK FOR NULL');
+	elseif match('sp_entry_exit','$(tableIDA)') then
+			TempA:
+                SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), 'exit_date', '2015-01-01', 'CHECK FOR NULL');				
+		else
+			TempA:
+				SELECT * FROM qlik_get_table_contents('public','$(tableIDA)', NULL::$(tableIDA), NULL, NULL, NULL);
+	end if
+	
+    $(qlikTableIDA):
+    NoConcatenate
+    LOAD * 
+    RESIDENT TempA
+    Where active;
+
+    STORE $(qlikTableIDA) INTO [lib://$(vStoreConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_$(qlikTableIDA).qvd];
+    DROP Table $(qlikTableIDA), TempA; //and drop temp
+Next vCountTablesA
+
+LIB CONNECT TO $(vConnection);
+//Get tables without active field.
+For vCountTablesN = 0 To NoOfRows('SP_TABLES_NO_ACTIVE')-1
+    Let tableIDN = Peek('table_name_no_active', $(vCountTablesN), 'SP_TABLES_NO_ACTIVE');
+    Let qlikTableIDN = Peek('qlik_table_name_no_active', $(vCountTablesN), 'SP_TABLES_NO_ACTIVE');
+	
+	//CUSTOM CODE: Visibility Tables - file size large
+	if match('sp_matrix_group','$(tableIDN)') then
+			TempN:
+				SELECT * FROM qlik_get_table_contents('public','$(tableIDN)', NULL::$(tableIDN), 'date_created', '2015-01-01', NULL);
+				
+		else
+			TempN:
+				SELECT * FROM qlik_get_table_contents('public','$(tableIDN)', NULL::$(tableIDN), NULL, NULL, NULL);
+	end if
+
+    $(qlikTableIDN):
+    NoConcatenate
+    LOAD * 
+    RESIDENT TempN;
+
+    STORE $(qlikTableIDN) INTO [lib://$(vStoreConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_$(qlikTableIDN).qvd];
+    DROP Table $(qlikTableIDN), TempN; 
+Next vCountTablesN
+

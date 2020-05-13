@@ -1,0 +1,58 @@
+  
+ 
+BUILD_DELTA_ENTRY_TABLE:        
+SELECT qlik_build_entry_answers_table('2015-01-01', '2015-01-01');
+SELECT qlik_build_entry_answer_pivot_view('2015-01-01', '2015-01-01', true);
+DROP TABLE BUILD_DELTA_ENTRY_TABLE;
+
+Temp_Client_Entry_Answer:
+select * from qlik_entry_answer_pivot_view;
+
+Client_Entry_Answer:
+Noconcatenate
+LOAD DISTINCT
+sec_key AS %SA_EE_ENTRY_ANSWER,
+sec_key AS %SA_EE_ENTRY_ANSWER_anshu,
+*
+RESIDENT Temp_Client_Entry_Answer;
+DROP TABLE Temp_Client_Entry_Answer;
+
+DROP FIELDS sec_key FROM Client_Entry_Answer;
+
+BUILD_DELTA_EXIT_TABLE:        
+SELECT qlik_build_exit_answers_table('2015-01-01', '2015-01-01');
+SELECT qlik_build_exit_answer_pivot_view('2015-01-01', '2015-01-01', true); 
+DROP TABLE BUILD_DELTA_EXIT_TABLE;
+
+Temp_Client_Exit_Answer:
+select * from qlik_exit_answer_pivot_view;
+
+Client_Exit_Answer:
+Noconcatenate
+LOAD DISTINCT
+sec_key AS %SA_EE_EXIT_ANSWER,
+sec_key AS %SA_EE_EXIT_ANSWER_anshu,
+*
+RESIDENT Temp_Client_Exit_Answer;
+DROP TABLE Temp_Client_Exit_Answer;
+DROP FIELDS sec_key FROM Client_Entry_Answer;
+
+Virtual_Field_Name_TMP:
+SELECT dq.virt_field_name, dq.description
+FROM da_question dq
+INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+WHERE (dq.active = TRUE)
+AND (dqt.code IN ('lookup','yes_no','date','int','money','textbox','textarea'))
+AND ((dq.reportable_flag = TRUE) OR (dq.ee_reportable_flag = TRUE) OR (dq.service_reportable_flag = TRUE));
+
+
+Virtual_Field_Name_Question:
+LOAD
+  virt_field_name								AS [Reference - Virtual Field Name],
+  description									AS [Reference - Question Description]												
+Resident Virtual_Field_Name_TMP;
+Drop Table Virtual_Field_Name_TMP;
+
+
+
+

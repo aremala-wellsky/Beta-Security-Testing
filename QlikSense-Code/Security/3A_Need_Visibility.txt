@@ -1,0 +1,88 @@
+Need_Group:
+LOAD DISTINCT 
+ 	provider_id,
+    visibility_group_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT USER_GROUP; 
+
+Need_tmp:
+LOAD
+    need_id,
+    active,
+	client_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_NEED.qvd]
+(qvd)
+WHERE num(date_set) >= '$(vNumDateSet)';
+
+Need:
+NOCONCATENATE
+LOAD
+	need_id,
+	client_id
+RESIDENT Need_tmp
+WHERE match(active, 1);
+
+DROP TABLE Need_tmp;
+
+INNER JOIN (Need)
+LOAD
+    need_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_NEEDVISIBILITY.qvd]
+(qvd);
+
+Need_visibility:
+LEFT JOIN (Need_Group)
+LOAD DISTINCT
+    visibility_group_id,
+    visible,
+    need_id,
+	client_id
+RESIDENT Need;
+
+DROP TABLE Need;
+
+Visible:
+Load DISTINCT
+	provider_id,
+    need_id,
+    1 AS Visible,
+	client_id
+RESIDENT Need_Group
+WHERE visible = 1;
+
+not_Visible:
+LEFT JOIN(Visible)
+Load DISTINCT
+	provider_id,
+    need_id,
+    1 AS not_Visible,
+	client_id
+RESIDENT Need_Group
+WHERE visible = 0;
+
+DROP TABLE Need_Group;
+
+Need_visibility:
+NOCONCATENATE
+LOAD DISTINCT
+	provider_id,
+	need_id AS [Need Id],
+	client_id AS %needclientid
+RESIDENT Visible
+WHERE match(Visible, 1)  AND isNull(not_Visible);
+
+DROP TABLE Visible;
+
+//Need_visibility_tmp:
+LEFT JOIN(Need_visibility)
+LOAD
+    [Need Id]
+RESIDENT FACT_Need_Service;
+
+STORE Need_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Need_visibility.qvd];
+DROP TABLE Need_visibility;
+

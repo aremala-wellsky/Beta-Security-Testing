@@ -1,0 +1,51 @@
+FACT_sp_matrix_TMP:
+NoConcatenate
+Load * 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_MATRIX.qvd]
+(qvd);
+
+DIM_Matrix:
+LOAD
+    matrix_id												    AS [Assessment Id], 
+     name														AS [Measurement Tool], 
+    description													AS [Assessment Description]
+Resident FACT_sp_matrix_TMP;
+Drop Table FACT_sp_matrix_TMP;
+
+FACT_sp_matrix_question_TMP:
+NoConcatenate
+Load 
+	matrix_question_id,
+	matrix_id,
+	name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_MATRIX_QUESTION.qvd]
+(qvd);
+LEFT JOIN (DIM_Matrix)
+LOAD
+	'Matrix' & '|' & matrix_question_id                      	AS [%ASSESSMENTQUESTIONTYPE_KEY],
+    matrix_id												    AS [Assessment Id],
+    name   													    AS [Measurement Admin  Question]
+Resident FACT_sp_matrix_question_TMP;
+Drop Table FACT_sp_matrix_question_TMP;
+
+
+
+FACT_sp_matrix_provider_TMP:
+NoConcatenate
+Load 
+	matrix_provider_id,
+	matrix_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_MATRIX_PROVIDER.qvd]
+(qvd);
+
+Left Join (DIM_Matrix)
+LOAD
+    matrix_provider_id										AS [Measurement Provider Id],
+    matrix_id												AS [Assessment Id],   
+     1 														AS [Count Measurement Provider] 
+Resident FACT_sp_matrix_provider_TMP;
+Drop Table FACT_sp_matrix_provider_TMP;
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE DIM_Matrix INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Matrix.qvd];
+DROP Table DIM_Matrix;

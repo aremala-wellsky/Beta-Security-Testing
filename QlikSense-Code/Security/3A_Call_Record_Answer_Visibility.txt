@@ -1,0 +1,88 @@
+Call_Record_Answer_Group:
+LOAD DISTINCT 
+ 	provider_id,
+    visibility_group_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT USER_GROUP; 
+
+Call_Record_Answer_tmp:
+LOAD
+    call_answer_id,
+    active,
+	call_record_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_CALL_ANSWER.qvd]
+(qvd)
+WHERE num(date_effective) >= '$(vNumDateSet)';
+
+Call_Record_Answer:
+NOCONCATENATE
+LOAD
+	call_answer_id,
+	call_record_id
+RESIDENT Call_Record_Answer_tmp
+WHERE match(active, 1);
+
+DROP TABLE Call_Record_Answer_tmp;
+
+INNER JOIN (Call_Record_Answer)
+LOAD
+    call_answer_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CALL_ANSWERVISIBILITY.qvd]
+(qvd);
+
+Call_Record_Answer_visibility:
+LEFT JOIN (Call_Record_Answer_Group)
+LOAD DISTINCT
+    visibility_group_id,
+    visible,
+    call_record_id,
+	call_answer_id
+RESIDENT Call_Record_Answer;
+
+DROP TABLE Call_Record_Answer;
+
+Visible:
+Load DISTINCT
+	provider_id,
+    call_answer_id,
+    1 AS Visible,
+	call_record_id
+RESIDENT Call_Record_Answer_Group
+WHERE visible = 1;
+
+not_Visible:
+LEFT JOIN(Visible)
+Load DISTINCT
+	provider_id,
+    call_answer_id,
+    1 AS not_Visible,
+	call_record_id
+RESIDENT Call_Record_Answer_Group
+WHERE visible = 0;
+
+DROP TABLE Call_Record_Answer_Group;
+
+Call_Record_Answer_visibility:
+NOCONCATENATE
+LOAD DISTINCT
+	provider_id,
+	call_answer_id,
+	call_record_id
+RESIDENT Visible
+WHERE match(Visible, 1)  AND isNull(not_Visible);
+
+DROP TABLE Visible;
+
+
+STORE Call_Record_Answer_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Call_Record_Answer_visibility.qvd];
+Drop table Call_Record_Answer_visibility;
+
+
+
+
+
+

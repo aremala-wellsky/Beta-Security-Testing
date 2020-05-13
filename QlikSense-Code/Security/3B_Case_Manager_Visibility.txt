@@ -1,0 +1,53 @@
+CLIENT_CASEMANAGER_ACCESS:
+LOAD DISTINCT 
+    [Case Manager Id] AS %CASE_MANAGER_KEY_SEC,
+	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST
+	//[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST_TIER1
+
+RESIDENT CASE_MANAGER_ACCESS;
+
+DROP TABLE CASE_MANAGER_ACCESS;
+
+
+explicit_case_manager_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+case_manager_security:
+NOCONCATENATE
+LOAD
+    [Case Manager Id],
+    provider_id,
+	%casemanagerclientid
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Case_Manager_visibility.qvd]
+(qvd);
+//RESIDENT Case_Manager_visibility;
+//DROP TABLE Case_Manager_visibility;
+
+LEFT JOIN(explicit_case_manager_security)
+LOAD 
+    [Case Manager Id],
+    provider_id,
+	%casemanagerclientid
+RESIDENT case_manager_security;
+
+DROP TABLE case_manager_security;
+
+CONCATENATE(CLIENT_CASEMANAGER_ACCESS)
+LOAD
+	[Case Manager Id] AS %CASE_MANAGER_KEY_SEC,
+	[TIER_LINK] & '|' & %casemanagerclientid AS %SA_CLIENT_TEST
+	//[TIER_LINK] & '|' & %casemanagerclientid AS %SA_CLIENT_TEST_TIER1
+RESIDENT explicit_case_manager_security;
+
+DROP TABLE explicit_case_manager_security;
+
+
+
+STORE CLIENT_CASEMANAGER_ACCESS INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_CASEMANAGER_ACCESS.qvd];
+DROP TABLE CLIENT_CASEMANAGER_ACCESS;

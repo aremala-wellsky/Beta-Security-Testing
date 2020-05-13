@@ -1,0 +1,37 @@
+
+
+
+CONCATENATE(Client_Access)
+LOAD DISTINCT
+	TIER_LINK,    
+    [Client Id] AS %DIM_CLIENT_KEY
+RESIDENT CALL_RECORD_ACCESS
+WHERE [Client Id] < 0;
+ 
+DROP TABLE CALL_RECORD_ACCESS; 
+
+
+
+USER_ACCESS:
+NOCONCATENATE
+LOAD
+[TIER_LINK],
+[%DIM_CLIENT_KEY],
+[TIER_LINK] & '|' & [%DIM_CLIENT_KEY] AS %SA_CLIENT_TEST
+//[TIER_LINK] & '|' & [%DIM_CLIENT_KEY] AS %SA_CLIENT_TEST_TIER1
+RESIDENT Client_Access;
+DROP TABLE Client_Access;
+
+
+ 
+STORE USER_ACCESS INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_ACCESS.qvd];
+
+DROP TABLE USER_ACCESS;
+
+
+
+DROP FIELDS [Client Provider Created By Id],[Client Is Active] FROM DIM_Client;
+
+
+
+

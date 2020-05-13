@@ -1,0 +1,75 @@
+FACT_ws_worksheet_TMP:
+NoConcatenate
+Load * 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_WS_WORKSHEET.qvd]
+(qvd);
+
+DIM_Worksheet:
+LOAD
+  worksheet_id														AS [Assessment Id], 
+  code																AS [Worksheet Code],
+  name																AS [Assessment],
+ if ( active = 1, 'Yes', 'No' ) 
+																	AS [Assessment Is Active],
+ if ( published = 1, 'Yes', 'No' ) 
+																	AS [Assessment Is Published],
+	(date(floor( date_added ) ) )									    AS [Assessment Added Date],
+	time( date_added ) 											    AS [Assessment Added Time],
+	(date(floor( date_updated ) ) )									AS [Assessment Updated Date],
+	time( date_updated ) 												AS [Assessment Updated Time],  
+	provider_creating_id                                       		AS [Assessment Provider Created By Id],
+    applymap ('MapProviderName', provider_creating_id, 0 )      	AS [Assessment Provider Created By],
+    provider_updating_id 											AS [Assessment Provider Updated By Id], 
+    applymap ('MapProviderName', provider_updating_id, 0 ) 			AS [Assessment Provider Updated By],
+	user_updating_id												AS [Assessment User Updated By Id], 
+	applymap ('MapUserName', user_updating_id, 0 ) 					AS [Assessment User Updated By],	
+    user_creating_id												AS [Assessment User Created By Id], 
+	applymap ('MapUserName', user_creating_id, 0 ) 					AS [Assessment User Created By],	
+	applymap ('MapWorksheetType', worksheet_type_id, NULL() ) 		
+    															AS [Assessment Type],
+    description													AS [Assessment Description],
+    (date(floor( date_last_published ) ) )						AS [Assessment Published Date]
+Resident FACT_ws_worksheet_TMP;
+Drop Table FACT_ws_worksheet_TMP;
+
+FACT_ws_worksheet_question_TMP:
+NoConcatenate
+Load 
+	worksheet_question_id,
+	worksheet_id,						
+	question_id,
+	published
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_WS_WORKSHEET_QUESTION.qvd]
+(qvd);
+LEFT JOIN (DIM_Worksheet)
+LOAD
+    worksheet_question_id                                      AS [Assessment Question Id],
+    worksheet_id												AS [Assessment Id],
+	if ( published = 1, 'Yes', 'No' ) 
+    															AS [Assessment Question Is Published],                                                               
+     1 															AS [Count Assessment Question],
+	 'Worksheet' & '|' & question_id								AS %ASSESSMENTQUESTIONTYPE_KEY  
+Resident FACT_ws_worksheet_question_TMP;
+Drop Table FACT_ws_worksheet_question_TMP;
+
+FACT_ws_worksheet_provider_TMP:
+NoConcatenate
+Load 
+	worksheet_provider_id,
+	worksheet_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_WS_WORKSHEET_PROVIDER.qvd]
+(qvd);
+Left Join (DIM_Worksheet)
+LOAD
+    worksheet_provider_id										AS [Assessment Available Id],
+    worksheet_id												AS [Assessment Id],                                                  
+     1 															AS [Count Assessment Provider],												
+    applymap ( 'MapWorksheet', worksheet_id, NULL())		   	AS [Assessment Available Name]
+   	
+Resident FACT_ws_worksheet_provider_TMP;
+Drop Table FACT_ws_worksheet_provider_TMP;
+
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE DIM_Worksheet INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Worksheet.qvd];
+DROP Table DIM_Worksheet;

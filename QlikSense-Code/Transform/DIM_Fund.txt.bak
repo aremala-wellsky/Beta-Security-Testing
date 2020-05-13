@@ -1,0 +1,259 @@
+FACT_sp_fund_TMP:
+NoConcatenate
+Load 
+	fund_id,	
+	name, 		
+	description,
+	category_id, 
+	compatible_vendors_type_id, 
+	compatible_codes_type_id,						
+	date_added,														
+	date_updated,									
+	provider_creating_id,                                
+	provider_updating_id, 								
+	user_updating_id,								
+	user_creating_id,									
+	limited_fund,										
+	other_contributing_source,							
+	use_approval_bin,									
+	vendor_distribution_id,								
+	allow_vouchers,										
+	voucher_expiration,												
+	usage_note,				
+	reconcile_bill_credits	
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_FUND.qvd]
+(qvd);
+
+DIM_Fund:
+LOAD
+  fund_id															AS [Fund Id],
+  fund_id															AS %DIM_FUND_CYCLE_KEY, 
+  name 																AS [Fund Name],
+  description														AS [Fund Description],
+  applymap ('MapPickList', category_id, NULL())						AS [Category Of Fund],
+  applymap ('MapPickList', compatible_vendors_type_id, NULL())		AS [Fund Compatible Vendors Type],
+  applymap ('MapPickList', compatible_codes_type_id, NULL())		AS [Fund Compatible Codes Type],
+  (date(floor( date_added ) ) )									    AS [Fund Added Date],
+  time( date_added ) 											    AS [Fund Added Time],
+  (date(floor( date_updated ) ) )									AS [Fund Updated Date],
+  time( date_updated ) 												AS [Fund Updated Time],  
+	provider_creating_id                                        	AS [Fund Provider Created By Id],
+    applymap ('MapProviderName', provider_creating_id, 0 )      	AS [Fund Provider Created By],
+    provider_updating_id 											AS [Fund Provider Updated By Id], 
+    applymap ('MapProviderName', provider_updating_id, 0 ) 			AS [Fund Provider Updated By],
+	user_updating_id												AS [Fund User Updated By Id], 
+	applymap ('MapUserName', user_updating_id, 0 ) 					AS [Fund User Updated By],	
+    user_creating_id												AS [Fund User Created By Id], 
+	applymap ('MapUserName', user_creating_id, 0 ) 					AS [Fund User Created By],
+	if ( limited_fund = 1, 'Yes', 'No' )							AS [Fund Is Limited],	
+    other_contributing_source										AS [Other Contributing Source For Fund],
+    use_approval_bin												AS [Fund User Approval Bin],
+    applymap ('MapPickList', vendor_distribution_id, NULL())		AS [Fund Vendor Distribution],	 
+    allow_vouchers													AS [Allow Vouchers For Fund],
+    voucher_expiration												AS [Fund Voucher Expiration],
+    usage_note														AS [Fund Usage Note],
+    reconcile_bill_credits											AS [Fund Reconcile Bill Credits]	
+Resident FACT_sp_fund_TMP;
+Drop Table FACT_sp_fund_TMP;
+
+FACT_sp_fund_compatible_code_TMP:
+NoConcatenate
+Load 
+  fund_compatible_code_id, 
+  fund_id,
+  compatible_code_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_FUND_COMPATIBLE_CODE.qvd]
+(qvd);
+LEFT JOIN(DIM_Fund)
+LOAD
+  fund_compatible_code_id												AS [Fund Compatible Code Id], 
+  fund_id																AS [Fund Id], 	
+applymap ('MapServiceCodeExternalCode', compatible_code_id, NULL() )	AS [Fund Compatible Code]  
+Resident FACT_sp_fund_compatible_code_TMP;
+Drop Table FACT_sp_fund_compatible_code_TMP;
+
+FACT_sp_fund_compatible_vendor_TMP:
+NoConcatenate
+Load 
+  fund_id,
+  compatible_vendor_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_FUND_COMPATIBLE_VENDOR.qvd]
+(qvd);
+LEFT JOIN(DIM_Fund)
+LOAD
+  fund_id 														AS [Fund Id],
+  compatible_vendor_id											AS [Compatible Vendor Id],
+  compatible_vendor_id											AS %DIM_VENDOR_KEY	
+Resident FACT_sp_fund_compatible_vendor_TMP;
+Drop Table FACT_sp_fund_compatible_vendor_TMP;
+
+FACT_sp_fund_enforcement_TMP:
+NoConcatenate
+Load 
+  fund_enforcement_id,
+  fund_id,
+  allow_fund_amount,
+  allow_allocation_amount,
+  allow_compatible_codes,
+  allow_compatible_vendors	
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_FUND_ENFORCEMENT.qvd]
+(qvd);
+LEFT JOIN(DIM_Fund)
+LOAD
+  fund_enforcement_id											AS [Fund Enforcement Id],
+  fund_id    													AS [Fund Id],
+  allow_fund_amount											    AS [Fund Enforcement Fund Amount Allowed],
+  allow_allocation_amount										AS [Fund Enforcement Allocation Amount Allowed],
+  allow_compatible_codes										AS [Fund Enforcement Compatible Codes Allowed],
+  allow_compatible_vendors										AS [Fund Enforcement Compatible Vendors Allowed]	
+Resident FACT_sp_fund_enforcement_TMP;
+Drop Table FACT_sp_fund_enforcement_TMP;
+
+FACT_sp_fund_user_TMP:
+NoConcatenate
+Load 
+  fund_id,					
+  user_id,					
+  is_fund_administrator, 	
+  is_review_agent
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_FUND_USER.qvd]
+(qvd);
+LEFT JOIN(DIM_Fund)
+LOAD 
+  fund_id					AS [Fund Id],
+  user_id					AS [Fund User Id],
+  if ( is_fund_administrator = 1, 'Yes', 'No' ) 	
+							AS [Fund Administrator],  
+  if ( is_review_agent = 1, 'Yes', 'No' )  			
+							AS [Fund Review Agent]
+
+Resident FACT_sp_fund_user_TMP;
+Drop Table FACT_sp_fund_user_TMP;
+
+FACT_sp_fund_cycle_TMP:
+NoConcatenate
+Load 
+fund_cycle_id, 			
+  fund_id,						
+  start_date, 												
+  end_date,														
+  fund_amount, 													
+  in_process_amount, 											
+  expended_amount,													
+  utilized_amount, 												
+  remaining_balance	
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_FUND_CYCLE.qvd]
+(qvd);
+
+DIM_Fund_Cycle:
+LOAD
+  fund_cycle_id 												AS [Fund Cycle Id],
+  fund_id														AS %DIM_FUND_CYCLE_KEY, 
+  fund_cycle_id														AS %DIM_FUND_CYCLE_PROVIDER_TRANSCATION_KEY, 
+  fund_cycle_id														AS %DIM_FUND_CYCLE_TRANSCATION_KEY, 
+  start_date 													AS [Fund Cycle Start Date],
+  end_date														AS [Fund Cycle End Date],
+  fund_amount 													AS [Fund Amount],
+  in_process_amount 											AS [Fund In Process Amount],
+  expended_amount												AS [Fund Expended Amount],	
+  utilized_amount 												AS [Fund Utilized Amount],
+  remaining_balance 											AS [Fund Remaining Balance]									
+Resident FACT_sp_fund_cycle_TMP;
+Drop Table FACT_sp_fund_cycle_TMP;
+
+FACT_sp_fund_cycle_amount_TMP:
+NoConcatenate
+Load 
+	fund_cycle_id, 
+  description,									
+  adjustment_amount,					
+  fund_amount
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_FUND_CYCLE_AMOUNT.qvd]
+(qvd);
+LEFT JOIN(DIM_Fund_Cycle)
+LOAD
+  fund_cycle_id AS [Fund Cycle Id],
+  description							AS [Fund Cycle Amount Description],		
+  adjustment_amount 					AS [Fund Cycle Adjustment Amount],
+  fund_amount							AS [Fund Cycle Amount] 							
+Resident FACT_sp_fund_cycle_amount_TMP;
+Drop Table FACT_sp_fund_cycle_amount_TMP;
+
+FACT_sp_fund_cycle_provider_TMP:
+NoConcatenate
+Load 
+  fund_cycle_id,  
+  provider_id, 																
+  allocated_amount, 							
+  allocated_percentage,						
+  in_process_amount, 						
+  expended_amount, 							
+  utilized_amount, 							
+  remaining_balance 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_FUND_CYCLE_PROVIDER.qvd]
+(qvd);
+LEFT JOIN(DIM_Fund_Cycle)
+LOAD
+  fund_cycle_id AS [Fund Cycle Id],  
+  provider_id 								AS %PROVIDER_FUND_KEY, 
+  provider_id 								AS [Fund Cycle Provider Id], 
+  allocated_amount 							AS [Fund Cycle Provider Allocated Amount],
+  allocated_percentage						AS [Fund Cycle Provider Allocated Percentage],
+  in_process_amount 						AS [Fund Cycle Provider In Process Amount],	
+  expended_amount 							AS [Fund Cycle Provider Expended Amount],
+  utilized_amount 							AS [Fund Cycle Provider Utilized Amount],
+  remaining_balance 						AS [Fund Cycle Provider Remaining Balance]								
+Resident FACT_sp_fund_cycle_provider_TMP;
+Drop Table FACT_sp_fund_cycle_provider_TMP;
+
+LEFT JOIN (DIM_Fund)
+Load	
+	*
+Resident DIM_Fund_Cycle;
+Drop Table DIM_Fund_Cycle;
+
+FACT_sp_fund_cycle_provider_transaction_TMP:
+NoConcatenate
+Load 
+  fund_cycle_provider_transaction_id,
+  fund_cycle_id	
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_FUND_CYCLE_PROVIDER_TRANSACTION.qvd]
+(qvd);
+
+DIM_Fund_Cycle_Provider_Transaction: //TODO
+LOAD
+fund_cycle_provider_transaction_id as [Fund Cycle Provider Transaction Id], 
+   fund_cycle_id														AS %DIM_FUND_CYCLE_PROVIDER_TRANSCATION_KEY						
+Resident FACT_sp_fund_cycle_provider_transaction_TMP;
+Drop Table FACT_sp_fund_cycle_provider_transaction_TMP;
+
+FACT_sp_fund_cycle_transaction_TMP:
+NoConcatenate
+Load 
+	fund_cycle_transaction_id,
+	fund_cycle_id,
+	transaction_type_id, 
+	amount,
+	fund_cycle_amount_id,   
+	need_service_group_fund_id  
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_FUND_CYCLE_TRANSACTION.qvd]
+(qvd);
+
+DIM_Fund_Cycle_Transaction: //TODO
+LOAD
+	fund_cycle_transaction_id 											AS [Fund Cycle Transaction Id], 
+	fund_cycle_id														AS %DIM_FUND_CYCLE_TRANSCATION_KEY,
+	fund_cycle_id 														AS [Fund Cycle Transaction Fund Cycle Id], 
+	applymap ('MapPickList', transaction_type_id, NULL())				AS [Fund Cycle Transaction Type], 
+	amount																AS [Fund Cycle Transaction Amount],
+	fund_cycle_amount_id												AS [Fund Cycle Transaction Amount Id],   
+	need_service_group_fund_id											AS [Fund Cycle Transaction Need Service Group Fund Id]  
+Resident FACT_sp_fund_cycle_transaction_TMP;
+Drop Table FACT_sp_fund_cycle_transaction_TMP;
+
+
+
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE DIM_Fund INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Fund.qvd];
+DROP Table DIM_Fund;

@@ -1,0 +1,16 @@
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNSiteFolder)/$(vSiteName).txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/StartTime.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Main.txt]);
+
+//CUSTOM CODE: sp5_mi_mshmis
+/*if wildmatch('sp5_mi_mshmis','$(vSiteName)') then
+		$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/QVD_Extract_sp5_mi_mshmis.txt]);
+	else
+		$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/QVD_Extract.txt]); 
+end if*/
+
+//Trim Visibility Tables
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/QVD_Extract_VisTrim.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/EndTime.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/ExitScript.txt]);

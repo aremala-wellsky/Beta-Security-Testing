@@ -1,0 +1,513 @@
+FACT_sp_client_TMP:
+NoConcatenate
+Load * 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT.qvd]
+(qvd);
+
+DIM_Client:
+
+LOAD
+    client_id																AS %ClientId,
+	client_id																AS [Client Id],
+	client_id  																AS %DIM_CLIENT_KEY,
+	client_id																AS %DemoClientId,
+    if ( anonymous = 1, 'Yes', 'No' )
+    																		AS [Client Is Anonymous],
+    if ( active = 1, 'Yes', 'No' ) 
+    																		AS [Client Is Active],
+    unique_id																AS [Client Unique Id],
+    first_name																AS [Client First Name],
+    last_name																AS [Client Last Name],
+    suffix																	AS [Client Name Suffix],
+    "alias"																	AS [Client Name Alias],
+    middle_name																AS [Client Middle Name],
+	
+    if ( applymap('MapShowSSN','sp_show_ssn', NULL() ) = 1, 
+	  if ( applymap('MapShowSSN','ssn_search_results_show_four_digit_only', NULL() ) = 1, 
+	  if(right(soc_sec_no_dashed,1) = '-', '', right(soc_sec_no_dashed,4)), 
+	  soc_sec_no_dashed), 
+	'-')																	AS [Client SSN],
+	
+	if ( applymap('MapShowSSN','sp_show_ssn', NULL() ) = 1,
+	  applymap ('MapPickList', ssn_data_quality_value_id, NULL() ),
+	'-') 																	AS [Client SSN Data Quality],
+
+	provider_creating_id												    AS [Client Provider Created By Id],
+
+    if ( unnamed_client = 1, 'Yes', 'No' ) 									AS [Client Is Unnamed],
+	
+    applymap ('MapPickList', name_data_quality_value_id, NULL() ) 			AS [Client Name Data Quality],
+    applymap ('MapPickList', veteran_status_id, NULL() ) 					AS [Client Veteran Status],
+	(date(floor( date_added ) ) )							       		    AS [Client Date Added],
+	(date(floor( date_updated)))                                 		    As [Client Date Updated],
+    applymap ('MapProviderName', provider_creating_id, NULL() ) 			AS [Client Provider Created By],
+	user_updating_id														AS [Client User Updated By Id],				
+    applymap ('MapUserName', user_updating_id, NULL() ) 					AS [Client User Updated By],
+	user_creating_id														AS [Client User Created By Id],				
+    applymap ('MapUserName', user_creating_id, NULL() ) 					AS [Client User Created By],
+	time(date_added)                                              		    AS [Client Time Added],
+    time(date_updated)                                           		    AS [Client Time Updated],
+    applymap ('MapProviderName', provider_updating_id, NULL() ) 			AS [Client Provider Updated By],
+	provider_updating_id													AS [Client Provider Updated By Id]
+        
+Resident FACT_sp_client_TMP;
+Drop Table FACT_sp_client_TMP;
+
+//=============================================
+FACT_sp_release_of_info_TMP:
+NoConcatenate
+Load 
+	release_of_info_id,
+	client_id,
+	documentation_id,
+	witness,
+	date_started,
+	date_ended,
+	permission,
+	user_creating_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_RELEASE_OF_INFO.qvd](qvd);
+
+ROI:
+LOAD 
+	"release_of_info_id"											As [ROI Id],
+	"release_of_info_id"											AS %RELEASE_OF_INFO_KEY_SEC,
+    client_id														AS %ROIClientId,	
+    applymap ('MapPickList', documentation_id, NULL() ) 			AS [ROI Documentation], 
+     (date(floor("date_started"	)))							        AS [ROI Start Date],
+     (date(floor("date_ended")))							        AS [ROI End Date],
+    if ( permission = 1, 'Yes', 'No' ) 						        AS [ROI Release Granted]
+    
+Resident FACT_sp_release_of_info_TMP;
+Drop Table FACT_sp_release_of_info_TMP;
+
+FACT_sp_alternate_client_identification_TMP:
+NoConcatenate
+Load 
+	client_id,
+	alternate_client_id,
+	alternate_client_id_type_id,
+    provider_creating_id,    
+    provider_updating_id    
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ALTERNATE_CLIENT_IDENTIFICATION.qvd](qvd);
+
+LEFT JOIN (DIM_Client)
+LOAD 
+    "client_id"																 AS %ClientId,
+     "alternate_client_id"													  AS [Client Alternate Client Id],
+	applymap ('MapPickList', alternate_client_id_type_id, NULL() )			  AS [Client Alternate Client Id Type]
+Resident FACT_sp_alternate_client_identification_TMP;
+Drop Table FACT_sp_alternate_client_identification_TMP;
+
+
+//=============================================
+FACT_sp_household_relationship_TMP:
+NoConcatenate
+Load 
+	household_relationship_id,
+	active,
+	client_id,
+	household_id,
+	date_entered,
+	date_ended,
+	relationship_value_id,
+	head_of_household,
+	date_added,
+	date_updated,
+	provider_creating_id,
+	provider_updating_id,
+	user_creating_id,
+	user_updating_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_HOUSEHOLD_RELATIONSHIP.qvd]
+(qvd);
+//LEFT JOIN (DIM_Client)
+DIM_Household:
+LOAD
+    household_relationship_id										AS	[Household Relationship Id],
+    client_id														AS [Household Relationship Client Id],
+	client_id														AS %householdclientid,
+    (date(floor( date_entered ) ) )									AS [Household Relationship Date Joined],
+    (date(floor( date_ended ) ) )									AS [Household Relationship Date Left],
+	applymap ( 'MapPickList', relationship_value_id, NULL() )		AS [Household Relationship],
+    if ( head_of_household = 1, 'Yes', 'No' ) 
+    																AS [Household Head of Household],                                                              
+    
+    
+	household_id													AS [Household Id],
+	household_id													AS [Household Relationship Household Id],
+	client_id														AS %householdId
+Resident FACT_sp_household_relationship_TMP;
+Drop Table FACT_sp_household_relationship_TMP;
+
+
+//=============================================
+FACT_sp_household_TMP:
+NoConcatenate
+Load 
+  household_id,
+  active,
+  type_id,
+  date_added,
+  date_updated,
+  provider_creating_id,
+  provider_updating_id, 
+  user_creating_id,
+  user_updating_id 	
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_HOUSEHOLD.qvd]
+(qvd);
+LEFT JOIN (DIM_Household)
+LOAD
+  household_id														AS [Household Id],
+  //household_id														AS %householdId,
+  applymap ( 'MapPickList', type_id, NULL() )						AS [Household Type]
+Resident FACT_sp_household_TMP;
+Drop Table FACT_sp_household_TMP;
+
+/* //=============================================
+LEFT JOIN(DIM_Client)
+Load 
+	//provider_creating_id & '|' & client_id & '|' & client_infraction_id	AS %ClientIdClientIncidentID_KEY,
+	client_id & '|' & client_infraction_id							AS %ClientIdClientIncidentID_KEY,
+	"client_id"														AS %ClientId
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT_INFRACTION.qvd](qvd);
+
+
+//=============================================
+LEFT JOIN(DIM_Client)
+Load 
+	//provider_creating_id & '|' & client_id & '|' & case_manager_id	AS %ClientIdCaseManagerId_KEY,
+	client_id & '|' & case_manager_id								AS %ClientIdCaseManagerId_KEY,
+	"client_id"														AS %ClientId
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CASE_MANAGER.qvd](qvd);
+
+
+//=============================================
+LEFT JOIN(DIM_Client)
+Load 
+	//provider_creating_id & '|' & client_id						AS %ClientIdGoalId_KEY,
+	client_id														AS %ClientIdGoalId_KEY,
+	"client_id"														AS %ClientId
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_GOAL.qvd](qvd);
+
+DIM_CLIENT_TMP:
+LOAD
+	*,
+	//provider_creating_id & '|' & client_id						AS %ClientIdGoalId_KEY,
+	client_id														AS %ClientIdGoalId_KEY,
+RESIDENT DIM_Client;
+DROP TABLE DIM_Client;
+RENAME TABLE DIM_CLIENT_TMP TO DIM_Client; */
+
+//=============================================
+// Create Client DIM_Client_Infraction
+//=============================================
+FACT_sp_client_infraction_TMP:
+NoConcatenate
+Load 
+	client_infraction_id,
+	active,
+	client_id,
+	infraction_value_id,
+	barcode_value_id,
+	staff_person,
+	bar_from_sites,
+	notes,
+	bar_start_date,
+	bar_end_date,
+    date_added,
+    date_updated,
+	user_creating_id,
+    provider_id,
+    provider_creating_id, 
+    provider_updating_id 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT_INFRACTION.qvd](qvd);
+
+DIM_Client_Infraction:
+NoConcatenate
+LOAD
+*,
+	num([Client Incident Start Date])								AS %numClientIncidentStartDate,
+	num([Client Incident End Date])									AS %numClientIncidentEndDate,
+	if(num([Client Incident End Date]) > 0, null(), 1) AS %NullClientIncidentEndFlag
+;
+LOAD 
+	client_id														AS %CLIENT_INFRACTION_KEY,
+	client_infraction_id											AS %CLIENT_INFRACTION_KEY_SEC,
+	"client_infraction_id"											As [Client Incident Id],
+    applymap ('MapPickList', infraction_value_id, NULL() ) 			AS [Client Incident],
+    applymap ('MapPickList', barcode_value_id, NULL() ) 			AS [Client Incident Code],
+    "staff_person"													AS [Client Incident Staff Person],
+	left("bar_from_sites",200)                                      As [Client Incident Sites Barred From],
+	left("notes",200)                                               As [Client Incident Notes],
+    ( date (floor ("bar_start_date")))						    AS [Client Incident Start Date], 
+    ( date (floor ("bar_end_date")))						    AS [Client Incident End Date],  
+    provider_id													    AS [Client Incident Provider Id]
+ 
+Resident FACT_sp_client_infraction_TMP;
+Drop Table FACT_sp_client_infraction_TMP;
+
+
+//=============================================
+// Create client DIM_Case_Manager
+//=============================================
+FACT_sp_case_manager_TMP:
+NoConcatenate
+Load 
+	case_manager_id,
+	active,
+	client_id,
+	name,
+	title,
+	phone_number,
+	date_started,
+	date_ended,
+	email_address,
+	user_creating_id,
+	provider_id,
+    provider_creating_id, 
+    provider_updating_id  
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CASE_MANAGER.qvd]
+(qvd);
+
+DIM_Case_Manager:
+NoConcatenate
+LOAD
+*,
+	num([Case Manager Date Started])								AS %numCaseManagerDateStarted,
+	num([Case Manager Date Ended])									AS %numCaseManagerDateEnded
+;
+LOAD 
+	client_id														AS %CASE_MANAGER_KEY,
+	case_manager_id												    AS %CASE_MANAGER_KEY_SEC,
+	"case_manager_id"												AS [Case Manager Id],
+    "name"															AS [Case Manager Name],
+    "title"															AS [Case Manager Title],
+    "phone_number"													AS [Case Manager Phone Number],
+	(date(floor( date_started ) ) )							        AS [Case Manager Date Started],
+	(date(floor( date_ended ) ) )							        AS [Case Manager Date Ended],
+    applymap ('MapProviderName', provider_id, NULL() ) 				AS [Case Manager Provider],
+    provider_id                                                     AS %casemanagerproviderlink
+Resident FACT_sp_case_manager_TMP;
+Drop Table FACT_sp_case_manager_TMP;
+
+FACT_sp_casemanager_provider_TMP:
+NoConcatenate
+Load
+    provider_id,
+    program_type_code_value_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER.qvd]
+(qvd);
+
+LEFT JOIN (DIM_Case_Manager)
+//DIM_CaseManagerProvider: //RUNNING TOTAL: Rows/Fields 98/28
+LOAD
+    "provider_id"                                                    AS %casemanagerproviderlink,
+    applymap ('MapPickList', program_type_code_value_id, NULL() )    AS [Case Manager Provider Project Type]
+Resident FACT_sp_casemanager_provider_TMP;
+Drop Table FACT_sp_casemanager_provider_TMP;
+
+//=============================================
+// Create Client DIM_Goal
+//=============================================
+FACT_sp_goal_TMP:
+NoConcatenate
+Load 
+	goal_id,
+	active,
+	client_id,
+	classification_id,
+	type_id,
+	target_date,
+	status_id,
+	outcome_id,
+	outcome_date,
+	projected_followup_date,
+	followup_made,
+	actual_followup_date,
+	followup_outcome_id,
+	date_added,
+	date_updated,
+    date_set,
+	user_creating_id,
+    user_updating_id,
+    group_id,
+    household_id,
+    description,
+    provider_id,
+    provider_creating_id,
+    provider_updating_id 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_GOAL.qvd](qvd);
+
+DIM_Goal:
+NoConcatenate
+Load
+*,
+	num([Goal Date Set])												AS %numGoalDateSet,
+	if(num("Goal Date Set") > 0, null(), 1) 							AS %NullGoalFlag
+;
+LOAD 
+	client_id															AS %GOAL_KEY,
+	"goal_id"															AS [Goal Id],
+	"goal_id"															AS %GOAL_KEY_SEC,
+   
+ 	applymap ('MapPickList', classification_id, NULL() )				AS [Goal Classification],
+ 	applymap ('MapPickList', type_id, NULL() )							AS [Goal Type],      
+    date(floor(target_date))                                                       AS [Goal Target Date],
+ 	applymap ('MapPickList', status_id, NULL() )						AS [Goal Status],   
+ 	applymap ('MapPickList', outcome_id, NULL() )						AS [Goal Outcome],      
+    (date(floor( outcome_date ) ) )								        AS [Goal Outcome Date],                                                                   
+	
+    (date(floor( projected_followup_date ) ) )					        AS [Goal Projected Followup Date],                                                                   
+	
+    if ( followup_made = 1, 'Yes', 'No' ) 
+    																	AS [Goal Followup Made],    
+    (date(floor( actual_followup_date ) ) )					         	AS [Goal Actual Followup Date],                                                                   
+	
+ 	applymap ('MapPickList', followup_outcome_id, NULL() )				AS [Goal Followup Outcome],         
+     "group_id"															AS [Goal Group Id],
+     "household_id"														AS [Goal Household Id],
+    (date(floor(date_set)))                                             AS [Goal Date Set],
+    applymap ('MapProviderName', provider_id, NULL() )                  AS [Goal Provider Name]
+Resident FACT_sp_goal_TMP
+WHERE num(date_set) >= '$(vNumDateSet)';
+Drop Table FACT_sp_goal_TMP;
+
+
+LEFT JOIN (DIM_Goal)
+Load
+ 	//provider_creating_id & '|' & goal_id & '|' & goal_actionstep_id	AS %GoalIdGoalActionstepID_KEY,
+	goal_id & '|' & goal_actionstep_id									AS %GoalIdGoalActionstepID_KEY,
+	"goal_id"															AS [Goal Id]
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_GOAL_ACTIONSTEP.qvd](qvd);
+
+
+//=============================================
+// Create Client DIM_Goal_Actionstep
+//=============================================
+FACT_sp_goal_actionstep_TMP:
+NoConcatenate
+Load 
+	goal_actionstep_id,
+	active,
+	goal_id,
+	date_set,
+    date_added,
+    date_updated,
+	description,
+	target_date,
+	status_id,
+	outcome_id,
+	outcome_date,
+	projected_followup_date,
+	followup_made,
+	actual_followup_date,
+	followup_outcome_id,
+	provider_creating_id,
+	user_creating_id,
+    provider_updating_id,
+    provider_id  
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_GOAL_ACTIONSTEP.qvd]
+(qvd);
+
+DIM_Goal_Actionstep:
+NoConcatenate
+LOAD 
+	goal_id & '|' & goal_actionstep_id									AS %GoalIdGoalActionstepID_KEY,
+	"goal_actionstep_id"									  			AS %GOAL_ACTIONSTEP_KEY_SEC,
+	"goal_actionstep_id"												AS [Goal Actionstep Id],
+    "goal_id"															AS [Goal Actionstep Goal Id],
+    (date(floor( date_set ) ) )					        				AS [Goal Actionstep Date Set Date],                                                                   
+    (date(floor( target_date ) ) )	           							AS [Goal Actionstep Target Date],                                                                   
+ 	applymap ('MapPickList', status_id, NULL() )						AS [Goal Actionstep Status],     
+ 	applymap ('MapPickList', outcome_id, NULL() )						AS [Goal Actionstep Outcome],       
+    (date(floor( outcome_date ) ) )						        		AS [Goal Actionstep Outcome Date],                                                                   
+    (date(floor( projected_followup_date ) ) )					        AS [Goal Actionstep Projected Followup Date],                                                                   
+    if ( followup_made = 1, 'Yes', 'No' )     							AS [Goal Actionstep Followup Made],
+    (date(floor( actual_followup_date ) ) )				        		AS [Goal Actionstep Actual Followup Date],                                                                   
+ 	applymap ('MapPickList', followup_outcome_id, NULL() )				AS [Goal Actionstep Followup Outcome],
+    applymap ('MapProviderName', provider_id, NULL())                   AS [Goal Actionstep Provider Name]
+Resident FACT_sp_goal_actionstep_TMP;
+Drop Table FACT_sp_goal_actionstep_TMP;
+
+//=============================================
+// Create Client DIM_Goal_Casenote
+//=============================================
+FACT_sp_goal_casenote_TMP:
+NoConcatenate
+Load 
+	goal_casenote_id,
+	active,
+	client_id,
+	provider_id,
+	goal_id,
+	note_date,
+	note,
+	date_added,
+    date_updated,
+	provider_creating_id,
+	provider_updating_id,
+	user_creating_id,
+	user_updating_id,
+	covered_by_roi,
+	case_manager_id,
+	household_id,
+	group_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_GOAL_CASENOTE.qvd]
+(qvd);
+
+DIM_Goal_Casenote:
+NoConcatenate
+LOAD 
+	"goal_casenote_id"													AS [Goal Casenote Id],	
+    "goal_id"                                                  			AS %goalcasenotegoallink,
+	goal_id	  															AS [Goal Casenote Goal Id],
+	client_id															AS [Goal Casenote Client Id],
+	left(note,500)														AS [Goal Casenote Note],
+	(date(floor( note_date)))											AS [Goal Casenote Note Date],
+	applymap ('MapCaseManagerName', case_manager_id, NULL())	        AS [Goal Casenote Case Manager],
+	(date(floor(date_added)))					        				AS [Goal Casenote Date Added],
+	(date(floor(date_updated)))					        				AS [Goal Casenote Date Updated],
+	if ( active = 1, 'Yes', 'No' )     									AS [Goal Casenote Is Active],
+    applymap ('MapProviderName', provider_id, NULL())                   AS [Goal Casenote Provider Name],
+	provider_creating_id										        AS [Goal Casenote Provider Created By Id],
+	applymap ('MapProviderName', provider_creating_id, NULL())          AS [Goal Casenote Provider Created By],
+	provider_updating_id										        AS [Goal Casenote Provider Updated By Id],
+	applymap ('MapProviderName', provider_updating_id, NULL())          AS [Goal Casenote Provider Updated By],
+	user_creating_id										        	AS [Goal Casenote User Created By Id],
+	applymap ('MapUserName', user_creating_id, NULL())          		AS [Goal Casenote User Created By],
+	user_updating_id										        	AS [Goal Casenote User Updated By Id],
+	applymap ('MapProviderName', user_updating_id, NULL())          	AS [Goal Casenote User Updated By],
+	household_id														AS [Goal Casenote Household Id],
+	if ( covered_by_roi = 1, 'Yes', 'No' )     							AS [Goal Casenote Covered By ROI],
+	group_id															AS [Goal Casenote Group Id]
+Resident FACT_sp_goal_casenote_TMP
+WHERE num(note_date) >= '$(vNumDateSet)';
+Drop Table FACT_sp_goal_casenote_TMP;
+
+FACT_psuedo_sp_call_record_TMP:
+NoConcatenate
+Load 
+	call_record_id,
+	provider_creating_id,
+	active
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CALL_RECORD.qvd](qvd)
+WHERE len(client_id) = 0 or NOT active;
+
+CONCATENATE (DIM_Client)
+LOAD 
+	provider_creating_id															AS [Client Provider Created By Id],
+    -(call_record_id)																AS %ClientId,
+	-(call_record_id)																AS [Client Id],
+	//provider_creating_id															AS %DIM_PROVIDER_CLIENT_KEY,
+	-(call_record_id)																AS %DIM_CLIENT_KEY
+
+RESIDENT FACT_psuedo_sp_call_record_TMP;
+DROP TABLE FACT_psuedo_sp_call_record_TMP;
+
+DROP FIELDS %ClientId FROM DIM_Client;
+
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE DIM_Client INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Client.qvd];
+DROP Table DIM_Client;
+
+

@@ -1,0 +1,34 @@
+CALL_ANSWER_ACCESS:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT INHERENT_SECURITY; 
+
+call_answer_security:
+LOAD
+    call_answer_id,
+    active,
+    provider_creating_id,
+    call_record_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)\E_$(vDBname)_CALL_ANSWER.qvd]
+(qvd)
+WHERE num(date_effective) >= '$(vNumDateSet)';
+
+
+INNER JOIN(CALL_ANSWER_ACCESS)
+LOAD
+    call_answer_id AS [Call Answer Id],
+    call_record_id as [Call Record Id],
+	 call_record_id as %call_worksheets_link,
+    provider_creating_id AS [Client Provider Created By Id],
+    1 AS [INHERENT SECURITY]
+RESIDENT call_answer_security
+WHERE match(active, 1)
+  AND call_answer_id > 0
+  AND call_record_id > 0;
+
+

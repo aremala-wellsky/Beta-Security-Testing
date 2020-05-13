@@ -1,0 +1,277 @@
+DROP_ANSWER_VIEWS:
+SELECT qlik_remove_all_qlik_view();
+DROP TABLE DROP_ANSWER_VIEWS;
+
+BUILD_ANSWER_VIEWS:
+SELECT qlik_flatten_all_ws_view('1/01/2015');
+//---------------------------------------------------------------------------
+//Build Client Worksheets 
+//---------------------------------------------------------------------------
+CLIENT_WS_ANSWER_LIST:
+SELECT table_name AS sp_table_name, SUBSTRING(table_name, 6, CHAR_LENGTH(table_name)) AS qlik_table_name 
+, SUBSTRING(table_name, 11, CHAR_LENGTH(table_name)) AS qlik_field_name
+FROM information_schema.tables
+//WHERE table_name ILIKE 'qlik_wcall_%'
+WHERE table_name ILIKE 'qlik_wsrv_%'
+ORDER BY table_name;
+
+FACT_Worksheet_Service:
+SELECT NULL AS wsrv_service_id, NULL AS wsrv_client_id WHERE (1 = 0);
+
+LET NumRows=NoOfRows('CLIENT_WS_ANSWER_LIST');
+//LET NumRows=5;
+
+FOR i=0 to $(NumRows)-1
+
+  LET varAnswerTableName=Peek('sp_table_name',$(i),'CLIENT_WS_ANSWER_LIST');
+  LET varAnswerQlikName=Peek('qlik_table_name',$(i),'CLIENT_WS_ANSWER_LIST');
+  LET varAnswerFieldQlikName=Peek('qlik_field_name',$(i),'CLIENT_WS_ANSWER_LIST');
+
+  $(varAnswerQlikName):
+  SELECT * FROM $(varAnswerTableName);
+  
+  LET varOrigFieldName = '$(varAnswerFieldQlikName)' & '_service_id';
+  LET varNewFieldName = UPPER('WSRV_' & '$(varAnswerFieldQlikName)' & '_service_id');
+  RENAME FIELD $(varOrigFieldName) to $(varNewFieldName);
+
+  LET varPkFieldName = '$(varNewFieldName)';
+
+  LET varOrigFieldName = '$(varAnswerFieldQlikName)' & '_client_id';
+  LET varNewFieldName = 'wsrv_' & '$(varAnswerFieldQlikName)' & '_client_id';
+  RENAME FIELD $(varOrigFieldName) to $(varNewFieldName);
+
+  LET varClientFieldName = '$(varNewFieldName)';
+
+  JOIN (FACT_Worksheet_Service)
+  LOAD
+	  $(varPkFieldName) AS [Need Service Id],
+      //$(varClientFieldName) AS wsrv_client_id,
+      $(varAnswerFieldQlikName)
+  RESIDENT $(varAnswerQlikName);
+
+  DROP TABLE $(varAnswerQlikName);
+
+  LET varStepName='STEP_' & $(i) & '_of_' & $(NumRows);
+  $(varStepName): select 1;
+  DROP TABLE $(varStepName);
+
+NEXT;
+
+//DROP TABLE BUILD_ANSWER_VIEWS;
+DROP TABLE CLIENT_WS_ANSWER_LIST;
+//****************
+
+//RENAME FIELD qlik_answer_id to [Answer Id];
+
+FieldMap:
+Mapping SQL 
+ SELECT lower(dq.virt_field_name) AS oldnames,  dq.virt_field_name || '_wsrv' AS newnames 
+  FROM ws_question dq
+  INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+  WHERE
+    (dq.active = TRUE) AND (dq.parent_id IS NULL)
+    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'));
+
+Rename Fields using FieldMap;
+
+//---------------------------------------------------------------------------
+//Build Call Worksheets
+//---------------------------------------------------------------------------
+CALL_WS_ANSWER_LIST:
+SELECT table_name AS sp_table_name, SUBSTRING(table_name, 6, CHAR_LENGTH(table_name)) AS qlik_table_name 
+, SUBSTRING(table_name, 12, CHAR_LENGTH(table_name)) AS qlik_field_name
+FROM information_schema.tables
+WHERE table_name ILIKE 'qlik_wcall_%'
+
+ORDER BY table_name;
+
+FACT_Worksheet_Call:
+SELECT NULL AS wcall_call_record_id, NULL AS wcall_client_id WHERE (1 = 0);
+
+LET NumRows=NoOfRows('CALL_WS_ANSWER_LIST');
+//LET NumRows=5;
+
+FOR i=0 to $(NumRows)-1
+
+  LET varAnswerTableName=Peek('sp_table_name',$(i),'CALL_WS_ANSWER_LIST');
+  LET varAnswerQlikName=Peek('qlik_table_name',$(i),'CALL_WS_ANSWER_LIST');
+  LET varAnswerFieldQlikName=Peek('qlik_field_name',$(i),'CALL_WS_ANSWER_LIST');
+
+  $(varAnswerQlikName):
+  SELECT * FROM $(varAnswerTableName);
+  
+  LET varOrigFieldName = '$(varAnswerFieldQlikName)' & '_call_id';
+  LET varNewFieldName = UPPER('WCALL_' & '$(varAnswerFieldQlikName)' & '_call_record_id');
+  RENAME FIELD $(varOrigFieldName) to $(varNewFieldName);
+
+  LET varPkFieldName = '$(varNewFieldName)';
+
+  LET varOrigFieldName = '$(varAnswerFieldQlikName)' & '_client_id';
+  LET varNewFieldName = 'wcall_' & '$(varAnswerFieldQlikName)' & '_client_id';
+  RENAME FIELD $(varOrigFieldName) to $(varNewFieldName);
+
+  LET varClientFieldName = '$(varNewFieldName)';
+
+  JOIN (FACT_Worksheet_Call)
+  LOAD
+	  $(varPkFieldName) AS [Call Record Id],
+      $(varClientFieldName) AS wcall_client_id,
+      $(varAnswerFieldQlikName)
+  RESIDENT $(varAnswerQlikName);
+
+  DROP TABLE $(varAnswerQlikName);
+
+  LET varStepName='STEP_' & $(i) & '_of_' & $(NumRows);
+  $(varStepName): select 1;
+  DROP TABLE $(varStepName);
+
+NEXT;
+
+DROP TABLE BUILD_ANSWER_VIEWS;
+DROP TABLE CALL_WS_ANSWER_LIST;
+//****************
+
+FieldMap2:
+Mapping SQL 
+ SELECT lower(dq.virt_field_name) AS oldnames, dq.virt_field_name || '_wcall' AS newnames
+  FROM ws_question dq
+  INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+  WHERE
+    (dq.active = TRUE) AND (dq.parent_id IS NULL)
+    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'));
+
+Rename Fields using FieldMap2;
+
+//---------------------------------------------------------------------------
+//Build Provider Admin Worksheets
+//---------------------------------------------------------------------------
+PROVIDER_ADMIN_WS_ANSWER_LIST:
+SELECT table_name AS sp_table_name, SUBSTRING(table_name, 6, CHAR_LENGTH(table_name)) AS qlik_table_name 
+, SUBSTRING(table_name, 14, CHAR_LENGTH(table_name)) AS qlik_field_name
+FROM information_schema.tables
+WHERE table_name ILIKE 'qlik_wpadmin_%'
+ORDER BY table_name;
+
+FACT_Worksheet_Provider_Admin:
+SELECT NULL AS wpadmin_provider_id WHERE (1 = 0);
+
+LET NumRows=NoOfRows('PROVIDER_ADMIN_WS_ANSWER_LIST');
+//LET NumRows=5;
+
+FOR i=0 to $(NumRows)-1
+
+  LET varAnswerTableName=Peek('sp_table_name',$(i),'PROVIDER_ADMIN_WS_ANSWER_LIST');
+  LET varAnswerQlikName=Peek('qlik_table_name',$(i),'PROVIDER_ADMIN_WS_ANSWER_LIST');
+  LET varAnswerFieldQlikName=Peek('qlik_field_name',$(i),'PROVIDER_ADMIN_WS_ANSWER_LIST');
+
+  $(varAnswerQlikName):
+  SELECT * FROM $(varAnswerTableName);
+  
+  LET varOrigFieldName = '$(varAnswerFieldQlikName)' & '_provider_id';
+  LET varNewFieldName = UPPER('WPADMIN_' & '$(varAnswerFieldQlikName)' & '_provider_id');
+  RENAME FIELD $(varOrigFieldName) to $(varNewFieldName);
+
+  LET varPkFieldName = '$(varNewFieldName)';
+  LET varAnswerFieldQlikNewName = UPPER('$(varAnswerFieldQlikName)');
+
+
+  JOIN (FACT_Worksheet_Provider_Admin)
+  LOAD
+	  $(varPkFieldName) AS wpadmin_provider_id,
+    $(varAnswerFieldQlikName) as [$(varAnswerFieldQlikNewName)_wpadmin]
+  RESIDENT $(varAnswerQlikName);
+
+  DROP TABLE $(varAnswerQlikName);
+
+  LET varStepName='STEP_' & $(i) & '_of_' & $(NumRows);
+  $(varStepName): select 1;
+  DROP TABLE $(varStepName);
+
+NEXT;
+
+DROP TABLE PROVIDER_ADMIN_WS_ANSWER_LIST;
+//****************
+
+FieldMap1:
+Mapping SQL 
+ SELECT lower(dq.virt_field_name) AS oldnames,  dq.virt_field_name || '_wpadmin' AS newnames 
+  FROM ws_question dq
+  INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+  WHERE
+    (dq.active = TRUE) AND (dq.parent_id IS NULL)
+    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'));
+
+Rename Fields using FieldMap1;
+
+//---------------------------------------------------------------------------
+//Build Provider Profile Worksheets
+//---------------------------------------------------------------------------
+PROVIDER_PROFILE_WS_ANSWER_LIST:
+SELECT table_name AS sp_table_name, SUBSTRING(table_name, 6, CHAR_LENGTH(table_name)) AS qlik_table_name 
+, SUBSTRING(table_name, 13, CHAR_LENGTH(table_name)) AS qlik_field_name
+FROM information_schema.tables
+WHERE table_name ILIKE 'qlik_wpprof_%'
+ORDER BY table_name;
+
+FACT_Worksheet_Provider_Profile:
+SELECT NULL AS wpprof_provider_id WHERE (1 = 0);
+
+LET NumRows=NoOfRows('PROVIDER_PROFILE_WS_ANSWER_LIST');
+//LET NumRows=5;
+
+FOR i=0 to $(NumRows)-1
+
+  LET varAnswerTableName=Peek('sp_table_name',$(i),'PROVIDER_PROFILE_WS_ANSWER_LIST');
+  LET varAnswerQlikName=Peek('qlik_table_name',$(i),'PROVIDER_PROFILE_WS_ANSWER_LIST');
+  LET varAnswerFieldQlikName=Peek('qlik_field_name',$(i),'PROVIDER_PROFILE_WS_ANSWER_LIST');
+
+  $(varAnswerQlikName):
+  SELECT * FROM $(varAnswerTableName);
+  
+  LET varOrigFieldName = '$(varAnswerFieldQlikName)' & '_provider_id';
+  LET varNewFieldName = UPPER('WPPROF_' & '$(varAnswerFieldQlikName)' & '_provider_id');
+  RENAME FIELD $(varOrigFieldName) to $(varNewFieldName);
+
+  LET varPkFieldName = '$(varNewFieldName)';
+  LET varAnswerFieldQlikNewName = UPPER('$(varAnswerFieldQlikName)');
+
+  //LET varOrigFieldName = 'w' & '$(varAnswerFieldQlikName)' & '_provider_id';
+  //LET varNewFieldName = 'wpprof_' & '$(varAnswerFieldQlikName)' & '_provider_id');
+  //RENAME FIELD $(varOrigFieldName) to $(varNewFieldName);
+
+  //LET varPkFieldName = '$(varNewFieldName)';
+
+  
+  JOIN (FACT_Worksheet_Provider_Profile)
+  LOAD
+	  $(varPkFieldName) AS wpprof_provider_id,
+    $(varAnswerFieldQlikName) as [$(varAnswerFieldQlikNewName)_wpprof]
+  RESIDENT $(varAnswerQlikName);
+
+  DROP TABLE $(varAnswerQlikName);
+
+  LET varStepName='STEP_' & $(i) & '_of_' & $(NumRows);
+  $(varStepName): select 1;
+  DROP TABLE $(varStepName);
+
+NEXT;
+
+DROP TABLE PROVIDER_PROFILE_WS_ANSWER_LIST;
+//****************
+
+FieldMap2:
+Mapping SQL 
+ SELECT lower(dq.virt_field_name) AS oldnames,  dq.virt_field_name || '_wpprof' AS newnames 
+  FROM ws_question dq
+  INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+  WHERE
+    (dq.active = TRUE) AND (dq.parent_id IS NULL)
+    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'));
+
+Rename Fields using FieldMap2;
+
+DROP_ANSWER_VIEWS:
+SELECT qlik_remove_all_qlik_view();
+DROP TABLE DROP_ANSWER_VIEWS;
+
+DROP FIELDS wsrv_service_id,wsrv_client_id,wcall_call_record_id,wcall_client_id;

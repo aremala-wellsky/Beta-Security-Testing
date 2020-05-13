@@ -1,0 +1,76 @@
+//---------------------------------------------------------------------------
+// Entry Answers
+//---------------------------------------------------------------------------
+
+LET varDeltaDate = '1/01/2015';
+
+
+LET varQVDExists = not isnull(QvdCreateTime('lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_DELTA_RUNDATE_V0.qvd'));
+
+IF $(varQVDExists) THEN
+  DeltaDate:
+  Noconcatenate
+  LOAD
+    DeltaDateVal
+  FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_DELTA_RUNDATE_V0.qvd](qvd);
+  LET varDeltaDate=Peek('DeltaDateVal',0,'DeltaDate'); 
+ ELSE
+ DeltaDate:
+   LOAD * INLINE [
+    DeltaDateVal
+    '9/9/9999'];
+END IF;
+
+DROP TABLE DeltaDate;
+
+Calls_To_Rebuild_Answers_For:
+Noconcatenate
+SELECT DISTINCT cr.call_record_id
+FROM sp_call_record cr
+WHERE (cr.active = TRUE) AND (cr.date_updated > '$(varDeltaDate)')
+AND ((cr.end_date IS NULL) OR (cr.end_date >= '$(vCallRecordDate)'))
+UNION
+SELECT DISTINCT  cr.call_record_id
+FROM sp_call_record cr
+INNER JOIN call_answer ca ON (ca.call_record_id = cr.call_record_id)
+INNER JOIN da_question dq ON (dq.question_id = ca.question_id)
+INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+WHERE (dq.active = TRUE) AND (dq.parent_id IS NULL) AND (cr.active = TRUE)
+AND (dqt.code IN ('lookup','yes_no','date','int','money','textbox', 'textarea'))
+AND ((dq.reportable_flag = TRUE) OR (dq.ee_reportable_flag = TRUE) OR (dq.service_reportable_flag = TRUE))             
+AND
+(
+  ((ca.date_added > '$(varDeltaDate)') AND (ca.active = TRUE))   
+  OR
+  ((ca.date_inactive > '$(varDeltaDate)') AND (ca.active = FALSE))
+)
+AND ((ca.date_effective::DATE <= cr.start_date::DATE) )
+AND ((cr.end_date IS NULL) OR (cr.end_date >= '$(vCallRecordDate)'));
+
+
+Calls_To_Remove_From_Current_QVD:
+Noconcatenate
+SELECT DISTINCT cr.call_record_id as match_call_id  
+FROM sp_call_record cr
+WHERE (cr.active = false) AND (cr.date_updated > '$(varDeltaDate)')
+AND ((cr.end_date IS NULL) OR (cr.end_date >= '$(vCallRecordDate)'));
+
+
+CONCATENATE(Calls_To_Remove_From_Current_QVD)
+LOAD DISTINCT     
+  call_record_id AS match_call_id
+RESIDENT Calls_To_Rebuild_Answers_For;
+
+
+
+
+LET varTempCallStartAnswerQVDExists = not isnull(QvdCreateTime('lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CALL_START_ANSWER_V2.qvd'));
+
+IF $(varTempCallStartAnswerQVDExists) THEN
+  Temp_Call_Start_Answer_Table:
+  Noconcatenate
+  LOAD
+    *
+  FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CALL_START_ANSWER_V2.qvd](qvd)
+  WHERE NOT EXISTS(match_call_id, %CALL_ANSWER_KEY_SEC); 
+ END IF;

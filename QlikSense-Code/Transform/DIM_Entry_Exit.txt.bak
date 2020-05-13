@@ -1,0 +1,105 @@
+FACT_sp_entry_exit_TMP:
+NoConcatenate
+Load * 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ENTRY_EXIT.qvd]
+(qvd);
+
+DIM_Entry_Exit:
+LOAD
+*,
+	num([Exit Date Adjusted])										AS %numExitDateAdjusted
+;
+LOAD
+    *,
+	if (len ([Exit Date]) < 1, today(), [Exit Date] )				AS [Exit Date Adjusted],
+	if (len ([Exit Date]) < 1, 'Yes','No')							AS [Entry Exit Has No Exit Date],
+	%EEClientId 													AS %DIM_EE_KEY,
+	%EEClientId														AS [Entry Exit Client Id],
+	num([Entry Date]) 												AS %numEntryDate,
+	num([Exit Date])												AS %numExitDate,
+	if(num([Exit Date]) > 0, null(), 1) AS %NullExitFlag
+;    
+LOAD
+    entry_exit_id													AS [Entry Exit Id],
+	entry_exit_id													AS %DIM_EE_KEY_SEC,
+    client_id														AS %EEClientId,
+    provider_id														AS [Entry Exit Provider Id],
+	provider_id														AS %DIM_PROVIDER_EE_KEY,
+    applymap ('MapProviderName', provider_id, NULL() ) 				AS [Entry Exit Provider Name],                                                             
+	applymap ('MapPickList', type_entry_exit_id, NULL() )			AS [Entry Exit Type],   
+    (date(floor( entry_date ) ) )									AS [Entry Date],
+    time ( entry_date )												AS [Entry Time],
+    //time ( floor(entry_date,1/(24*60)),'hh:mm' ) 					AS [Entry Time],	
+    (date(floor( exit_date ) ) )									AS [Exit Date],                                                                   
+    time ( exit_date )												AS [Exit Time],	
+	//time ( floor(exit_date,1/(24*60)),'hh:mm' ) 					AS [Exit Time],
+	household_id													AS [Entry Exit Household Id],
+	client_id														AS %householdId,
+	
+    applymap ('MapPickList', reason_leaving_value_id, NULL() ) AS [Exit Reason],
+    if ( len (reason_leaving_other)>0,  reason_leaving_other, NULL())
+    																AS [Exit Reason Other],                                                                 
+	[Exit Destination Temp] AS [Exit Destination],
+	if (([Exit Destination Temp]  = 'Other (HUD)' or [Exit Destination Temp]  = 'Other'),
+       destination_other, NULL())						AS [Exit Destination Other],   
+    group_id														AS [Entry Exit Group Id],
+	if(isnull(group_id),entry_exit_id,group_id)						AS [Entry Exit Group Uid],
+	//group_id   													AS %householdgroupid,
+	applymap ('MapUserName', user_updating_id, NULL() )         	AS [Entry Exit User Updated By],
+	user_updating_id  												AS [Entry Exit User Updated By Id],
+    applymap ('MapUserName', user_creating_id, NULL() )         	AS [Entry Exit User Created By],
+	user_creating_id  												AS [Entry Exit User Created By Id],
+	provider_creating_id											AS [Entry Exit Provider Created By Id],
+	applymap ('MapProviderName', provider_creating_id, NULL() ) 	AS [Entry Exit Provider Created By],
+    provider_updating_id 											AS [Entry Exit Provider Updated By Id],
+    applymap ('MapProviderName', provider_updating_id, NULL() ) 	AS [Entry Exit Provider Updated By],
+	
+	(date(floor(date_updated) ) )									AS [Entry Exit Date Updated],
+	time (date_updated)												AS [Entry Exit Time Updated],
+	(date(floor(date_added) ) )										AS [Entry Exit Date Added],
+	time (date_added)												AS [Entry Exit Time Added],
+    provider_id                                                     AS %entryexitproviderlink
+    ;
+Load
+	*,
+    applymap ('MapPickList', destination_value_id, NULL() ) AS [Exit Destination Temp]
+Resident FACT_sp_entry_exit_TMP;
+Drop Table FACT_sp_entry_exit_TMP;
+
+FACT_sp_reporting_group_provider_TMP: //RUNNING TOTAL: Rows/Fields 212/74
+Load 	
+	provider_id,
+	reporting_group_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_REPORTING_GROUP_PROVIDER.qvd]
+(qvd);
+LEFT JOIN(DIM_Entry_Exit)
+LOAD 
+    "provider_id"															AS %entryexitproviderlink,
+ 	applymap ('MapReportingGroup', reporting_group_id, NULL() )				AS [Entry Exit Reporting Group]
+
+Resident FACT_sp_reporting_group_provider_TMP;
+Drop Table FACT_sp_reporting_group_provider_TMP;
+
+FACT_sp_entryexit_provider_TMP:
+Load
+    provider_id,
+    program_type_code_value_id,
+	parent_provider_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER.qvd]
+(qvd);
+
+LEFT JOIN(DIM_Entry_Exit)
+//DIM_Entry_ExitProvider:
+LOAD
+    "provider_id"                                                    AS %entryexitproviderlink,
+    applymap ('MapPickList', program_type_code_value_id, NULL() )    AS [Entry Exit Provider Project Type],
+	applymap ('MapProviderName', parent_provider_id, NULL() )	AS [Entry Exit Parent Provider Name],
+	parent_provider_id AS [Entry Exit Parent Provider Id]
+Resident FACT_sp_entryexit_provider_TMP;
+Drop Table FACT_sp_entryexit_provider_TMP;
+
+//DROP FIELDS %EEClientId FROM DIM_Entry_Exit;
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE DIM_Entry_Exit INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Entry_Exit.qvd];
+DROP Table DIM_Entry_Exit;

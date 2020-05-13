@@ -1,0 +1,50 @@
+CLIENT_ACTIONSTEP_ACCESS:  
+LOAD DISTINCT
+    [Goal Actionstep Id] AS %GOAL_ACTIONSTEP_KEY_SEC,    
+    [TIER_LINK] & '|' & [Goal Id] AS %SA_GOAL_ACTIONSTEP
+RESIDENT GOAL_ACTIONSTEP_ACCESS;
+
+DROP TABLE GOAL_ACTIONSTEP_ACCESS;
+
+//DROP TABLE GOAL_ACCESS;
+
+explicit_goal_actionstep_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+goal_actionstep_security:
+NOCONCATENATE
+LOAD
+    [Goal Actionstep Id],
+    provider_id,
+	%goalactionstepgoalid
+	FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Goal_Actionstep_visibility.qvd]
+(qvd);
+//RESIDENT Goal_Actionstep_visibility;
+//DROP TABLE Goal_Actionstep_visibility;
+
+
+ LEFT JOIN(explicit_goal_actionstep_security)
+LOAD 
+    [Goal Actionstep Id],
+    provider_id,
+	%goalactionstepgoalid
+RESIDENT goal_actionstep_security;
+
+DROP TABLE goal_actionstep_security;
+
+CONCATENATE(CLIENT_ACTIONSTEP_ACCESS)
+LOAD
+	 [Goal Actionstep Id] AS %GOAL_ACTIONSTEP_KEY_SEC,    
+    [TIER_LINK] & '|' & %goalactionstepgoalid AS %SA_GOAL_ACTIONSTEP
+RESIDENT explicit_goal_actionstep_security;
+
+DROP TABLE explicit_goal_actionstep_security;
+
+STORE CLIENT_ACTIONSTEP_ACCESS INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_ACTIONSTEP_ACCESS.qvd];
+DROP TABLE CLIENT_ACTIONSTEP_ACCESS;

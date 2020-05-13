@@ -1,0 +1,33 @@
+CALL_RECORDSET_ACCESS:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+call_recordset_security:
+LOAD
+    call_record_id,
+    active,
+    call_recordset_id,
+    provider_creating_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)\E_$(vDBname)_CALL_RECORDSET.qvd]
+(qvd)
+WHERE num(date_effective) >= '$(vNumDateSet)';
+
+INNER JOIN(CALL_RECORDSET_ACCESS)
+LOAD
+    call_record_id as [Call Record Id],
+	 call_record_id as %call_worksheets_link,
+   call_recordset_id,
+    provider_creating_id AS [Client Provider Created By Id],
+    1 AS [INHERENT SECURITY]
+RESIDENT call_recordset_security
+WHERE match(active, 1)
+  AND call_record_id > 0
+  AND call_recordset_id > 0;
+
+DROP TABLE call_recordset_security;
+

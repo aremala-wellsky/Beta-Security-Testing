@@ -1,0 +1,145 @@
+DROP_ANSWER_VIEWS:                     
+SELECT qlik_remove_all_qlik_view();     
+
+DROP TABLE DROP_ANSWER_VIEWS;           
+
+
+BUILD_RECORDSET_VIEWS:                 
+SELECT qlik_flatten_all_suba_view('1/01/2015');   
+
+DROP TABLE BUILD_RECORDSET_VIEWS;
+
+
+CALL_RECORDSET_LIST:
+//SELECT table_name AS sp_table_name, 'callsa_' || SUBSTRING(table_name, 12, CHAR_LENGTH(table_name)) AS qlik_table_name 
+SELECT table_name AS sp_table_name, 'call_' || SUBSTRING(table_name, 12, CHAR_LENGTH(table_name)) AS qlik_table_name 
+FROM information_schema.tables
+WHERE table_name ILIKE 'qlik_scall_%'
+ORDER BY table_name;
+
+
+exisitng_call_recordset_table_name:
+SELECT cr.call_recordset_id, cr.call_record_id, cr.provider_creating_id, p.name, cr.user_creating_id, u.name AS user_name
+FROM call_recordset cr
+JOIN sp_provider p ON p.provider_id = cr.provider_creating_id
+JOIN sp_user u ON u.user_id = cr.user_creating_id
+WHERE (cr.active = TRUE); 
+//AND (cr.date_effective >= '1/01/2015');
+
+
+LET NumRows=NoOfRows('CALL_RECORDSET_LIST');
+//LET NumRows=2;
+FOR i=0 to $(NumRows)-1
+
+  LET varRecordSetTableName=Peek('sp_table_name',$(i),'CALL_RECORDSET_LIST');
+  LET varRecordSetQlikName=Peek('qlik_table_name',$(i),'CALL_RECORDSET_LIST');
+  LET varRecordSetQlikName_Call= '$(varRecordSetQlikName)' & '_start';
+   LET varRecordSetQlikName_Ucase_Call=Upper(right('$(varRecordSetQlikName)', (len('$(varRecordSetQlikName)'))-5));
+   
+   $(varRecordSetQlikName):
+  SELECT * FROM $(varRecordSetTableName);
+
+  $(varRecordSetQlikName_Call):
+  Noconcatenate
+  LOAD DISTINCT
+  *,
+  recordset_id as %CALL_RECORDSET_KEY_SEC,
+  recordset_id AS 'call_$(varRecordSetQlikName_Ucase_Call)RECORDSET_ID_start'
+  RESIDENT $(varRecordSetQlikName);
+  
+
+  
+
+  INNER JOIN($(varRecordSetQlikName_Call))
+  LOAD
+    call_recordset_id AS recordset_id,
+//	call_record_id AS [Call Record Id],
+ //  call_record_id AS %SA_CALL_RECORD_CALL_ANSWER_TIER1,
+    provider_creating_id AS 'call_$(varRecordSetQlikName_Ucase_Call)_Provider_Creating_start',
+    name AS 'call_$(varRecordSetQlikName_Ucase_Call)_Provider_Name_Creating_start',
+    user_creating_id AS 'call_$(varRecordSetQlikName_Ucase_Call)_User_Created_By_Id_start',
+    user_name AS 'call_$(varRecordSetQlikName_Ucase_Call)_User_Created_By_start'
+  RESIDENT exisitng_call_recordset_table_name;
+DROP TABLE $(varRecordSetQlikName);
+
+  LET varStepName='STEP_' & $(i) & '_of_' & $(NumRows);
+  $(varStepName): select 1;
+  DROP TABLE $(varStepName);
+  
+  DROP FIELDS recordset_id FROM $(varRecordSetQlikName_Call);
+
+NEXT;
+
+DROP TABLE CALL_RECORDSET_LIST;
+DROP TABLE exisitng_call_recordset_table_name;
+
+
+//RENAME FIELD recordset_id to [Call Recordset Id];
+
+
+
+
+FieldMap5:
+Mapping SQL
+ SELECT lower(dq.virt_field_name) AS oldnames, 'call_' || dq.virt_field_name || '_start'  AS newnames  
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+      AND ((dq.start_date_flag = FALSE) AND (dq.end_date_flag = FALSE))
+      AND ((dq.virt_field_name <> (dq_p.virt_field_name || 'ENDDATE'))) AND ((dq.virt_field_name <> (dq_p.virt_field_name || 'STARTDATE')))
+    UNION
+    SELECT lower(dq.virt_field_name) ||'_1' AS oldnames, 'call_' || dq.virt_field_name || '1_start'  AS newnames  
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+      AND ((dq.start_date_flag = FALSE) OR (dq.end_date_flag = FALSE))
+      AND ((dq.virt_field_name = (dq_p.virt_field_name || 'ENDDATE'))) OR ((dq.virt_field_name = (dq_p.virt_field_name || 'STARTDATE')))  
+     UNION
+     SELECT lower(dq.virt_field_name) ||'_1' AS oldnames, 'call_' || dq.virt_field_name || '1_start'  AS newnames  
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+      AND ((dq.start_date_flag = FALSE))
+      AND (((dq.virt_field_name = (dq_p.virt_field_name || 'START')))) 
+          --OR (dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND length(dq_p.virt_field_name) > 20))	  
+    UNION
+
+    SELECT lower(dq.virt_field_name) ||'_1' AS oldnames, 'call_' || dq.virt_field_name || '_start'  AS newnames  
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+      AND ((dq.end_date_flag = FALSE))
+      AND (((dq.virt_field_name = (dq_p.virt_field_name || 'END'))) 
+          OR (dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND length(dq_p.virt_field_name) > 20))	  
+    UNION   
+    SELECT
+    CASE WHEN dq.start_date_flag = TRUE THEN lower(dq_p.virt_field_name) || 'startdate'
+		  WHEN (dq.virt_field_name = (dq_p.virt_field_name || 'END') AND length(dq_p.virt_field_name) <= 20) AND dq.end_date_flag = TRUE THEN lower(dq_p.virt_field_name) || 'enddate'
+		WHEN (dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND dq.end_date_flag = TRUE AND length(dq_p.virt_field_name) > 20) THEN lower(dq_p.virt_field_name) || 'enddate'
+    END AS oldnames, 'call_' || dq.virt_field_name || '_start' AS newnames 
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+	  AND ((dq.start_date_flag = TRUE) OR (dq.virt_field_name = (dq_p.virt_field_name || 'END') AND length(dq_p.virt_field_name) <= 20) OR ((dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND length(dq_p.virt_field_name) > 20)))
+    UNION
+	SELECT
+    CASE WHEN (dq.virt_field_name = (dq_p.virt_field_name || 'END') AND length(dq_p.virt_field_name) <= 20) AND dq.end_date_flag = FALSE THEN lower(dq_p.virt_field_name) || 'enddate'
+		WHEN (dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND dq.end_date_flag = FALSE AND length(dq_p.virt_field_name) > 20) THEN lower(dq_p.virt_field_name) || 'enddate'
+    END AS oldnames, 'call_' || dq.virt_field_name || '1_start' AS newnames 
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+	  AND ((dq.start_date_flag = TRUE) OR (dq.virt_field_name = (dq_p.virt_field_name || 'END') AND length(dq_p.virt_field_name) <= 20) OR ((dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND length(dq_p.virt_field_name) > 20)));
+  Rename Fields using FieldMap5;
+
+
+DROP_ANSWER_VIEWS:
+SELECT qlik_remove_all_qlik_view();
+
+DROP TABLE DROP_ANSWER_VIEWS;

@@ -1,0 +1,75 @@
+DROP TABLE EEs_To_Rebuild_Answers_For;
+
+DROP TABLE EEs_To_Remove_From_Current_QVD;
+
+
+LET varTempClientEntryQVDExists = not isnull(QvdCreateTime('lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_ENTRY_ANSWER_V2.qvd'));
+
+IF $(varTempClientEntryQVDExists) THEN
+Concatenate(Temp_Client_Entry_Answer_Table)
+LOAD
+	*
+	RESIDENT Client_Entry_Answer;
+	 DROP TABLE Client_Entry_Answer;
+
+ELSE
+  Temp_Client_Entry_Answer_Table:
+  Noconcatenate
+  LOAD
+    *
+  RESIDENT Client_Entry_Answer; 
+  DROP TABLE Client_Entry_Answer;
+END IF;
+ 
+RENAME TABLE Temp_Client_Entry_Answer_Table to Client_Entry_Answer;
+
+STORE Client_Entry_Answer INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_ENTRY_ANSWER_V2.qvd];
+	
+LET varTempClientExitQVDExists = not isnull(QvdCreateTime('lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_EXIT_ANSWER_V2.qvd'));
+
+IF $(varTempClientExitQVDExists) THEN
+Concatenate(Temp_Client_Exit_Answer_Table)
+LOAD
+	*
+	RESIDENT Client_Exit_Answer;
+	 DROP TABLE Client_Exit_Answer;
+
+ELSE
+  Temp_Client_Exit_Answer_Table:
+  Noconcatenate
+  LOAD
+    *
+  RESIDENT Client_Exit_Answer; 
+  DROP TABLE Client_Exit_Answer;
+END IF;
+
+RENAME TABLE Temp_Client_Exit_Answer_Table to Client_Exit_Answer;
+
+
+
+//---------------------------------------------------------------------------
+// Extra wrapup coding
+//---------------------------------------------------------------------------
+
+LET varNewDeltaDate = Date(Today() -1);  
+
+//LET varNewDeltaDate = '02/27/2018';
+
+DROP TABLE DeltaDate;
+
+DeltaDate:
+Noconcatenate
+LOAD * INLINE
+[
+DeltaDateVal
+$(varNewDeltaDate)
+];
+
+
+STORE DeltaDate INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_DELTA_RUNDATE_V0.qvd];
+Drop table DeltaDate;
+
+
+
+STORE Client_Exit_Answer INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_EXIT_ANSWER_V2.qvd];
+//STORE Client_Exit_Answer INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Client_Exit_Answer.qvd];

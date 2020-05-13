@@ -1,0 +1,39 @@
+FACT_da_assessment_TMP:
+NoConcatenate
+Load * 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_ASSESSMENT.qvd]
+(qvd);
+
+DIM_Assessment:
+LOAD
+    assessment_id												AS [Assessment Id],
+     name														AS [Assessment],
+    applymap ('MapAssessmentType', assessment_type_id, NULL() ) 		
+    															AS [Assessment Type],
+    description													AS [Assessment Description]    
+Resident FACT_da_assessment_TMP
+WHERE art_reportable_flag > 0;
+Drop Table FACT_da_assessment_TMP;
+
+FACT_da_assessment_question_TMP:
+NoConcatenate
+Load 
+	assessment_question_id,
+	assessment_id,
+	question_id,
+	published
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_ASSESSMENT_QUESTION.qvd]
+(qvd);
+LEFT JOIN (DIM_Assessment)
+LOAD
+    assessment_question_id                                      AS [Assessment Question Id],
+    assessment_id												AS [Assessment Id],
+	'Assessment' & '|' & question_id							AS [%ASSESSMENTQUESTIONTYPE_KEY]                                                                 
+Resident FACT_da_assessment_question_TMP;
+Drop Table FACT_da_assessment_question_TMP;
+
+
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE DIM_Assessment INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Assessment.qvd];
+DROP Table DIM_Assessment;

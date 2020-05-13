@@ -1,0 +1,97 @@
+Entry_Exit_Group:
+LOAD DISTINCT 
+ 	provider_id,
+    visibility_group_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT USER_GROUP; 
+
+Entry_Exit_tmp:
+LOAD
+    entry_exit_id,
+    active
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ENTRY_EXIT.qvd]
+(qvd)
+WHERE (isNull(num(exit_date)) OR (num(exit_date) >= '$(vNumDateSet)'));
+
+Entry_Exit:
+NOCONCATENATE
+LOAD
+	entry_exit_id
+RESIDENT Entry_Exit_tmp
+WHERE match(active, 1);
+
+//DROP TABLE Entry_Exit_tmp;
+
+
+INNER JOIN(Entry_Exit_tmp)
+LOAD
+    entry_exit_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ENTRY_EXITVISIBILITY.qvd]
+(qvd);
+
+RENAME table Entry_Exit_tmp to Entry_Exit_VIS;
+
+//enrty_exit_visibility_tmp:
+INNER JOIN (Entry_Exit)
+LOAD
+    entry_exit_id,
+    visibility_group_id,
+    visible
+RESIDENT Entry_Exit_VIS;
+DROP TABLE Entry_Exit_VIS;
+
+Entry_Exit_visibility:
+LEFT JOIN (Entry_Exit_Group)
+LOAD DISTINCT
+    visibility_group_id,
+    visible,
+    entry_exit_id
+RESIDENT Entry_Exit;
+
+DROP TABLE Entry_Exit;
+
+Visible:
+Load DISTINCT
+	provider_id,
+    entry_exit_id,
+    1 AS Visible
+RESIDENT Entry_Exit_Group
+WHERE visible = 1;
+
+not_Visible:
+LEFT JOIN(Visible)
+Load DISTINCT
+	provider_id,
+    entry_exit_id,
+    1 AS not_Visible
+RESIDENT Entry_Exit_Group
+WHERE visible = 0;
+
+DROP TABLE Entry_Exit_Group;
+
+Entry_Exit_visibility:
+NOCONCATENATE
+LOAD DISTINCT
+	provider_id,
+	entry_exit_id AS [Entry Exit Id]
+RESIDENT Visible
+WHERE match(Visible, 1)  AND isNull(not_Visible);
+
+DROP TABLE Visible;
+
+
+LEFT JOIN(Entry_Exit_visibility)
+LOAD
+    [Entry Exit Id],
+    [Entry Exit Provider Created By Id],
+	%EEClientId
+FROM [lib://$(vConnection)/$(vQVDTransformType)/$(vDBname)/$(vQVDTypePrefix)_DIM_Entry_Exit.qvd]
+(qvd);
+
+
+STORE Entry_Exit_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Entry_Exit_visibility.qvd];
+Drop table Entry_Exit_visibility;

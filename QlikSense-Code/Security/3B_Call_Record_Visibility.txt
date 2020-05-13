@@ -1,0 +1,43 @@
+
+CLIENT_CALL_RECORD_ACCESS:
+LOAD DISTINCT 
+    [Call Record Id] AS %CALL_RECORD_KEY_SEC,
+	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST,
+	//[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST_TIER1,
+	[TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_RECORD_CALL_RECORDSET,
+	[TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_RECORD_CALL_ANSWER
+RESIDENT CALL_RECORD_ACCESS;
+
+
+explicit_call_record_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT INHERENT_SECURITY; 
+
+
+LEFT JOIN(explicit_call_record_security)
+LOAD
+    [Call Record Id],
+    provider_id,
+	%callrecordclientid
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Call_Record_visibility.qvd]
+(qvd);
+
+CONCATENATE(CLIENT_CALL_RECORD_ACCESS)
+LOAD
+    [Call Record Id] AS %CALL_RECORD_KEY_SEC,
+	[TIER_LINK] & '|' & %callrecordclientid AS %SA_CLIENT_TEST,
+	//[TIER_LINK] & '|' & %callrecordclientid AS %SA_CLIENT_TEST_TIER1,
+	[TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_RECORD_CALL_RECORDSET,
+	[TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_RECORD_CALL_ANSWER
+RESIDENT explicit_call_record_security;
+
+DROP TABLE explicit_call_record_security;
+
+
+	

@@ -1,0 +1,44 @@
+EERECORDSET_ACCESS:
+LOAD DISTINCT 
+    *,
+	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_TEST
+RESIDENT EE_RECORDSET_ACCESS;
+DROP TABLE EE_RECORDSET_ACCESS;
+
+explicit_recordset_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+
+
+recordset_security:
+NOCONCATENATE
+LOAD
+*
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Recordset_visibility.qvd]
+(qvd);
+
+LEFT JOIN(explicit_recordset_security)
+LOAD 
+*
+RESIDENT recordset_security;
+
+
+DROP TABLE recordset_security;
+
+CONCATENATE(EERECORDSET_ACCESS)
+LOAD 
+    *,
+	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_TEST
+RESIDENT explicit_recordset_security;
+//where len(%entry_recordset_id) = 0
+//and  Exists(%exit_recordset_id);
+
+DROP TABLE explicit_recordset_security;
+
+
+

@@ -1,0 +1,24 @@
+RECENT_CLIENT_tmp:
+SELECT DISTINCT ee.client_id FROM sp_entry_exit ee
+  WHERE ((ee.exit_date IS NULL) OR (ee.exit_date >= '01/01/2015'))
+UNION
+SELECT distinct srv.client_id FROM sp_need_service srv
+  where (srv.client_id IS NOT NULL) AND
+        ((srv.provide_start_date >= '01/01/2015')
+          OR (srv.provide_end_date >= '01/01/2015')
+          OR ((srv.provide_end_date IS NULL) AND (srv.shelter_item = TRUE))
+          OR (srv.refer_date >= '01/01/2015')
+        )
+UNION
+SELECT DISTINCT n.client_id FROM sp_need n WHERE (n.client_id IS NOT NULL) and (n.date_set >= '01/01/2015')
+UNION
+SELECT DISTINCT g.client_id FROM sp_goal g WHERE (g.date_set >= '01/01/2015')
+UNION
+SELECT DISTINCT g.client_id FROM sp_goal_actionstep g WHERE (g.date_set >= '01/01/2015')
+UNION
+SELECT DISTINCT a.client_id FROM da_answer a WHERE (a.date_effective >= '01/01/2015')
+UNION
+SELECT DISTINCT a.client_id FROM da_recordset a WHERE (a.date_effective >= '01/01/2015')
+UNION
+SELECT DISTINCT c.client_id FROM sp_call_record c 
+  WHERE (c.client_id IS NOT NULL) AND ((c.end_date IS NULL) OR (c.end_date >= '01/01/2015'));

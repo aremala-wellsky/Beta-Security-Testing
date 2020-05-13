@@ -1,0 +1,61 @@
+FACT_Worksheet_Answer_TMP:
+NoConcatenate
+Load * 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_WS_ANSWER.qvd]
+(qvd);
+
+FACT_Worksheet_Answer:
+NoConcatenate
+LOAD 
+	*,
+     'Provider'														AS [Answer Type],
+	 'Worksheet' & '|' & [Question Id]								AS %ASSESSMENTQUESTIONTYPE_KEY,   
+    AnswerTemp3														AS Answer;
+LOAD    
+    *,
+    //Counter for Answers
+    if (len(AnswerTemp2)>0,1,0)										AS [Count Answer],      
+    //Inserting Null Value for NULLs
+    if (Len(AnswerTemp2)>0, AnswerTemp2, '$(vNullValue)' )			AS AnswerTemp3;    
+LOAD *,
+     if ( isYesNo and AnswerTemp <> null(),
+     if ( AnswerTemp = 1, 'Yes', 'No'), AnswerTemp )	AS AnswerTemp2;        
+LOAD 
+	 *,
+	 if (isLookup, applymap ('MapPickList', val_int, NULL() ), val_int & date(val_date) & val_textfield & val_float) AS AnswerTemp,
+     applymap ('MapPickListValueCode', val_int, NULL())             AS [Answer Picklist Code];
+LOAD        
+   	answer_id														AS [Answer Id],
+    question_id														AS [Question Id],  
+    applymap ('MapWsQuestionIsLookup', question_id, 0 ) 			AS isLookup,
+    applymap ('MapWsQuestionIsYesNo', question_id, 0 ) 				AS isYesNo,
+    applymap ('MapWsQuestion', question_id, 0 ) 					AS Question,
+    applymap ('MapWsQuestionParentId', question_id, NULL()) 		AS [Worksheet Subassessment Id],
+    (date(floor( date_added ) ) )				        			AS [Answer Added Date],
+    time ( date_added ) 	                						AS [Answer Added Time],
+    (date(floor( date_updated) ) )		        					AS [Answer Updated Date],
+    time ( date_updated )                							AS [Answer Updated Time],
+	
+    val_int,
+    val_date,
+    val_textfield,
+    val_float
+Resident FACT_Worksheet_Answer_TMP;
+Drop Table FACT_Worksheet_Answer_TMP;
+
+
+DROP Fields       
+    AnswerTemp,
+    AnswerTemp2,
+    AnswerTemp3,
+	isLookup,
+   	isYesNo,
+    val_int,
+    val_date,
+    val_textfield,
+    val_float;
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE FACT_Worksheet_Answer INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_FACT_Worksheet_Answer.qvd];
+DROP Table FACT_Worksheet_Answer;
+

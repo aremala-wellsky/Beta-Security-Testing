@@ -1,0 +1,107 @@
+
+//============================================
+//SET STREAM NAME TO USE FOR SETUP VERICATION:
+//============================================
+SET vStreamName = "";
+SET vStreamConnection = 'SPData_Beta';
+SET vStreamQVDType = 'Extract';
+LET vStreamQVDTypePrefix = left(vStreamQVDType, 1);
+LET vStreamFilenamePrefix = vStreamQVDTypePrefix & '_' & upper(vDBname);
+
+SITE:
+LOAD 
+ 	val_varchar as Site 
+FROM [lib://$(vStreamConnection)/$(vStreamQVDType)/$(vDBname)/$(vStreamFilenamePrefix)_SP_SETTING.qvd](qvd)
+WHERE name = 'QLIK_TICKET_HOMEDIR';
+
+LET vStreamName = Peek('Site',0,'SITE');
+DROP Table SITE;
+//============================================
+//END 
+//============================================
+SET GBL_vAgeAtEntry=Age([Entry Date],[SVPPROFDOB_entry]);
+SET GBL_vAgeAtExit= Age(If(IsNull([Exit Date]),Date(Floor(ReloadTime())), [Exit Date]),SVPPROFDOB_entry);
+SET GBL_vAgeToday= Age(Date(Floor(ReloadTime())),SVPPROFDOB_entry);
+
+SET vCount_ClientId = Count(Distinct ([Client Id]));
+SET vCount_ClientUniqueId = Count(Distinct ([Client Unique Id]));
+SET vCount_EntryExitId = Count(Distinct ([Entry Exit Id]));
+SET vCount_NeedServiceId = Count(Distinct ([Need Service Id]));
+SET vCount_NeedId = Count(Distinct ([Need Id])); 		
+SET DISABLE_INSIGHTS = 1;
+
+SET CUS_vCSB_Program_Capacity
+
+ 			    = RangeSum(
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'LSS - FM Faith on 8th') > 0
+And SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'LSS - Women''s on Grant/Nancy''s Place') > 0
+And SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'LSS - Men''s on Grant') > 0, 222),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]), 'NCR - Commons at Livingston') > 0
+And SubStringCount(GetFieldSelections([Entry Exit Provider Name]), 'NCR - Commons at Livingston II') > 0, 60),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]), 'Maryhaven - Commons at Chantry') > 0
+And SubStringCount(GetFieldSelections([Entry Exit Provider Name]), 'Maryhaven - SA Commons at Chantry') > 0, 50),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'LSS - Women''s on Grant/Nancy''s Place') > 0, 38),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'LSS - FM Faith on 8th') > 0, 95),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'LSS - Men''s on Grant')> 0, 89),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'LSS - FM VA Emergency Housing') > 0, 24),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'HH - Emergency Shelter') > 0, 16),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'Maryhaven - EC Safety') > 0, 32),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'Maryhaven - EC Shelter2Housing') > 0, 18),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'SE - FOH Men''s Shelter') > 0, 130),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'VOAGO Men''s Shelter') > 0, 40),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'VOAGO VA Emergency Housing') > 0, 15),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'YMCA - Van Buren Family Shelter') > 0, 64),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'YMCA - Van Buren Women''s Shelter') > 0, 139),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'YMCA VB Pregnant Women''s Shelter') > 0, 12),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'YWCA Family Center') > 0, 50),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'Amethyst - SRA') > 0, 32),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'Amethyst - TRA') > 0, 20),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'ARCO - TRA') > 0, 89),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Briggsdale') > 0, 25),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Briggsdale II') > 0, 40),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Cassady Avenue') > 0, 10),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Community ACT') > 0, 42),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - East 5th Avenue') > 0, 38),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Family Homes') > 0, 10),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Inglewood Court') > 0, 45),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Leasing Supportive Housing') > 0, 25),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - North 22nd Street') > 0, 30),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Parsons Avenue') > 0, 25),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - RLPTI') > 0, 80),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Safe Haven') > 0, 13),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Shelter Plus Care - SRA') > 0, 197),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Shelter Plus Care - SRA3') > 0, 11),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Shelter Plus Care - TRA') > 0, 171),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Shelter Plus Care - TRA2') > 0, 20),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Southpoint Place RL') > 0, 46),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Terrace Place') > 0, 47),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'CHN - Wilson') > 0, 8),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'Maryhaven - Commons at Chantry') > 0, 10),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'Maryhaven - SA Commons at Chantry') > 0, 40),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'NCR - Commons at Buckingham') > 0, 75),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'NCR - Commons at Grant') > 0, 50),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'NCR - Commons at Livingston') > 0, 25),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'NCR - Commons at Livingston II') > 0, 35),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'NCR - Commons at Third') > 0, 60),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'NCR - VOAGO Van Buren Village') > 0, 60),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'VOAGO - Family PSH') > 0, 38),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'YMCA - Franklin Station') > 0, 75),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'YMCA HOME Scattered Sites') > 0, 50),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'YMCA - Isaiah') > 0, 150),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'YMCA - PSH@ 40 W. Long') > 0, 105),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'YMCA - PSH@ 40 W. Long Expansion') > 0, 38),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'YWCA - WINGS') > 0, 91),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'HH - Transitional Living Project') > 0, 24),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'Maryhaven - Women''s Transitional Housing') > 0, 5),
+if(SubStringCount(GetFieldSelections([Entry Exit Provider Name]),'VOAGO - Veterans Transitional Housing)') > 0, 40));
+
+//VARIABLE FOR USER INPUT
+
+SET vInputField01 = NULL();
+SET vInputField02 = NULL();
+Temp_YesNoInput_tbl:
+LOAD * INLINE [
+    InputYesNo
+    Yes
+    No
+];

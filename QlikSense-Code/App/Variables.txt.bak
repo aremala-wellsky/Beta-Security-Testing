@@ -1,0 +1,641 @@
+/*********************
+Complex Calculation Variables
+DO NOT CHANGE
+*********************/
+//******************************************************************************Variable Initialization*************************************************************************************************************************
+
+SET GBL_HUD_mReport1_StartDate  			= NULL();
+SET GBL_HUD_mReport1_EndDate  				= NULL();
+SET GBL_HUD_mReport2_StartDate  			= NULL();
+SET GBL_HUD_mReport2_EndDate  				= NULL();
+SET GBL_HUD_mReport1_StartDate  			= NULL();
+SET GBL_HUD_mReport1_StartDate_service 		= NULL();
+SET GBL_HUD_mReport1_EndDate_service  		= NULL();
+SET GBL_HUD_mReport1_StartDate_call  		= NULL();
+SET GBL_HUD_mReport1_EndDate_call  			= NULL();
+SET GBL_HUD_mReport1_StartDate_need  		= NULL();
+SET GBL_HUD_mReport1_EndDate_need  			= NULL();
+SET GBL_HUD_mReport1_StartDate_int  		= NULL();
+SET GBL_HUD_mReport1_EndDate_int  			= NULL();
+SET GBL_HUD_mReport1_StartDate_goal  		= NULL();
+SET GBL_HUD_mReport1_EndDate_goal  			= NULL();
+SET GBL_HUD_mReport1_StartDate_c_f  		= NULL();
+SET GBL_HUD_mReport1_EndDate_c_f  			= NULL();
+SET GBL_HUD_mReport1_StartDate_g_f  		= NULL();
+SET GBL_HUD_mReport1_EndDate_g_f  			= NULL();
+SET GBL_HUD_mReport1_StartDate_s_f  		= NULL();
+SET GBL_HUD_mReport1_EndDate_s_f  			= NULL();
+SET GBL_HUD_mReport1_StartDate_gas_f 		= NULL();
+SET GBL_HUD_mReport1_EndDate_gas_f  		= NULL();
+SET GBL_HUD_mReport1_IncidentStartDate  	= NULL();
+SET GBL_HUD_mReport1_IncidentEndDate  		= NULL();
+SET GBL_HUD_mReport1_CaseStartDate  		= NULL();
+SET GBL_HUD_mReport1_CaseEndDate  			= NULL();
+SET GBL_HUD_mReport1_StartDate_s_r  		= NULL();
+SET GBL_HUD_mReport1_EndDate_s_r  			= NULL();
+SET GBL_HUD_mReport1_StartDate_g_s			= NULL();
+SET GBL_HUD_mReport1_EndDate_g_s			= NULL();
+SET GBL_HUD_mReport1_StartDate_eff			= NULL();
+SET GBL_HUD_mReport1_EndDate_eff			= NULL();
+SET GBL_mReport1_StartDate_service 			= NULL();
+SET GBL_mReport1_EndDate_service  			= NULL();
+SET GBL_HUD_mReport1_StartDate_Matrix		= NULL();
+SET GBL_HUD_mReport1_EndDate_Matrix       	= NULL();
+SET GBL_HUD_mReport1_StartDate_Session		= NULL();
+SET GBL_HUD_mReport1_EndDate_Session       	= NULL();
+SET Custom_1_Calendar_Start					= NULL();
+SET Custom_2_Calendar_Start					= NULL();
+SET Custom_3_Calendar_Start					= NULL();
+SET Custom_4_Calendar_Start					= NULL();
+SET Custom_5_Calendar_Start					= NULL();
+SET Custom_1_Calendar_End 					= NULL();
+SET Custom_2_Calendar_End					= NULL();
+SET Custom_3_Calendar_End					= NULL();
+SET Custom_4_Calendar_End					= NULL();
+SET Custom_5_Calendar_End					= NULL();
+
+//VARIABLE FOR USER INPUT
+
+SET vInputField01 = NULL();
+SET vInputField02 = NULL();
+Temp_YesNoInput_tbl:
+LOAD * INLINE [
+    InputYesNo
+    Yes
+    No
+];
+
+//*******************************************************Other than Subassessments******************************************************************************************************************************
+
+SET GBL_HUD_vIsEntryAnswer_s	 	 	    = 	(If(([Answer Effective Date] <= [Entry Date] and([Exit Date] >= '~(GBL_HUD_mReport1_StartDate)'or IsNull([Exit Date]))),
+												If([Answer Effective Date] < [Entry Date],'yes',
+													(If([Answer Effective Time] <= [Entry Time] ,'yes','no'))),'no'));
+SET GBL_HUD_vIsEntryAnswer1    		   	    = 	=replace([GBL_HUD_vIsEntryAnswer_s],'~','$');
+SET GBL_HUD_vIsEntryAnswer_y		   		= 	If(~(GBL_HUD_vIsEntryAnswer1) = 'yes',~(GBL_HUD_vIsEntryAnswer1),null());
+SET GBL_HUD_vIsEntryAnswer_yes    			= 	=replace([GBL_HUD_vIsEntryAnswer_y],'~','$');
+
+SET GBL_HUD_vIsExitAnswer_s  	     	    = (If((([Answer Effective Date] <= [Exit Date] and [Entry Date] <= '~(GBL_HUD_mReport1_EndDate)') or IsNull([Exit Date])),
+												If([Answer Effective Date] < [Exit Date] or IsNull([Exit Date]),'yes',
+													(If([Answer Effective Time] <= [Exit Time] or IsNull([Exit Time]) ,'yes','no'))),'no'));
+SET GBL_HUD_vIsExitAnswer1    			    = 	=replace([GBL_HUD_vIsExitAnswer_s],'~','$');
+SET GBL_HUD_vIsExitAnswer_y				    = 	If(~(GBL_HUD_vIsExitAnswer1) = 'yes',~(GBL_HUD_vIsExitAnswer1),null());
+SET GBL_HUD_vIsExitAnswer_yes   			= 	=replace([GBL_HUD_vIsExitAnswer_y],'~','$');
+
+SET GBL_HUD_vIsReviewAnswer_s	 	 	    = 	(If(([Answer Effective Date] <= [Entry Exit Review Date] and([Exit Date] >= '~(GBL_HUD_mReport1_StartDate)'or IsNull([Exit Date]))),
+												If([Answer Effective Date] < [Entry Exit Review Date],'yes',
+													(If([Answer Effective Time] <= [Entry Exit Review Time] ,'yes','no'))),'no'));
+SET GBL_HUD_vIsReviewAnswer1    		   	= 	=replace([GBL_HUD_vIsReviewAnswer_s],'~','$');
+SET GBL_HUD_vIsReviewAnswer_y		   		= 	If(~(GBL_HUD_vIsReviewAnswer1) = 'yes',~(GBL_HUD_vIsReviewAnswer1),null());
+SET GBL_HUD_vIsReviewAnswer_yes    			= 	=replace([GBL_HUD_vIsReviewAnswer_y],'~','$');
+
+SET GBL_HUD_vRangeDateEffective_e			= 	If (~(GBL_HUD_vIsEntryAnswer1) = 'yes',([Answer Effective Date]&' '&[Answer Effective Time]), null());
+SET GBL_HUD_vRangeDateEffective_en    		= 	=replace([GBL_HUD_vRangeDateEffective_e],'~','$');
+SET GBL_HUD_max_da_en						=   date(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_en)),[Answer Client Id],[Entry Exit Id],[Question Id]));
+SET GBL_HUD_max_date_en					    = 	=replace([GBL_HUD_max_da_en],'~','$');
+SET GBL_HUD_max_ti_en						=   time(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_en)),[Answer Client Id],[Entry Exit Id],[Question Id]));
+SET GBL_HUD_max_time_en				    	= 	=replace([GBL_HUD_max_ti_en],'~','$');
+SET GBL_HUD_vMostRecentAnswer_da_en 		= 	if((~(GBL_HUD_max_date_en)) =(date(~(GBL_HUD_vRangeDateEffective_en))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_date_en    	= 	=replace([GBL_HUD_vMostRecentAnswer_da_en],'~','$');
+SET GBL_HUD_vMostRecentAnswer_ti_en			= 	if((~(GBL_HUD_max_time_en)) =(time(~(GBL_HUD_vRangeDateEffective_en))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_time_en    	= 	=replace([GBL_HUD_vMostRecentAnswer_ti_en],'~','$');
+SET GBL_HUD_vMostRecentAnswer_dt_en 		= 	if((~(GBL_HUD_vMostRecentAnswer_date_en) = 'yes' and ~(GBL_HUD_vMostRecentAnswer_time_en) = 'yes'),[Answer],null());
+SET GBL_HUD_vMostRecentAnswer_entry    		= 	=replace([GBL_HUD_vMostRecentAnswer_dt_en],'~','$');
+
+
+SET GBL_HUD_vRangeDateEffective_ex			= 	If (~(GBL_HUD_vIsExitAnswer1) = 'yes',([Answer Effective Date]&' '&[Answer Effective Time]), null());
+SET GBL_HUD_vRangeDateEffective_exi    		= 	=replace([GBL_HUD_vRangeDateEffective_ex],'~','$');
+SET GBL_HUD_max_da_ex						=   date(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_exi)),[Answer Client Id],[Entry Exit Id],[Question Id]));
+SET GBL_HUD_max_date_ex				    	= 	=replace([GBL_HUD_max_da_ex],'~','$');
+SET GBL_HUD_max_ti_ex						=   time(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_exi)),[Answer Client Id],[Entry Exit Id],[Question Id]));
+SET GBL_HUD_max_time_ex					    = 	=replace([GBL_HUD_max_ti_ex],'~','$');
+SET GBL_HUD_vMostRecentAnswer_da_ex 		= 	if((~(GBL_HUD_max_date_ex)) =(date(~(GBL_HUD_vRangeDateEffective_exi))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_date_ex    	= 	=replace([GBL_HUD_vMostRecentAnswer_da_ex],'~','$');
+SET GBL_HUD_vMostRecentAnswer_ti_ex 		= 	if((~(GBL_HUD_max_time_ex)) =(time(~(GBL_HUD_vRangeDateEffective_exi))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_time_ex    	= 	=replace([GBL_HUD_vMostRecentAnswer_ti_ex],'~','$');
+SET GBL_HUD_vMostRecentAnswer_dt_ex 		= 	if((~(GBL_HUD_vMostRecentAnswer_date_ex) = 'yes' and ~(GBL_HUD_vMostRecentAnswer_time_ex) = 'yes'),[Answer],null());
+SET GBL_HUD_vMostRecentAnswer_exit     		= 	=replace([GBL_HUD_vMostRecentAnswer_dt_ex],'~','$');
+
+SET GBL_HUD_vRangeDateEffective_r			= 	If (~(GBL_HUD_vIsReviewAnswer1) = 'yes',([Answer Effective Date]&' '&[Answer Effective Time]), null());
+SET GBL_HUD_vRangeDateEffective_re    		= 	=replace([GBL_HUD_vRangeDateEffective_r],'~','$');
+SET GBL_HUD_max_da_re						=   date(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_re)),[Answer Client Id],[Entry Exit Id],[Entry Exit Review Id],[Question Id]));
+SET GBL_HUD_max_date_re					    = 	=replace([GBL_HUD_max_da_re],'~','$');
+SET GBL_HUD_max_ti_re						=   time(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_re)),[Answer Client Id],[Entry Exit Id],[Entry Exit Review Id],[Question Id]));
+SET GBL_HUD_max_time_re				    	= 	=replace([GBL_HUD_max_ti_re],'~','$');
+SET GBL_HUD_vMostRecentAnswer_da_re 		= 	if((~(GBL_HUD_max_date_en)) =(date(~(GBL_HUD_vRangeDateEffective_re))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_date_re    	= 	=replace([GBL_HUD_vMostRecentAnswer_da_re],'~','$');
+SET GBL_HUD_vMostRecentAnswer_ti_re			= 	if((~(GBL_HUD_max_time_en)) =(time(~(GBL_HUD_vRangeDateEffective_re))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_time_re    	= 	=replace([GBL_HUD_vMostRecentAnswer_ti_re],'~','$');
+SET GBL_HUD_vMostRecentAnswer_dt_re 		= 	if((~(GBL_HUD_vMostRecentAnswer_date_re) = 'yes' and ~(GBL_HUD_vMostRecentAnswer_time_re) = 'yes'),[Answer],null());
+SET GBL_HUD_vMostRecentAnswer_review    	= 	=replace([GBL_HUD_vMostRecentAnswer_dt_re],'~','$');
+
+
+SET GBL_HUD_vIsInterim					= 	If(([Entry Exit Point In Time Type] = 'Interim Review'),'yes',null());
+SET GBL_HUD_vIsFollowup					= 	If(([Entry Exit Point In Time Type] = 'Follow Up Review'),'yes',null());
+
+
+//**********************************************************************cutoffs********************************************************************************************************************************
+
+SET GBL_HUD_vIsEntryAnswer_s_c	 	 	    = 	(If(([Answer Effective Date] <= [Entry Date]
+											and((If ((Date([Exit Date])< '~(GBL_HUD_mReport1_EndDate)'),date([Exit Date]),'~(GBL_HUD_mReport1_EndDate)')) >= '~(GBL_HUD_mReport1_StartDate)')),
+												If([Answer Effective Date] < [Entry Date],'yes',
+													(If([Answer Effective Time] <= [Entry Time] ,'yes','no'))),'no'));
+SET GBL_HUD_vIsEntryAnswer1_c    		   	= 	=replace([GBL_HUD_vIsEntryAnswer_s_c],'~','$');
+SET GBL_HUD_vIsEntryAnswer_y_c		   		= 	If(~(GBL_HUD_vIsEntryAnswer1_c) = 'yes',~(GBL_HUD_vIsEntryAnswer1_c),null());
+SET GBL_HUD_vIsEntryAnswer_yes_c    		= 	=replace([GBL_HUD_vIsEntryAnswer_y_c],'~','$');
+
+SET GBL_HUD_vRangeDateEffective_e_c			= 	If (~(GBL_HUD_vIsEntryAnswer1_c) = 'yes',([Answer Effective Date]&' '&[Answer Effective Time]), null());
+SET GBL_HUD_vRangeDateEffective_en_c    	= 	=replace([GBL_HUD_vRangeDateEffective_e_c],'~','$');
+SET GBL_HUD_max_da_en_c						=   date(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_en_c)),[Answer Client Id],[Entry Exit Id],[Question Id]));
+SET GBL_HUD_max_date_en_c					= 	=replace([GBL_HUD_max_da_en_c],'~','$');
+SET GBL_HUD_max_ti_en_c						=   time(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_en_c)),[Answer Client Id],[Entry Exit Id],[Question Id]));
+SET GBL_HUD_max_time_en_c				    = 	=replace([GBL_HUD_max_ti_en_c],'~','$');
+SET GBL_HUD_vMostRecentAnswer_da_en_c 		= 	if((~(GBL_HUD_max_date_en_c)) =(date(~(GBL_HUD_vRangeDateEffective_en_c))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_date_en_c    	= 	=replace([GBL_HUD_vMostRecentAnswer_da_en_c],'~','$');
+SET GBL_HUD_vMostRecentAnswer_ti_en_c		= 	if((~(GBL_HUD_max_time_en_c)) =(time(~(GBL_HUD_vRangeDateEffective_en_c))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_time_en_c    	= 	=replace([GBL_HUD_vMostRecentAnswer_ti_en_c],'~','$');
+SET GBL_HUD_vMostRecentAnswer_dt_en_c 		= 	if((~(GBL_HUD_vMostRecentAnswer_date_en_c) = 'yes' and ~(GBL_HUD_vMostRecentAnswer_time_en_c) = 'yes'),[Answer],null());
+SET GBL_HUD_vMostRecentAnswer_entry_c    	= 	=replace([GBL_HUD_vMostRecentAnswer_dt_en_c],'~','$');
+
+SET GBL_HUD_vReport1_ExitEndDate_s_c_t	    =	(If ((Date([Exit Date])< '~(GBL_HUD_mReport1_EndDate)'),[Exit Time],time('~(GBL_HUD_mReport1_EndDate)')));
+SET GBL_HUD_vReport1_ExitEndDate_cutoff_time=   =replace([GBL_HUD_vReport1_ExitEndDate_s_c_t],'~','$');
+
+SET GBL_HUD_vReport1_ExitEndDate_s_c	    =	(If ((Date([Exit Date])< '~(GBL_HUD_mReport1_EndDate)'),[Exit Date],('~(GBL_HUD_mReport1_EndDate)')));
+SET GBL_HUD_vReport1_ExitEndDate_cutoff  	=   =replace([GBL_HUD_vReport1_ExitEndDate_s_c],'~','$');
+
+SET GBL_HUD_vIsExitAnswer_s_c  	     	    = (If((([Answer Effective Date] <= (If ((Date([Exit Date])< '~(GBL_HUD_mReport1_EndDate)'),date([Exit Date]),'~(GBL_HUD_mReport1_EndDate)'))
+												and [Entry Date] <= '~(GBL_HUD_mReport1_EndDate)')),
+												If([Answer Effective Date] < (If ((Date([Exit Date])< '~(GBL_HUD_mReport1_EndDate)'),date([Exit Date]),'~(GBL_HUD_mReport1_EndDate)')),'yes',
+													(If([Answer Effective Time] <= ~(GBL_HUD_vReport1_ExitEndDate_cutoff_time) ,'yes','no'))),'no'));
+SET GBL_HUD_vIsExitAnswer1_c    			= 	=replace([GBL_HUD_vIsExitAnswer_s_c],'~','$');
+SET GBL_HUD_vIsExitAnswer_y_c				= 	If(~(GBL_HUD_vIsExitAnswer1_c) = 'yes',~(GBL_HUD_vIsExitAnswer1_c),null());
+SET GBL_HUD_vIsExitAnswer_yes_c   			= 	=replace([GBL_HUD_vIsExitAnswer_y_c],'~','$');
+
+
+SET GBL_HUD_vRangeDateEffective_ex_c		= 	If (~(GBL_HUD_vIsExitAnswer1_c) = 'yes',([Answer Effective Date]&' '&[Answer Effective Time]), null());
+SET GBL_HUD_vRangeDateEffective_exi_c    	= 	=replace([GBL_HUD_vRangeDateEffective_ex_c],'~','$');
+SET GBL_HUD_max_da_ex_c						=   date(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_exi_c)),[Answer Client Id],[Entry Exit Id],[Question Id]));
+SET GBL_HUD_max_date_ex_c				    = 	=replace([GBL_HUD_max_da_ex_c],'~','$');
+SET GBL_HUD_max_ti_ex_c						=   time(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_exi_c)),[Answer Client Id],[Entry Exit Id],[Question Id]));
+SET GBL_HUD_max_time_ex_c					= 	=replace([GBL_HUD_max_ti_ex_c],'~','$');
+SET GBL_HUD_vMostRecentAnswer_da_ex_c 		= 	if((~(GBL_HUD_max_date_ex_c)) =(date(~(GBL_HUD_vRangeDateEffective_exi_c))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_date_ex_c    	= 	=replace([GBL_HUD_vMostRecentAnswer_da_ex_c],'~','$');
+SET GBL_HUD_vMostRecentAnswer_ti_ex_c 		= 	if((~(GBL_HUD_max_time_ex_c)) =(time(~(GBL_HUD_vRangeDateEffective_exi_c))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_time_ex_c    	= 	=replace([GBL_HUD_vMostRecentAnswer_ti_ex_c],'~','$');
+SET GBL_HUD_vMostRecentAnswer_dt_ex_c 		= 	if((~(GBL_HUD_vMostRecentAnswer_date_ex_c) = 'yes' and ~(GBL_HUD_vMostRecentAnswer_time_ex_c) = 'yes'),[Answer],null());
+SET GBL_HUD_vMostRecentAnswer_exit_c     	= 	=replace([GBL_HUD_vMostRecentAnswer_dt_ex_c],'~','$');
+
+//*****subassessments
+SET GBL_HUD_vIsEntryAnswer_s_s_c	 	   	    = (If(([Subassessment Start Date] <= [Entry Date] and ((If ((Date([Exit Date])< '~(GBL_HUD_mReport1_EndDate)'),date([Exit Date]),'~(GBL_HUD_mReport1_EndDate)')) >= '~(GBL_HUD_mReport1_StartDate)')),
+												If([Subassessment Start Date] < [Entry Date],'yes',
+													(If([Subassessment Start Time] <= [Entry Time] ,'yes','no'))),'no'));
+SET GBL_HUD_vIsEntryAnswer1_s_c    		    	= 	=replace([GBL_HUD_vIsEntryAnswer_s_s],'~','$');
+SET GBL_HUD_vIsEntryAnswer_y_s_c				= 	If(~(GBL_HUD_vIsEntryAnswer1_s) = 'yes',~(GBL_HUD_vIsEntryAnswer1_s),null());
+SET GBL_HUD_vIsEntryAnswer_yes_sub_c    		= 	=replace([GBL_HUD_vIsEntryAnswer_y_s],'~','$');
+
+SET GBL_HUD_vRangeDateEffective_e_sub_c			= 	If (~(GBL_HUD_vIsEntryAnswer1_s_c) = 'yes',([Subassessment Answer Effective Date]&' '&[Subassessment Answer Effective Time]), null());
+SET GBL_HUD_vRangeDateEffective_en_sub_c    		= 	=replace([GBL_HUD_vRangeDateEffective_e_sub_c],'~','$');
+SET GBL_HUD_max_da_en_sub_c						=   date(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_en_sub_c)),[Subassessment Answer Client Id],[Entry Exit Id],[Subassessment Question Id],[Recordset Id]));
+SET GBL_HUD_max_date_en_sub_c					    = 	=replace([GBL_HUD_max_da_en_sub],'~','$');
+SET GBL_HUD_max_ti_en_sub_c						=   time(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_en_sub_c)),[Subassessment Answer Client Id],[Entry Exit Id],[Subassessment Question Id],[Recordset Id]));
+SET GBL_HUD_max_time_en_sub_c				    	= 	=replace([GBL_HUD_max_ti_en_sub_c],'~','$');
+SET GBL_HUD_vMostRecentAnswer_da_en_sub_c 		= 	if((~(GBL_HUD_max_date_en_sub_c)) =(date(~(GBL_HUD_vRangeDateEffective_en_sub_c))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_date_en_sub_c    	= 	=replace([GBL_HUD_vMostRecentAnswer_da_en_sub_c],'~','$');
+SET GBL_HUD_vMostRecentAnswer_ti_en_sub_c			= 	if((~(GBL_HUD_max_time_en_sub_c)) =(time(~(GBL_HUD_vRangeDateEffective_en_sub_c))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_time_en_sub_c    	= 	=replace([GBL_HUD_vMostRecentAnswer_ti_en_sub_c],'~','$');
+SET GBL_HUD_vMostRecentAnswer_dt_en_sub_c 		= 	if((~(GBL_HUD_vMostRecentAnswer_date_en_sub_c) = 'yes' and ~(GBL_HUD_vMostRecentAnswer_time_en_sub_c) = 'yes'),[Subassessment Answer],null());
+SET GBL_HUD_vMostRecentAnswer_entry_sub_c    		= 	=replace([GBL_HUD_vMostRecentAnswer_dt_en_sub_c],'~','$');
+
+SET GBL_HUD_vIsExitAnswer_s_s_c  	      	    = (If((([Subassessment End Date] <= (If ((Date([Exit Date])< '~(GBL_HUD_mReport1_EndDate)'),date([Exit Date]),'~(GBL_HUD_mReport1_EndDate)')) and [Entry Date] <= '~(GBL_HUD_mReport1_EndDate)')),
+												If([Subassessment End Date] < (If ((Date([Exit Date])< '~(GBL_HUD_mReport1_EndDate)'),date([Exit Date]),'~(GBL_HUD_mReport1_EndDate)')),'yes',
+													(If([Subassessment End Time] <= ~(GBL_HUD_vReport1_ExitEndDate_cutoff_time) ,'yes','no'))),'no'));
+SET GBL_HUD_vIsExitAnswer1_s_c    		    	= 	=replace([GBL_HUD_vIsExitAnswer_s_s_c],'~','$');
+SET GBL_HUD_vIsExitAnswer_y_s_c			    	= 	If(~(GBL_HUD_vIsExitAnswer1_s_c) = 'yes',~(GBL_HUD_vIsExitAnswer1_s_c),null());
+SET GBL_HUD_vIsExitAnswer_yes_sub_c   			= 	=replace([GBL_HUD_vIsExitAnswer_y_s_c],'~','$');
+
+SET GBL_HUD_vRangeDateEffective_ex_sub_c			= 	If (~(GBL_HUD_vIsExitAnswer1_s_c) = 'yes',([Subassessment Answer Effective Date]&' '&[Subassessment Answer Effective Time]), null());
+SET GBL_HUD_vRangeDateEffective_exi_sub_c    		= 	=replace([GBL_HUD_vRangeDateEffective_ex_sub_c],'~','$');
+SET GBL_HUD_max_da_ex_sub_c						=   date(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_exi_sub_c)),[Subassessment Answer Client Id],[Entry Exit Id],[Subassessment Question Id],[Recordset Id]));
+SET GBL_HUD_max_date_ex_sub_c				    	= 	=replace([GBL_HUD_max_da_ex_sub_c],'~','$');
+SET GBL_HUD_max_ti_ex_sub_c						=   time(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_exi_sub_c)),[Subassessment Answer Client Id],[Entry Exit Id],[Subassessment Question Id],[Recordset Id]));
+SET GBL_HUD_max_time_ex_sub_c					    = 	=replace([GBL_HUD_max_ti_ex_sub_c],'~','$');
+SET GBL_HUD_vMostRecentAnswer_da_ex_sub_c 		= 	if((~(GBL_HUD_max_date_ex_sub_c)) =(date(~(GBL_HUD_vRangeDateEffective_exi_sub_c))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_date_ex_sub_c    	= 	=replace([GBL_HUD_vMostRecentAnswer_da_ex_sub_c],'~','$');
+SET GBL_HUD_vMostRecentAnswer_ti_ex_sub_c 		= 	if((~(GBL_HUD_max_time_ex_sub_c)) =(time(~(GBL_HUD_vRangeDateEffective_exi_sub_c))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_time_ex_sub_c    	= 	=replace([GBL_HUD_vMostRecentAnswer_ti_ex_sub_c],'~','$');
+SET GBL_HUD_vMostRecentAnswer_dt_ex_sub_c 		= 	if((~(GBL_HUD_vMostRecentAnswer_date_ex_sub_c) = 'yes' and ~(GBL_HUD_vMostRecentAnswer_time_ex_sub_c) = 'yes'),[Subassessment Answer],null());
+SET GBL_HUD_vMostRecentAnswer_exit_sub_c     		= 	=replace([GBL_HUD_vMostRecentAnswer_dt_ex_sub_c],'~','$');
+
+//************************************************************************Subassessments*************************************************************************************************************************
+
+SET GBL_HUD_vIsEntryAnswer_s_s	 	   	    = 	(If(([Subassessment Start Date] <= [Entry Date] and ([Exit Date] >= '~(GBL_HUD_mReport1_StartDate)'or IsNull([Exit Date]))),
+												If([Subassessment Start Date] < [Entry Date],'yes',
+													(If([Subassessment Start Time] <= [Entry Time] ,'yes','no'))),'no'));
+SET GBL_HUD_vIsEntryAnswer1_s    		    = 	=replace([GBL_HUD_vIsEntryAnswer_s_s],'~','$');
+SET GBL_HUD_vIsEntryAnswer_y_s				= 	If(~(GBL_HUD_vIsEntryAnswer1_s) = 'yes',~(GBL_HUD_vIsEntryAnswer1_s),null());
+SET GBL_HUD_vIsEntryAnswer_yes_sub    		= 	=replace([GBL_HUD_vIsEntryAnswer_y_s],'~','$');
+
+SET GBL_HUD_vRangeDateEffective_e_sub			= 	If (~(GBL_HUD_vIsEntryAnswer1_s) = 'yes',([Subassessment Effective Date]&' '&[Subassessment Effective Time]), null());
+SET GBL_HUD_vRangeDateEffective_en_sub    		= 	=replace([GBL_HUD_vRangeDateEffective_e_sub],'~','$');
+SET GBL_HUD_max_da_en_sub						=   date(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_en_sub)),[Subassessment Client Id],[Entry Exit Id],[Subassessment Question Id],[Recordset Id]));
+SET GBL_HUD_max_date_en_sub					    = 	=replace([GBL_HUD_max_da_en_sub],'~','$');
+SET GBL_HUD_max_ti_en_sub						=   time(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_en_sub)),[Subassessment Client Id],[Entry Exit Id],[Subassessment Question Id],[Recordset Id]));
+SET GBL_HUD_max_time_en_sub				    	= 	=replace([GBL_HUD_max_ti_en_sub],'~','$');
+SET GBL_HUD_vMostRecentAnswer_da_en_sub 		= 	if((~(GBL_HUD_max_date_en_sub)) =(date(~(GBL_HUD_vRangeDateEffective_en_sub))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_date_en_sub    	= 	=replace([GBL_HUD_vMostRecentAnswer_da_en_sub],'~','$');
+SET GBL_HUD_vMostRecentAnswer_ti_en_sub			= 	if((~(GBL_HUD_max_time_en_sub)) =(time(~(GBL_HUD_vRangeDateEffective_en_sub))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_time_en_sub    	= 	=replace([GBL_HUD_vMostRecentAnswer_ti_en_sub],'~','$');
+SET GBL_HUD_vMostRecentAnswer_dt_en_sub 		= 	if((~(GBL_HUD_vMostRecentAnswer_date_en_sub) = 'yes' and ~(GBL_HUD_vMostRecentAnswer_time_en_sub) = 'yes'),[Subassessment Answer],null());
+SET GBL_HUD_vMostRecentAnswer_entry_sub    		= 	=replace([GBL_HUD_vMostRecentAnswer_dt_en_sub],'~','$');
+
+SET GBL_HUD_vIsExitAnswer_s_s  	      	    = (If((([Subassessment End Date] <= [Exit Date] and [Entry Date] <= '~(GBL_HUD_mReport1_EndDate)') or IsNull([Exit Date])),
+												If([Subassessment End Date] < [Exit Date] or IsNull([Exit Date]),'yes',
+													(If([Subassessment End Time] <= [Exit Time] or IsNull([Exit Time]) ,'yes','no'))),'no'));
+SET GBL_HUD_vIsExitAnswer1_s    		    = 	=replace([GBL_HUD_vIsExitAnswer_s_s],'~','$');
+SET GBL_HUD_vIsExitAnswer_y_s			    = 	If(~(GBL_HUD_vIsExitAnswer1_s) = 'yes',~(GBL_HUD_vIsExitAnswer1_s),null());
+SET GBL_HUD_vIsExitAnswer_yes_sub   		= 	=replace([GBL_HUD_vIsExitAnswer_y_s],'~','$');
+
+SET GBL_HUD_vRangeDateEffective_ex_sub			= 	If (~(GBL_HUD_vIsExitAnswer1_s) = 'yes',([Subassessment Effective Date]&' '&[Subassessment Effective Time]), null());
+SET GBL_HUD_vRangeDateEffective_exi_sub    		= 	=replace([GBL_HUD_vRangeDateEffective_ex_sub],'~','$');
+SET GBL_HUD_max_da_ex_sub						=   date(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_exi_sub)),[Subassessment Client Id],[Entry Exit Id],[Subassessment Question Id],[Recordset Id]));
+SET GBL_HUD_max_date_ex_sub				    	= 	=replace([GBL_HUD_max_da_ex_sub],'~','$');
+SET GBL_HUD_max_ti_ex_sub						=   time(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_exi_sub)),[Subassessment Client Id],[Entry Exit Id],[Subassessment Question Id],[Recordset Id]));
+SET GBL_HUD_max_time_ex_sub					    = 	=replace([GBL_HUD_max_ti_ex_sub],'~','$');
+SET GBL_HUD_vMostRecentAnswer_da_ex_sub 		= 	if((~(GBL_HUD_max_date_ex_sub)) =(date(~(GBL_HUD_vRangeDateEffective_exi_sub))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_date_ex_sub    	= 	=replace([GBL_HUD_vMostRecentAnswer_da_ex_sub],'~','$');
+SET GBL_HUD_vMostRecentAnswer_ti_ex_sub 		= 	if((~(GBL_HUD_max_time_ex_sub)) =(time(~(GBL_HUD_vRangeDateEffective_exi_sub))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_time_ex_sub    	= 	=replace([GBL_HUD_vMostRecentAnswer_ti_ex_sub],'~','$');
+SET GBL_HUD_vMostRecentAnswer_dt_ex_sub 		= 	if((~(GBL_HUD_vMostRecentAnswer_date_ex_sub) = 'yes' and ~(GBL_HUD_vMostRecentAnswer_time_ex_sub) = 'yes'),[Subassessment Answer],null());
+SET GBL_HUD_vMostRecentAnswer_exit_sub     		= 	=replace([GBL_HUD_vMostRecentAnswer_dt_ex_sub],'~','$');
+
+
+//******************************************************************************************************************************************************************************************************************************
+
+//Master Calander Item-1 (Assessments and Subassessment)
+
+//SET GBL_HUD_vReport1_EntryStartDate_s				=	If ((Date([Entry Date])> '~(GBL_HUD_mReport1_StartDate)'),Null(),date([Entry Date]));
+SET GBL_HUD_vReport1_EntryStartDate_s				=	If ((Date([Entry Date])> '~(GBL_HUD_mReport1_EndDate)'),Null(),'yes');
+SET GBL_HUD_vReport1_EntryStartDate 				= 	=replace([GBL_HUD_vReport1_EntryStartDate_s],'~','$');
+
+//SET GBL_HUD_vReport1_ExitEndDate_s	    		=	If ((Date([Exit Date])< '~(GBL_HUD_mReport1_EndDate)'),Null(),date([Exit Date]));
+SET GBL_HUD_vReport1_ExitEndDate_s	    			=	If ((Date([Exit Date])> '~(GBL_HUD_mReport1_StartDate)'),'yes',If(IsNull([Exit Date]),'yes',Null()));
+SET GBL_HUD_vReport1_ExitEndDate        		    =   =replace([GBL_HUD_vReport1_ExitEndDate_s],'~','$');
+
+
+SET GBL_HUD_vReport1_EntryStartDate_su				=	If ((Date([Subassessment Start Date])> '~(GBL_HUD_mReport1_EndDate)'),Null(),'yes');
+SET GBL_HUD_vReport1_EntryStartDate_sub 			= 	=replace([GBL_HUD_vReport1_EntryStartDate_su],'~','$');
+
+
+SET GBL_HUD_vReport1_ExitEndDate_su	    			=	If ((Date([Subassessment End Date])> '~(GBL_HUD_mReport1_StartDate)'),'yes',If(IsNull([Subassessment End Date]),'yes',Null()));
+SET GBL_HUD_vReport1_ExitEndDate_sub        		=   =replace([GBL_HUD_vReport1_ExitEndDate_su],'~','$');
+
+
+
+
+//Master Calander Item-2 (Assessments and Subassessment)
+
+//SET GBL_HUD_vReport2_EntryStartDate_s				=	If ((Date([Entry Date])> '~(GBL_HUD_mReport2_StartDate)'),Null(),date([Entry Date]));
+SET GBL_HUD_vReport2_EntryStartDate_s				=	If ((Date([Entry Date])> '~(GBL_HUD_mReport2_EndDate)'),Null(),'yes');
+SET GBL_HUD_vReport2_EntryStartDate 				= 	=replace([GBL_HUD_vReport2_EntryStartDate_s],'~','$');
+
+//SET GBL_HUD_vReport2_ExitEndDate_s	    		=	If ((Date([Exit Date])< '~(GBL_HUD_mReport2_EndDate)'),Null(),date([Exit Date]));
+SET GBL_HUD_vReport2_ExitEndDate_s	    			=	If ((Date([Exit Date])> '~(GBL_HUD_mReport2_StartDate)'),'yes',If(IsNull([Exit Date]),'yes',Null()));
+SET GBL_HUD_vReport2_ExitEndDate        		    =   =replace([GBL_HUD_vReport2_ExitEndDate_s],'~','$');
+
+
+
+
+//Master Calander Item-1 (services)
+
+//SET GBL_HUD_vReport1_EntryStartDate_ser			=	If ((Date([Service Start Date])< '~(GBL_HUD_mReport1_StartDate_service)'),Null(),date([Service Start Date]));
+SET GBL_HUD_vReport1_EntryStartDate_ser				=	If (((Date([Service Start Date])<= (Date([Exit Date]))) and (Date([Service Start Date])<= '~(GBL_HUD_mReport1_EndDate)')),'yes',If((IsNull([Exit Date]) and (Date([Service Start Date])<= '~(GBL_HUD_mReport1_EndDate)')),'yes',Null()));
+SET GBL_HUD_vReport1_EntryStartDate_service 		= 	=replace([GBL_HUD_vReport1_EntryStartDate_ser],'~','$');
+
+//SET GBL_HUD_vReport1_ExitEndDate_ser	   		    =	If ((Date([Service Provide End Date])> '~(GBL_HUD_mReport1_EndDate_service)'),Null(),date([Service Provide End Date]));
+SET GBL_HUD_vReport1_ExitEndDate_ser	   		    =	If (((Date([Service Provide End Date])>= (Date([Entry Date]))) and (Date([Service Provide End Date])>= '~(GBL_HUD_mReport1_StartDate)')),'yes',If(IsNull([Service Provide End Date]),'yes',Null()));
+SET GBL_HUD_vReport1_ExitEndDate_service  	  	    =   =replace([GBL_HUD_vReport1_ExitEndDate_ser],'~','$');
+
+
+//Master Calander Item-1 (call)
+
+//SET GBL_HUD_vReport1_EntryStartDate_c				=	If ((Date([Call Start Date])< '~(GBL_HUD_mReport1_StartDate_call)'),Null(),date([Call Start Date]));
+//SET GBL_HUD_vReport1_EntryStartDate_call		    = 	=replace([GBL_HUD_vReport1_EntryStartDate_c],'~','$');
+
+//SET GBL_HUD_vReport1_ExitEndDate_c	   		  	    =	If ((Date([Call End Date])> '~(GBL_HUD_mReport1_EndDate_call)'),Null(),date([Call End Date]));
+//SET GBL_HUD_vReport1_ExitEndDate_call  	            =   =replace([GBL_HUD_vReport1_ExitEndDate_c],'~','$');
+
+SET GBL_HUD_vReport1_RangeDate_call_s				=	If ((Date([Call Start Date])< '~(GBL_HUD_mReport1_StartDate_call)'
+														or Date([Call Start Date])> '~(GBL_HUD_mReport1_EndDate_call)'),Null(),date([Call Start Date]));
+SET GBL_HUD_vReport1_RangeDate_call    	  			= 	=replace([GBL_HUD_vReport1_RangeDate_call_s],'~','$');
+
+SET GBL_HUD_vReport1_RangeDate_call_s_rs				=	If ((Date([Subassessment Start Date])< '~(GBL_HUD_mReport1_StartDate_call)'
+														or Date([Subassessment Start Date])> '~(GBL_HUD_mReport1_EndDate_call)'),Null(),date([Subassessment Start Date]));
+SET GBL_HUD_vReport1_RangeDate_call_rs    	  			= 	=replace([GBL_HUD_vReport1_RangeDate_call_s_rs],'~','$');
+
+
+
+//************************************************************************Calls*************************************************************************************************************************
+
+
+SET GBL_HUD_vRangeDateEffective_da_call			= 	([Call Answer Effective Date ]);
+SET GBL_HUD_vRangeDateEffective_date_call   	= 	=replace([GBL_HUD_vRangeDateEffective_da_call],'~','$');
+SET GBL_HUD_vRangeDateEffective_ti_call			= 	(timestamp([Call Answer Effective Time ],' hh:mm:ss.fff'));
+SET GBL_HUD_vRangeDateEffective_time_call   	= 	=replace([GBL_HUD_vRangeDateEffective_ti_call],'~','$');
+SET GBL_HUD_max_da_en_call						=   date(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_date_call)),[Call Client Id],[Question Id],[Call Record Id]));
+SET GBL_HUD_max_date_en_call					= 	=replace([GBL_HUD_max_da_en_call],'~','$');
+SET GBL_HUD_max_ti_en_call						=   timestamp((time(aggr( nodistinct max(~(GBL_HUD_vRangeDateEffective_time_call)),[Call Client Id],[Question Id],[Call Record Id]))),' hh:mm:ss.fff');
+SET GBL_HUD_max_time_en_call				    = 	=replace([GBL_HUD_max_ti_en_call],'~','$');
+SET GBL_HUD_vMostRecentAnswer_da_en_call 		= 	if((~(GBL_HUD_max_date_en_call)) =(date(~(GBL_HUD_vRangeDateEffective_date_call))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_date_en_call    	= 	=replace([GBL_HUD_vMostRecentAnswer_da_en_call],'~','$');
+SET GBL_HUD_vMostRecentAnswer_ti_en_call			= 	if((~(GBL_HUD_max_time_en_call)) =(~(GBL_HUD_vRangeDateEffective_time_call)),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_time_en_call    	= 	=replace([GBL_HUD_vMostRecentAnswer_ti_en_call],'~','$');
+SET GBL_HUD_vMostRecentAnswer_dt_en_call 			= 	if((~(GBL_HUD_vMostRecentAnswer_date_en_call) = 'yes' and ~(GBL_HUD_vMostRecentAnswer_time_en_call) = 'yes'),[Call Answer],null());
+SET GBL_HUD_vMostRecentAnswer_call    			= 	=replace([GBL_HUD_vMostRecentAnswer_dt_en_call],'~','$');
+
+
+
+//************************************************************************Call Recordsets*************************************************************************************************************************
+
+SET GBL_HUD_vRangeDateAdded_da_rs				= 	([Call Recordset Answer Added Date]);
+SET GBL_HUD_vRangeDateAdded_date_rs   			= 	=replace([GBL_HUD_vRangeDateAdded_da_rs],'~','$');
+SET GBL_HUD_vRangeDateAdded_ti_rs				= 	(timestamp([Call Recordset Answer Added Time],' hh:mm:ss.fff'));
+SET GBL_HUD_vRangeDateAdded_time_rs   			= 	=replace([GBL_HUD_vRangeDateAdded_ti_rs],'~','$');
+SET GBL_HUD_max_da_en_rs						=   date(aggr( nodistinct max(~(GBL_HUD_vRangeDateAdded_date_rs)),[Call Recordset Answer Client Id],[Question Id],[Call Record Set Id]));
+SET GBL_HUD_max_date_en_rs					    = 	=replace([GBL_HUD_max_da_en_rs],'~','$');
+SET GBL_HUD_max_ti_en_rs						=   timestamp((time(aggr( nodistinct max(~(GBL_HUD_vRangeDateAdded_time_rs)),[Call Recordset Answer Client Id],[Question Id],[Call Record Set Id]))),' hh:mm:ss.fff');
+SET GBL_HUD_max_time_en_rs				    	= 	=replace([GBL_HUD_max_ti_en_rs],'~','$');
+SET GBL_HUD_vMostRecentAnswer_da_en_rs 			= 	if((~(GBL_HUD_max_date_en_rs)) =(date(~(GBL_HUD_vRangeDateAdded_date_rs))),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_date_en_rs    	= 	=replace([GBL_HUD_vMostRecentAnswer_da_en_rs],'~','$');
+SET GBL_HUD_vMostRecentAnswer_ti_en_rs			= 	if((~(GBL_HUD_max_time_en_rs)) =(~(GBL_HUD_vRangeDateAdded_time_rs)),'yes',null());
+SET GBL_HUD_vMostRecentAnswer_time_en_rs    	= 	=replace([GBL_HUD_vMostRecentAnswer_ti_en_rs],'~','$');
+SET GBL_HUD_vMostRecentAnswer_dt_en_rs 			= 	if((~(GBL_HUD_vMostRecentAnswer_date_en_rs) = 'yes' and ~(GBL_HUD_vMostRecentAnswer_time_en_rs) = 'yes'),[Call Recordset Answer],null());
+SET GBL_HUD_vMostRecentAnswer_rs    			= 	=replace([GBL_HUD_vMostRecentAnswer_dt_en_rs],'~','$');
+
+
+
+
+
+//Master Calander for Need Date Set Calculations
+
+SET GBL_HUD_vReport1_RangeDate_n					=	If (((Date([Need Date Set])> '~(GBL_HUD_mReport1_EndDate)') or (Date([Need Date Set])< '~(GBL_HUD_mReport1_StartDate)')),Null(),date([Need Date Set]));
+SET GBL_HUD_vReport1_RangeDate_need		 		 	= 	=replace([GBL_HUD_vReport1_RangeDate_n],'~','$');
+
+//Master Calander for Entry Exit Review Date Calculations
+
+SET GBL_HUD_vReport1_RangeDate_i					=	If ((Date([Entry Exit Review Date])< '~(GBL_HUD_mReport1_StartDate_int)' or Date([Entry Exit Review Date])> '~(GBL_HUD_mReport1_EndDate_int)'),Null(),date([Entry Exit Review Date]));
+SET GBL_HUD_vReport1_RangeDate_interim		 	 	= 	=replace([GBL_HUD_vReport1_RangeDate_i],'~','$');
+
+//Master Calander for Goal target Date Calculations
+
+SET GBL_HUD_vReport1_RangeDate_g					=	If ((Date([Goal Target Date])< '~(GBL_HUD_mReport1_StartDate_goal)' or Date([Goal Target Date])> '~(GBL_HUD_mReport1_EndDate_goal)'),Null(),date([Goal Target Date]));
+SET GBL_HUD_vReport1_RangeDate_goal		  			= 	=replace([GBL_HUD_vReport1_RangeDate_g],'~','$');
+
+//Master Calander for call followup Date Calculations
+
+SET GBL_HUD_vReport1_RangeDate_c_f					=	If ((Date([Call Actual Followup Date])< '~(GBL_HUD_mReport1_StartDate_c_f)'
+														or Date([Call Actual Followup Date])> '~(GBL_HUD_mReport1_EndDate_c_f)'),Null(),date([Call Actual Followup Date]));
+SET GBL_HUD_vReport1_RangeDate_call_follow		  	= 	=replace([GBL_HUD_vReport1_RangeDate_c_f],'~','$');
+
+
+//Master Calander for Goal followup Date Calculations
+
+SET GBL_HUD_vReport1_RangeDate_g_f					=	If ((Date([Goal Actual Followup Date])< '~(GBL_HUD_mReport1_StartDate_g_f)'
+														or Date([Goal Actual Followup Date])> '~(GBL_HUD_mReport1_EndDate_g_f)'),Null(),date([Goal Actual Followup Date]));
+SET GBL_HUD_vReport1_RangeDate_goal_follow		  	= 	=replace([GBL_HUD_vReport1_RangeDate_g_f],'~','$');
+
+//Master Calander for Service followup Date Calculations
+
+SET GBL_HUD_vReport1_RangeDate_s_f					=	If ((Date([Service Actual Followup Date])< '~(GBL_HUD_mReport1_StartDate_s_f)'
+														or Date([Service Actual Followup Date])> '~(GBL_HUD_mReport1_EndDate_s_f)'),Null(),date([Service Actual Followup Date]));
+SET GBL_HUD_vReport1_RangeDate_service_follow		= 	=replace([GBL_HUD_vReport1_RangeDate_s_f],'~','$');
+
+
+//Master Calander for Goal ActionStep target Date Calculations
+
+SET GBL_HUD_vReport1_RangeDate_gas_f				=	If ((Date([Goal Actionstep Target Date])< '~(GBL_HUD_mReport1_StartDate_gas_f)'
+														or Date([Goal Actionstep Target Date])> '~(GBL_HUD_mReport1_EndDate_gas_f)'),Null(),date([Goal Actionstep Target Date]));
+SET GBL_HUD_vReport1_RangeDate_gas_follow		    = 	=replace([GBL_HUD_vReport1_RangeDate_gas_f],'~','$');
+
+//Master Calander for Client Incident Date Calculations
+
+SET GBL_HUD_vReport1_IncidentStartDate_s			=	If ((Date([Client Incident Start Date])> '~(GBL_HUD_mReport1_IncidentEndDate)'),Null(),date([Client Incident Start Date]));
+SET GBL_HUD_vReport1_IncidentStartDate				= 	=replace([GBL_HUD_vReport1_IncidentStartDate_s],'~','$');
+
+SET GBL_HUD_vReport1_IncidentEndDate_s	  		    =	If ((Date([Client Incident End Date])< '~(GBL_HUD_mReport1_IncidentStartDate)'),Null(),date([Client Incident End Date]));
+SET GBL_HUD_vReport1_IncidentEndDate 	     		=   =replace([GBL_HUD_vReport1_IncidentEndDate_s],'~','$');
+
+//Master Calander for Case Manager Date Calculations
+
+//SET GBL_HUD_vReport1_CaseStartDate_c				=	If ((Date([Case Manager Date Started])< '~(GBL_HUD_mReport1_CaseStartDate)'),Null(),date([Case Manager Date Started]));
+SET GBL_HUD_vReport1_CaseStartDate_c				=	If ((Date([Case Manager Date Started])> '~(GBL_HUD_mReport1_CaseEndDate)'),Null(),'yes');
+SET GBL_HUD_vReport1_CaseStartDate					= 	=replace([GBL_HUD_vReport1_CaseStartDate_c],'~','$');
+
+//SET GBL_HUD_vReport1_CaseEndDate_c	  		   	=	If ((Date([Case Manager Date Ended])> '~(GBL_HUD_mReport1_CaseEndDate)'),Null(),date([Case Manager Date Ended]));
+SET GBL_HUD_vReport1_CaseEndDate_c	  		   	    =	If ((Date([Case Manager Date Ended])> '~(GBL_HUD_mReport1_CaseEndDate)'),'yes',If(IsNull([Case Manager Date Ended]),'yes',Null()));
+SET GBL_HUD_vReport1_CaseEndDate	     			=   =replace([GBL_HUD_vReport1_CaseEndDate_c],'~','$');
+
+//Master Calander for Service referred Calculations
+
+SET GBL_HUD_vReport1_RangeDate_s_r					=	  If ((Date([Service Refer Start Date])< '~(GBL_HUD_mReport1_StartDate_s_r)'
+														or Date([Service Refer Start Date])> '~(GBL_HUD_mReport1_EndDate_s_r)'),Null(),date([Service Refer Start Date]));
+SET GBL_HUD_vReport1_RangeDate_Service_Refer	   	= 	=replace([GBL_HUD_vReport1_RangeDate_s_r],'~','$');
+
+//Master Calander for Goal Date Set Calculations
+
+SET GBL_HUD_vReport1_RangeDate_g_s				=	If ((Date([Goal Date Set])< '~(GBL_HUD_mReport1_StartDate_g_s)'
+														or Date([Goal Date Set])> '~(GBL_HUD_mReport1_EndDate_g_s)'),Null(),date([Goal Date Set]));
+SET GBL_HUD_vReport1_RangeDate_g_set		    = 	=replace([GBL_HUD_vReport1_RangeDate_g_s],'~','$');
+
+//Master Calander for Entry Exit Answer Effective Date Calculations
+
+SET GBL_HUD_vReport1_RangeDate_eff					=	If (((Date([Answer Effective Date])< '~(GBL_HUD_mReport1_StartDate_eff)' or Date([Answer Effective Date])> '~(GBL_HUD_mReport1_EndDate_eff)') or [Subassessment Answer Type] = 'Subassessment' or [Call Recordset Answer Type] ='Recordset' or [Measurement Answer Type] ='Matrix'),Null(),date([Answer Effective Date]));
+SET GBL_HUD_vReport1_RangeDate_effective		 	= 	=replace([GBL_HUD_vReport1_RangeDate_eff],'~','$');
+
+
+//Master Calander for Entry Exit Answer Effective Date Calculations-subassessments
+
+SET GBL_HUD_vReport1_RangeDate_eff_sub			=	If (((Date([Answer Effective Date])< '~(GBL_HUD_mReport1_StartDate_eff)' or Date([Answer Effective Date])> '~(GBL_HUD_mReport1_EndDate_eff)') or [Answer Type] <> 'Assessment'  or [Call Answer Type] ='Call' or [Measurement Answer Type] ='Matrix'),Null(),date([Answer Effective Date]));
+SET GBL_HUD_vReport1_RangeDate_effective_sub	 	= 	=replace([GBL_HUD_vReport1_RangeDate_eff_sub],'~','$');
+
+
+SET GBL_HUD_vIncidentClientId				= count(DISTINCT [Answer Client Id]);
+
+
+
+/////////////////////////////////////////////////////////////////////////////OTHER THAN HUD ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+SET GBL_vReport1_Service_StartDate_Ser			=	If ((Date([Service Start Date])> '~(GBL_mReport1_EndDate_service)'),Null(),date([Service Start Date]));
+SET GBL_vReport1_Service_StartDate			    = 	=replace([GBL_vReport1_Service_StartDate_Ser],'~','$');
+
+SET GBL_vReport1_Service_EndDate_Ser		    =	If ((Date([Service Provide End Date])< '~(GBL_mReport1_StartDate_service)'),Null(),date([Service Provide End Date]));
+SET GBL_vReport1_Service_EndDate 	     		=   =replace([GBL_vReport1_Service_EndDate_Ser],'~','$');
+
+//Master Calander Item-1 (Assessments and Subassessment)
+
+//SET GBL_vReport1_EntryStartDate_s				=	If ((Date([Entry Date])> '~(GBL_mReport1_StartDate)'),Null(),date([Entry Date]));
+SET GBL_vReport1_EntryStartDate_s				=	If ((Date([Entry Date])> '~(GBL_mReport1_EndDate)'),Null(),'yes');
+SET GBL_vReport1_EntryStartDate 				= 	=replace([GBL_vReport1_EntryStartDate_s],'~','$');
+
+//SET GBL_vReport1_ExitEndDate_s	    		=	If ((Date([Exit Date])< '~(GBL_mReport1_EndDate)'),Null(),date([Exit Date]));
+SET GBL_vReport1_ExitEndDate_s	    			=	If ((Date([Exit Date])> '~(GBL_mReport1_StartDate)'),'yes',If(IsNull([Exit Date]),'yes',Null()));
+SET GBL_vReport1_ExitEndDate        		    =   =replace([GBL_vReport1_ExitEndDate_s],'~','$');
+
+
+SET GBL_vReport1_EntryStartDate_su				=	If ((Date([Subassessment Start Date])> '~(GBL_mReport1_EndDate)'),Null(),'yes');
+SET GBL_vReport1_EntryStartDate_sub 			= 	=replace([GBL_vReport1_EntryStartDate_su],'~','$');
+
+
+SET GBL_vReport1_ExitEndDate_su	    			=	If ((Date([Subassessment End Date])> '~(GBL_mReport1_StartDate)'),'yes',If(IsNull([Subassessment End Date]),'yes',Null()));
+SET GBL_vReport1_ExitEndDate_sub        		=   =replace([GBL_vReport1_ExitEndDate_su],'~','$');
+
+
+
+
+//Master Calander Item-2 (Assessments and Subassessment)
+
+//SET GBL_vReport2_EntryStartDate_s				=	If ((Date([Entry Date])> '~(GBL_mReport2_StartDate)'),Null(),date([Entry Date]));
+SET GBL_vReport2_EntryStartDate_s				=	If ((Date([Entry Date])> '~(GBL_mReport2_EndDate)'),Null(),'yes');
+SET GBL_vReport2_EntryStartDate 				= 	=replace([GBL_vReport2_EntryStartDate_s],'~','$');
+
+//SET GBL_vReport2_ExitEndDate_s	    		=	If ((Date([Exit Date])< '~(GBL_mReport2_EndDate)'),Null(),date([Exit Date]));
+SET GBL_vReport2_ExitEndDate_s	    			=	If ((Date([Exit Date])> '~(GBL_mReport2_StartDate)'),'yes',If(IsNull([Exit Date]),'yes',Null()));
+SET GBL_vReport2_ExitEndDate        		    =   =replace([GBL_vReport2_ExitEndDate_s],'~','$');
+
+
+
+SET GBL_vIsEntryAnswer_s	 	 	    = 	If(([Subassessment Answer Type] = 'Subassessment' or [Call Recordset Answer Type] ='Recordset' or [Call Answer Type] ='Call'  or [Measurement Answer Type] ='Matrix'),'no',(If(([Answer Effective Date] <= [Entry Date] and([Exit Date] >= '~(GBL_mReport1_StartDate)'or IsNull([Exit Date]))),
+												If([Answer Effective Date] < [Entry Date],'yes',
+													(If([Answer Effective Time] <= [Entry Time] ,'yes','no'))),'no')));
+SET GBL_vIsEntryAnswer1    		   	    = 	=replace([GBL_vIsEntryAnswer_s],'~','$');
+SET GBL_vIsEntryAnswer_y		   		= 	If(~(GBL_vIsEntryAnswer1) = 'yes',~(GBL_vIsEntryAnswer1),null());
+SET GBL_vIsEntryAnswer_yes    			= 	=replace([GBL_vIsEntryAnswer_y],'~','$');
+
+SET GBL_vIsExitAnswer_s  	     	    = If(([Subassessment Answer Type] = 'Subassessment' or [Call Recordset Answer Type] ='Recordset' or [Call Answer Type] ='Call'  or [Measurement Answer Type] ='Matrix'),'no',(If((([Answer Effective Date] <= [Exit Date] and [Entry Date] <= '~(GBL_mReport1_EndDate)') or IsNull([Exit Date])),
+												If([Answer Effective Date] < [Exit Date] or IsNull([Exit Date]),'yes',
+													(If([Answer Effective Time] <= [Exit Time] or IsNull([Exit Time]) ,'yes','no'))),'no')));
+SET GBL_vIsExitAnswer1    			    = 	=replace([GBL_vIsExitAnswer_s],'~','$');
+SET GBL_vIsExitAnswer_y				    = 	If(~(GBL_vIsExitAnswer1) = 'yes',~(GBL_vIsExitAnswer1),null());
+SET GBL_vIsExitAnswer_yes   			= 	=replace([GBL_vIsExitAnswer_y],'~','$');
+
+SET GBL_vRangeDateEffective_e			= 	If (~(GBL_vIsEntryAnswer1) = 'yes',([Answer Effective Date]&' '&[Answer Effective Time]), null());
+SET GBL_vRangeDateEffective_en    		= 	=replace([GBL_vRangeDateEffective_e],'~','$');
+SET GBL_max_da_en						=   date(aggr( nodistinct max(~(GBL_vRangeDateEffective_en)),[Answer Client Id],[Entry Exit Id],[Question Id]));
+SET GBL_max_date_en					    = 	=replace([GBL_max_da_en],'~','$');
+SET GBL_max_ti_en						=   time(aggr( nodistinct max(~(GBL_vRangeDateEffective_en)),[Answer Client Id],[Entry Exit Id],[Question Id]));
+SET GBL_max_time_en				    	= 	=replace([GBL_max_ti_en],'~','$');
+SET GBL_vMostRecentAnswer_da_en 		= 	if((~(GBL_max_date_en)) =(date(~(GBL_vRangeDateEffective_en))),'yes',null());
+SET GBL_vMostRecentAnswer_date_en    	= 	=replace([GBL_vMostRecentAnswer_da_en],'~','$');
+SET GBL_vMostRecentAnswer_ti_en			= 	if((~(GBL_max_time_en)) =(time(~(GBL_vRangeDateEffective_en))),'yes',null());
+SET GBL_vMostRecentAnswer_time_en    	= 	=replace([GBL_vMostRecentAnswer_ti_en],'~','$');
+SET GBL_vMostRecentAnswer_dt_en 		= 	if((~(GBL_vMostRecentAnswer_date_en) = 'yes' and ~(GBL_vMostRecentAnswer_time_en) = 'yes'),[Answer],null());
+SET GBL_vMostRecentAnswer_entry    		= 	=replace([GBL_vMostRecentAnswer_dt_en],'~','$');
+
+
+SET GBL_vRangeDateEffective_ex			= 	If (~(GBL_vIsExitAnswer1) = 'yes',([Answer Effective Date]&' '&[Answer Effective Time]), null());
+SET GBL_vRangeDateEffective_exi    		= 	=replace([GBL_vRangeDateEffective_ex],'~','$');
+SET GBL_max_da_ex						=   date(aggr( nodistinct max(~(GBL_vRangeDateEffective_exi)),[Answer Client Id],[Entry Exit Id],[Question Id]));
+SET GBL_max_date_ex				    	= 	=replace([GBL_max_da_ex],'~','$');
+SET GBL_max_ti_ex						=   time(aggr( nodistinct max(~(GBL_vRangeDateEffective_exi)),[Answer Client Id],[Entry Exit Id],[Question Id]));
+SET GBL_max_time_ex					    = 	=replace([GBL_max_ti_ex],'~','$');
+SET GBL_vMostRecentAnswer_da_ex 		= 	if((~(GBL_max_date_ex)) =(date(~(GBL_vRangeDateEffective_exi))),'yes',null());
+SET GBL_vMostRecentAnswer_date_ex    	= 	=replace([GBL_vMostRecentAnswer_da_ex],'~','$');
+SET GBL_vMostRecentAnswer_ti_ex 		= 	if((~(GBL_max_time_ex)) =(time(~(GBL_vRangeDateEffective_exi))),'yes',null());
+SET GBL_vMostRecentAnswer_time_ex    	= 	=replace([GBL_vMostRecentAnswer_ti_ex],'~','$');
+SET GBL_vMostRecentAnswer_dt_ex 		= 	if((~(GBL_vMostRecentAnswer_date_ex) = 'yes' and ~(GBL_vMostRecentAnswer_time_ex) = 'yes'),[Answer],null());
+SET GBL_vMostRecentAnswer_exit     		= 	=replace([GBL_vMostRecentAnswer_dt_ex],'~','$');
+
+
+////////subassessments
+
+SET GBL_vIsEntryAnswer_s_s	 	   	    = 	If(([Answer Type] = 'Assessment' or [Call Answer Type] ='Call' or [Call Recordset Answer Type] ='Recordset' or [Measurement Answer Type] ='Matrix'),'no',(If(([Subassessment Start Date] <= [Entry Date] and ([Exit Date] >= '~(GBL_mReport1_StartDate)'or IsNull([Exit Date]))),
+												If([Subassessment Start Date] < [Entry Date],'yes',
+													(If([Subassessment Start Time] <= [Entry Time] ,'yes','no'))),'no')));
+SET GBL_vIsEntryAnswer1_s    		    = 	=replace([GBL_vIsEntryAnswer_s_s],'~','$');
+SET GBL_vIsEntryAnswer_y_s				= 	If(~(GBL_vIsEntryAnswer1_s) = 'yes',~(GBL_vIsEntryAnswer1_s),null());
+SET GBL_vIsEntryAnswer_yes_sub    		= 	=replace([GBL_vIsEntryAnswer_y_s],'~','$');
+
+SET GBL_vRangeDateEffective_e_sub			= 	If (~(GBL_vIsEntryAnswer1_s) = 'yes',([Subassessment Answer Effective Date]&' '&[Subassessment Answer Effective Time]), null());
+SET GBL_vRangeDateEffective_en_sub    		= 	=replace([GBL_vRangeDateEffective_e_sub],'~','$');
+SET GBL_max_da_en_sub						=   date(aggr( nodistinct max(~(GBL_vRangeDateEffective_en_sub)),[Subassessment Answer Client Id],[Entry Exit Id],[Question Id],[Recordset Id]));
+SET GBL_max_date_en_sub					    = 	=replace([GBL_max_da_en_sub],'~','$');
+SET GBL_max_ti_en_sub						=   time(aggr( nodistinct max(~(GBL_vRangeDateEffective_en_sub)),[Subassessment Answer Client Id],[Entry Exit Id],[Question Id],[Recordset Id]));
+SET GBL_max_time_en_sub				    	= 	=replace([GBL_max_ti_en_sub],'~','$');
+SET GBL_vMostRecentAnswer_da_en_sub 		= 	if((~(GBL_max_date_en_sub)) =(date(~(GBL_vRangeDateEffective_en_sub))),'yes',null());
+SET GBL_vMostRecentAnswer_date_en_sub    	= 	=replace([GBL_vMostRecentAnswer_da_en_sub],'~','$');
+SET GBL_vMostRecentAnswer_ti_en_sub			= 	if((~(GBL_max_time_en_sub)) =(time(~(GBL_vRangeDateEffective_en_sub))),'yes',null());
+SET GBL_vMostRecentAnswer_time_en_sub    	= 	=replace([GBL_vMostRecentAnswer_ti_en_sub],'~','$');
+SET GBL_vMostRecentAnswer_dt_en_sub 		= 	if((~(GBL_vMostRecentAnswer_date_en_sub) = 'yes' and ~(GBL_vMostRecentAnswer_time_en_sub) = 'yes'),[Subassessment Answer],null());
+SET GBL_vMostRecentAnswer_entry_sub    		= 	=replace([GBL_vMostRecentAnswer_dt_en_sub],'~','$');
+
+SET GBL_vIsExitAnswer_s_s  	      	    = If(([Answer Type] = 'Assessment' or [Call Answer Type] ='Call' or [Call Recordset Answer Type] ='Recordset'  or [Measurement Answer Type] ='Matrix'),'no',(If((([Subassessment End Date] <= [Exit Date] and [Entry Date] <= '~(GBL_mReport1_EndDate)') or IsNull([Exit Date])),
+												If([Subassessment End Date] < [Exit Date] or IsNull([Exit Date]),'yes',
+													(If([Subassessment End Time] <= [Exit Time] or IsNull([Exit Time]) ,'yes','no'))),'no')));
+SET GBL_vIsExitAnswer1_s    		    = 	=replace([GBL_vIsExitAnswer_s_s],'~','$');
+SET GBL_vIsExitAnswer_y_s			    = 	If(~(GBL_vIsExitAnswer1_s) = 'yes',~(GBL_vIsExitAnswer1_s),null());
+SET GBL_vIsExitAnswer_yes_sub   		= 	=replace([GBL_vIsExitAnswer_y_s],'~','$');
+
+SET GBL_vRangeDateEffective_ex_sub			= 	If (~(GBL_vIsExitAnswer1_s) = 'yes',([Subassessment Answer Effective Date]&' '&[Subassessment Answer Effective Time]), null());
+SET GBL_vRangeDateEffective_exi_sub    		= 	=replace([GBL_vRangeDateEffective_ex_sub],'~','$');
+SET GBL_max_da_ex_sub						=   date(aggr( nodistinct max(~(GBL_vRangeDateEffective_exi_sub)),[Subassessment Answer Client Id],[Entry Exit Id],[Question Id],[Recordset Id]));
+SET GBL_max_date_ex_sub				    	= 	=replace([GBL_max_da_ex_sub],'~','$');
+SET GBL_max_ti_ex_sub						=   time(aggr( nodistinct max(~(GBL_vRangeDateEffective_exi_sub)),[Subassessment Answer Client Id],[Entry Exit Id],[Question Id],[Recordset Id]));
+SET GBL_max_time_ex_sub					    = 	=replace([GBL_max_ti_ex_sub],'~','$');
+SET GBL_vMostRecentAnswer_da_ex_sub 		= 	if((~(GBL_max_date_ex_sub)) =(date(~(GBL_vRangeDateEffective_exi_sub))),'yes',null());
+SET GBL_vMostRecentAnswer_date_ex_sub    	= 	=replace([GBL_vMostRecentAnswer_da_ex_sub],'~','$');
+SET GBL_vMostRecentAnswer_ti_ex_sub 		= 	if((~(GBL_max_time_ex_sub)) =(time(~(GBL_vRangeDateEffective_exi_sub))),'yes',null());
+SET GBL_vMostRecentAnswer_time_ex_sub    	= 	=replace([GBL_vMostRecentAnswer_ti_ex_sub],'~','$');
+SET GBL_vMostRecentAnswer_dt_ex_sub 		= 	if((~(GBL_vMostRecentAnswer_date_ex_sub) = 'yes' and ~(GBL_vMostRecentAnswer_time_ex_sub) = 'yes'),[Subassessment Answer],null());
+SET GBL_vMostRecentAnswer_exit_sub     		= 	=replace([GBL_vMostRecentAnswer_dt_ex_sub],'~','$');
+
+
+SET GBL_HUD_vReport1_RangeDate_mat			=   If (((Date([Measurement Answer Added Date])< '~(GBL_HUD_mReport1_StartDate_Matrix)')or (Date([Measurement Answer Added Date])> '~(GBL_HUD_mReport1_EndDate_Matrix)')or (([Measurement Answer Type])<> 'Matrix')),Null(),date([Measurement Answer Added Date]));
+SET GBL_HUD_vReport1_RangeDate_Matrix	 	= 	=replace([GBL_HUD_vReport1_RangeDate_mat],'~','$');
+
+
+//SET GBL_HUD_vReport1_EntryStartDate_a				=	If ((Date([Activity Start Date])> '~(GBL_HUD_mReport1_EndDate_Activity)'),Null(),'yes');
+//SET GBL_HUD_vReport1_EntryStartDate_Activity 		= 	=replace([GBL_HUD_vReport1_EntryStartDate_a],'~','$');
+
+//SET GBL_HUD_vReport1_ExitEndDate_a	    			=	If ((Date([Activity End Date])> '~(GBL_HUD_mReport1_StartDate_Activity)'),'yes',If(IsNull([Activity End Date]),'yes',Null()));
+//SET GBL_HUD_vReport1_ExitEndDate_Activity        	=   =replace([GBL_HUD_vReport1_ExitEndDate_a],'~','$');
+
+//SET GBL_HUD_vReport1_EntryStartDate_s				=	If ((Date([Activity Session Date])> '~(GBL_HUD_mReport1_EndDate_Session)'),Null(),'yes');
+//SET GBL_HUD_vReport1_EntryStartDate_Session 		= 	=replace([GBL_HUD_vReport1_EntryStartDate_s],'~','$');
+
+//SET GBL_HUD_vReport1_ExitEndDate_s	    			=	If ((Date([Activity Session Date])> '~(GBL_HUD_mReport1_StartDate_Session)'),'yes',If(IsNull([Activity Session Date]),'yes',Null()));
+//SET GBL_HUD_vReport1_ExitEndDate_Session        	=   =replace([GBL_HUD_vReport1_ExitEndDate_s],'~','$');
+
+//============================================
+//SET STREAM NAME TO USE FOR SETUP VERICATION:
+//============================================
+SET vStreamName = "";
+SET vStreamConnection = 'SPData_Beta';
+SET vStreamQVDType = 'Extract';
+LET vStreamQVDTypePrefix = left(vStreamQVDType, 1);
+LET vStreamFilenamePrefix = vStreamQVDTypePrefix & '_' & upper(vDBname);
+
+SITE:
+LOAD
+ 	val_varchar as Site
+FROM [lib://$(vStreamConnection)/$(vStreamQVDType)/$(vDBname)/$(vStreamFilenamePrefix)_SP_SETTING.qvd](qvd)
+WHERE name = 'QLIK_TICKET_HOMEDIR';
+
+LET vStreamName = Peek('Site',0,'SITE');
+DROP Table SITE;
+//============================================
+//END
+//============================================
+
+
+SET GBL_vAgeAtEntry=Age([Entry Date],[SVPPROFDOB_entry]);
+SET GBL_vAgeAtExit= Age(If(IsNull([Exit Date]),Date(Floor(ReloadTime())), [Exit Date]),SVPPROFDOB_entry);
+SET GBL_vAgeToday= Age(Date(Floor(ReloadTime())),SVPPROFDOB_entry);
+
+SET vCount_ClientId = Count(Distinct ([Client Id]));
+SET vCount_ClientUniqueId = Count(Distinct ([Client Unique Id]));
+SET vCount_EntryExitId = Count(Distinct ([Entry Exit Id]));
+SET vCount_NeedServiceId = Count(Distinct ([Need Service Id]));
+SET vCount_NeedId = Count(Distinct ([Need Id])); 
+
+SET DISABLE_INSIGHTS = 1;
+

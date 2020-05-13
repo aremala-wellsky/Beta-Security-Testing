@@ -1,0 +1,80 @@
+FACT_sp_call_record_TMP:
+NoConcatenate
+Load 
+  call_record_id, 
+  start_date, 
+  end_date, 
+  call_type_value_id, 
+  caller_type_value_id, 
+  call_notes, 
+  total_seconds, 
+  first_name, 
+  last_name, 
+  call_status_value_id, 
+  followup_needed, 
+  client_id, 
+  grant_roi, 
+  active,
+  in_progress, 
+  suffix, 
+  telephone, 
+  alias, 
+  projected_followup_date, 
+  followup_made, 
+  actual_followup_date, 
+  followup_user_id, 
+  covered_by_roi,
+  telephone_areacode, 
+  telephone_prefix, 
+  telephone_line, 
+  middle_name, 
+  search_initials, 
+  telephone_extension, 
+  veteran_status_value_id,
+  provider_creating_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CALL_RECORD.qvd](qvd);
+
+
+FACT_Call_Record:
+LOAD
+*,
+	num([Call Start Date])											AS %numCallStartDate,
+	num([Call End Date])											AS %numCallEndDate
+	;
+LOAD
+	call_record_id															AS %CallRecordJoinKey,
+	call_record_id															AS %CALL_RECORD_KEY_SEC,
+    applymap ('MapPickList', caller_type_value_id, NULL() )					AS [Caller Type],	
+    (date(floor(start_date)))                                               AS [Call Start Date],
+ 	//time(start_date)		         			    						AS [Call Start Time],
+	time( floor(start_date,1/(24*60)),'hh:mm' )								 AS [Call Start Time],
+     date(floor(end_date))                                                  AS [Call End Date],
+    //time(end_date)                                                          AS [Call End Time],
+	time( floor(end_date,1/(24*60)),'hh:mm' ) 								AS [Call End Time],
+    (date(floor(projected_followup_date)))                                  AS [Call Projected Followup Date],
+    (date(floor(actual_followup_date)))                                     AS [Call Actual Followup Date],
+    applymap ('MapPickList', call_type_value_id, NULL() )					AS [Call Type],
+	
+	total_seconds															AS [Call Total Seconds], 
+    applymap ('MapPickList', call_status_value_id, NULL() )					AS [Call Status], 
+    followup_needed															AS [Call Followup Needed], 
+    applymap ( 'MapCallAnswerClientId', call_record_id, -(call_record_id))  AS [Call Client Id], 
+    applymap ( 'MapCallAnswerClientId', call_record_id, -(call_record_id)) 		
+																			AS %DIM_CLIENT_KEY_CALL,	
+	call_record_id															AS [Call Record Id],																			
+    telephone																AS [Call Telephone], 
+    followup_made															AS [Call Followup Made], 
+    applymap ('MapUserName', followup_user_id, 0 ) 							AS [Call Followup User],
+    applymap ('MapPickList', veteran_status_value_id, NULL() )				AS [Call Veteran Status],
+    provider_creating_id													AS [Call Provider Id],
+	applymap ('MapProviderName', provider_creating_id, NULL() ) 			AS [Call Provider Name],
+    first_name																AS [Call First Name], 
+    last_name																AS [Call Last Name], 	
+	middle_name																AS [Call Middle Name]
+Resident FACT_sp_call_record_TMP;
+Drop Table FACT_sp_call_record_TMP;
+
+
+
+STORE FACT_Call_Record INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_FACT_Call_Record.qvd];
+

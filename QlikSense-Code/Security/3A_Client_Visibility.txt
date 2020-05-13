@@ -1,0 +1,98 @@
+Client_Group:
+LOAD DISTINCT 
+ 	provider_id,
+    visibility_group_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT USER_GROUP; 
+
+
+
+Client_tmp:
+LOAD
+    client_id,
+    active
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT.qvd]
+(qvd);
+
+Client:
+NOCONCATENATE
+LOAD
+	client_id
+RESIDENT Client_tmp
+WHERE match(active, 1);
+
+DROP TABLE Client_tmp;
+
+
+keep_only_recent_clients_tmp:
+INNER JOIN (Client)
+LOAD
+	client_id
+RESIDENT RECENT_CLIENT_tmp;
+
+
+
+//client_visibility_tmp:
+INNER JOIN (Client)
+LOAD
+//     clientvisibility_id,
+    client_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENTVISIBILITY.qvd]
+(qvd);
+
+Client_visibility:
+LEFT JOIN (Client_Group)
+LOAD DISTINCT
+    visibility_group_id,
+    visible,
+    client_id
+RESIDENT Client;
+
+DROP TABLE Client;
+
+Visible:
+Load DISTINCT
+	provider_id,
+    client_id,
+    1 AS Visible
+RESIDENT Client_Group
+WHERE visible = 1;
+
+not_Visible:
+LEFT JOIN(Visible)
+Load DISTINCT
+	provider_id,
+    client_id,
+    1 AS not_Visible
+RESIDENT Client_Group
+WHERE visible = 0;
+
+DROP TABLE Client_Group;
+
+client_visibility:
+NOCONCATENATE
+LOAD DISTINCT
+	provider_id,
+	client_id AS [Client Id]
+RESIDENT Visible
+WHERE match(Visible, 1)  AND isNull(not_Visible);
+
+DROP TABLE Visible;
+
+//client_tmp:
+LEFT JOIN(client_visibility)
+LOAD
+    [Client Id],
+    [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDTransformType)/$(vDBname)/$(vQVDTypePrefix)_DIM_Client.qvd]
+(qvd);
+
+
+STORE client_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_client_visibility.qvd];
+Drop table client_visibility;
+
+

@@ -1,0 +1,45 @@
+
+//============================================
+//SET STREAM NAME TO USE FOR SETUP VERICATION:
+//============================================
+SET vStreamName = "";
+SET vStreamConnection = 'SPData_Beta';
+SET vStreamQVDType = 'Extract';
+LET vStreamQVDTypePrefix = left(vStreamQVDType, 1);
+LET vStreamFilenamePrefix = vStreamQVDTypePrefix & '_' & upper(vDBname);
+
+SITE:
+LOAD
+ 	val_varchar as Site
+FROM [lib://$(vStreamConnection)/$(vStreamQVDType)/$(vDBname)/$(vStreamFilenamePrefix)_SP_SETTING.qvd](qvd)
+WHERE name = 'QLIK_TICKET_HOMEDIR';
+
+LET vStreamName = Peek('Site',0,'SITE');
+DROP Table SITE;
+//============================================
+//END
+//============================================
+
+
+SET GBL_vAgeAtEntry=Age([Entry Date],[SVPPROFDOB_entry]);
+SET GBL_vAgeAtExit= Age(If(IsNull([Exit Date]),Date(Floor(ReloadTime())), [Exit Date]),SVPPROFDOB_entry);
+SET GBL_vAgeToday= Age(Date(Floor(ReloadTime())),SVPPROFDOB_entry);
+
+SET vCount_ClientId = Count(Distinct ([Client Id]));
+SET vCount_ClientUniqueId = Count(Distinct ([Client Unique Id]));
+SET vCount_EntryExitId = Count(Distinct ([Entry Exit Id]));
+SET vCount_NeedServiceId = Count(Distinct ([Need Service Id]));
+SET vCount_NeedId = Count(Distinct ([Need Id])); 
+
+SET DISABLE_INSIGHTS = 1;
+
+//VARIABLE FOR USER INPUT
+
+SET vInputField01 = NULL();
+SET vInputField02 = NULL();
+Temp_YesNoInput_tbl:
+LOAD * INLINE [
+    InputYesNo
+    Yes
+    No
+];

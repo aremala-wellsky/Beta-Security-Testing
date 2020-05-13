@@ -1,0 +1,14 @@
+ENTRY_EXIT_ACCESS_TIER1:
+NOCONCATENATE
+LOAD 
+	client_id AS [Client Id],
+    entry_exit_id AS [Entry Exit Id],
+    //provider_creating_id AS [Client Provider Created By Id],
+	user_access_tier & '|' & user_provider_id AS TIER_LINK
+RESIDENT INHERENT_SECURITY_tmp_EE
+WHERE (isNull(num(exit_date)) OR (num(exit_date) >= '$(vNumDateSet)')) and (user_access_tier = 1);
+
+
+STORE ENTRY_EXIT_ACCESS_TIER1 INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_ENTRY_EXIT_ACCESS_TIER1.qvd];
+drop table ENTRY_EXIT_ACCESS_TIER1 ;
+DROP TABLE INHERENT_SECURITY_tmp_EE;

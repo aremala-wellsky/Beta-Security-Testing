@@ -1,0 +1,39 @@
+RECORDSET_ACCESS:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+//     provider_id,
+// 	user_access_tier,
+    [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+recordset_security:
+LOAD
+    recordset_id,
+    active,
+    client_id,
+//     provider_id,
+    provider_creating_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)\E_$(vDBname)_DA_RECORDSET.qvd]
+(qvd)
+WHERE num(date_effective) >= '$(vNumDateSet)';
+
+INNER JOIN(RECORDSET_ACCESS)
+LOAD
+    client_id AS [Client Id],
+    recordset_id AS [Recordset Id],
+//     provider_id,
+    provider_creating_id AS [Client Provider Created By Id],
+    1 AS [INHERENT SECURITY]
+RESIDENT recordset_security
+WHERE match(active, 1)
+  AND client_id > 0
+  AND recordset_id > 0;
+
+DROP TABLE recordset_security;
+
+
+
+

@@ -1,0 +1,582 @@
+FACT_sp_need_TMP:
+NOCONCATENATE
+Load 
+	* 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_NEED.qvd](qvd);
+
+FACT_Need_Service:
+LOAD
+    need_id	& '|' & client_id 									AS %JoinKey,
+	if((len(client_id)=0),-(call_record_id),client_id) 			AS %FACT_NEEDSERVICE_KEY,
+	if((len(client_id)=0),-(call_record_id),client_id) 			AS [Need Service Client Id],
+    need_id														AS [Need Id], 
+	need_id 													AS %FACT_NEED_KEY_SEC,
+	need_id 													AS %FACT_NEED_KEY_SEC_TIER1,
+	//"need_id" 												AS %NEED_ACTIVITY_KEY,
+    client_id													AS  %ClientIdNeedId,
+    group_id                                                    AS [Need Group Id],
+    if(isnull(group_id),need_id,group_id)         		        AS [Need Group Uid],
+    code_id                                                     AS %categoryneedid,
+    applymap ( 'MapNeedServiceDescription', code_id, NULL() ) 	AS [Need Name],
+    applymap ( 'MapNeedServiceCode', code_id, NULL() ) 			AS [Need Code],
+    num ( amount )												AS [Need Amount],
+    applymap ('MapPickList', status_id, '$(vNullValue)' )		AS [Need Status],
+    applymap ('MapPickList', outcome_id, '$(vNullValue)' )		AS [Need Outcome],
+    applymap ('MapPickList', reason_unmet_id, '$(vNullValue)' ) AS [Need Unmet Reason],
+    (date(floor(date_set)))                                     AS [Need Date Set],
+    time(date_set)                                              AS [Need Time Set],	   	   	  
+	//time( floor(date_set,1/(24*60)),'hh:mm' ) 				AS [Need Time Set],
+    provider_id                                                 AS [Need Provider Id],
+	provider_id													AS  %needproviderlink,
+    applymap ('MapProviderName', provider_id, NULL() ) 			AS [Need Provider],
+    goal_id														AS [Need Goal Id],
+    call_record_id												AS [Need Call Record Id],
+    household_id 												AS [Need Household Id],
+    applymap ('MapUserName', user_updating_id, NULL() )         AS [Need User Updated By],
+	user_updating_id  										    AS [Need User Updated By Id],
+    applymap ('MapUserName', user_creating_id, NULL() )         AS [Need User Created By],
+	user_creating_id  											AS [Need User Created By Id],
+    provider_creating_id										AS [Need Provider Created By Id],
+	applymap ('MapProviderName', provider_creating_id, NULL() ) AS [Need Provider Created By],
+    provider_updating_id 										AS [Need Provider Updated By Id],
+    applymap ('MapProviderName', provider_updating_id, NULL() ) AS [Need Provider Updated By],
+     (date(floor(date_updated) ) )								AS [Need Date Updated],
+	time (date_updated)											AS [Need Time Updated],
+	(date(floor(date_added) ) )									AS [Need Date Added],
+	time (date_added)											AS [Need Time Added],
+    left("note",200)                                            AS [Need Notes]
+Resident FACT_sp_need_TMP;
+Drop Table FACT_sp_need_TMP;
+
+FACT_sp_service_code_external_term_TEMP:
+NOCONCATENATE
+SELECT t.external_system, t.external_code, t.name, s.code, s.description, s.service_code_id
+FROM sp_service_code s 
+JOIN sp_service_code_external_term t ON s.service_code_id = t.service_code_id
+JOIN sp_need n ON n.code_id = s.service_code_id
+WHERE t.external_system = 'AIRS';
+
+//LEFT JOIN (FACT_Need_Service) 
+Need_Category:
+NoConcatenate
+LOAD
+service_code_id AS %categoryneedid,
+external_code AS [Need Category Code],
+name AS [Need Category Name]
+Resident FACT_sp_service_code_external_term_TEMP;
+DROP TABLE  FACT_sp_service_code_external_term_TEMP;
+
+
+
+FACT_sp_need_service_TMP:
+NOCONCATENATE
+Load 
+	need_id,
+	client_id,
+	code_id,
+	active,
+	refer_date,
+	service_provided,
+    projected_followup_date,
+    actual_followup_date,
+	provide_start_date,
+	provide_end_date,
+	date_updated,
+	date_added,
+    provide_provider_id,
+	provider_creating_id,
+    provider_updating_id,
+    provider_code_id, 
+	//Provider Specific Service Code,
+	user_creating_id,
+    group_id,
+	need_service_group_id,
+	need_service_id,
+	"service_note",
+    referto_provider_id,
+    refer_proj_followup_date,
+    refer_actual_followup_date,
+    household_id,
+    hprp_finance_assist_type_id,
+    hprp_financial_assistance_start_date,
+    hprp_financial_assistance_end_date,
+    destination_value_id, 
+    shelter_reserve_date,
+    shelter_item,
+    shelter_bed_id,
+    service_staff_id ,
+    referral_outcome_id,
+	shelter_bedlist_id,
+    call_record_id,
+	shelter_entry_exit_id,
+	followup_user_id,
+	refer_followup_user_id,
+    user_updating_id,
+	hopwa_service_type_id,
+	hopwa_fin_assist_type_id,
+	hopwa_fin_assist_amount,
+    vispdat_recordset_id,
+    tayvispdat_recordset_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_NEED_SERVICE.qvd](qvd);
+
+LEFT JOIN (FACT_Need_Service)
+LOAD
+*,
+	num([Service Provide Start Date])								            AS %numServiceProvideStartDate,
+	num([Service Provide End Date])									            AS %numServiceProvideEndDate
+;
+LOAD
+    need_id	& '|' & client_id					                				        AS %JoinKey,
+    need_service_id												                        AS [Need Service Id],
+    need_service_id												                        AS %need_worksheets_link,
+	(date(floor( refer_date ) ) )						                                AS [Service Refer Date],
+    time( refer_date ) 						                                            AS [Service Refer Time],
+    if ( service_provided = 1, 'Yes', 'No' ) 
+    															                        AS [Service Is Provided],
+ 	(date(floor( provide_start_date ) ) )				                                AS [Service Provide Start Date],
+     time( provide_start_date )  				                                        AS [Service Provide Start Time],
+    if (len ( trim ( provide_start_date ) ) > 0, 'Yes', 'No' )	                        AS [Need Is Unmet],
+	(date(floor( provide_end_date ) ) )					                                AS [Service Provide End Date],
+    time ( provide_end_date )               					                        AS [Service Provide End Time],
+	//time ( floor(provide_end_date,1/(24*60)),'hh:mm' )     					        AS [Service Provide End Date Time],
+    applymap ( 'MapNeedServiceDescription', code_id, ' ')               	            AS [Service Name],
+    applymap ( 'MapNeedServiceCode', code_id, ' ' ) 		                 	        AS [Service Code],
+    left("service_note",200)                                                	        AS [Service Notes],
+    applymap ('MapProviderSpecificService', provider_code_id, NULL())                   AS [Provider Specific Service],
+    provide_provider_id                                                                 AS [Service Provide Provider By Id],
+	provide_provider_id                                                     	        AS %needserviceproviderlink,
+    applymap ('MapProviderName', provide_provider_id, NULL() )                          AS [Service Provide Provider By],
+    group_id										                                    AS [Need Service Group Id],
+	need_service_group_id										                        AS [Need Service Fund Group Id],
+    if(isnull(group_id),need_service_id,group_id)                                       AS [Need Service Group Uid],
+    applymap ('MapProviderName', referto_provider_id, NULL() ) 					        AS [Service Referto Provider],
+    referto_provider_id                                                                 AS [Service Referto Provider Id],
+    household_id 																        AS [Service Household Id],
+    applymap ('MapPickList', destination_value_id, '$(vNullValue)' )			        AS [Service Destination],
+    (date(floor(actual_followup_date)))                                                 AS [Service Actual Followup Date],
+    (date(floor(projected_followup_date)))                                              AS [Service Projected Followup Date],
+    (date(floor(refer_proj_followup_date)))                                             AS [Referral Projected Followup Date],
+    (date(floor(refer_actual_followup_date)))                                           AS [Referral Actual Followup Date],
+    (date(floor(shelter_reserve_date)))                                                 AS [Shelter Reserve Date],
+    if ( shelter_item = 1, 'Yes', 'No' ) 
+    																			        AS [Service Shelter Item],
+	applymap ( 'MapBedlistname', shelter_bedlist_id, NULL() )               	        AS [Service Bedlist Name],
+	applymap ( 'MapBedlistbedname', shelter_bed_id, NULL() )               		        AS [Service Bedlist Bed Name],
+    service_staff_id                                                                    As %servicestaffid,
+    applymap ('MapPickList', referral_outcome_id, '$(vNullValue)' )				        AS [Service Referral Outcome],
+ //   applymap ('MapNeedVisibility', need_id, NULL() ) AS [Need Visibility Group],
+  //	if ( applymap ('MapNeedVisibleVisibility', need_id, NULL() ) = 1, 'Yes', 'No' ) AS [Need Visible],
+	call_record_id																        AS [Service Call Record Id],
+	shelter_entry_exit_id														        AS [Shelter Entry Exit Id],
+	applymap ('MapUserName', followup_user_id, NULL() )								    AS [Service Followup User],
+	applymap ('MapUserName', refer_followup_user_id, NULL() )						    AS [Service Referral Followup User],
+    applymap ('MapUserName', user_updating_id, NULL() )         	                    AS [Service User Updated By],
+	user_updating_id  												                    AS [Service User Updated By Id],
+    applymap ('MapUserName', user_creating_id, NULL() )         	                    AS [Service User Created By],
+	user_creating_id  												                    AS [Service User Created By Id],
+    provider_creating_id											                    AS [Service Provider Created By Id],
+	applymap ('MapProviderName', provider_creating_id, NULL() ) 	                    AS [Service Provider Created By],
+    provider_updating_id 											                    AS [Service Provider Updated By Id],
+    applymap ('MapProviderName', provider_updating_id, NULL() ) 	                    AS [Service Provider Updated By],
+     (date(floor(date_updated) ) )									                    AS [Service Date Updated],
+	time (date_updated)												                    AS [Service Time Updated],
+	(date(floor(date_added) ) )										                    AS [Service Date Added],
+	time (date_added)												                    AS [Service Time Added],
+	 applymap ('MapPickList', hopwa_service_type_id, '$(vNullValue)' )		            AS [Type of HOPWA Service],
+	 applymap ('MapPickList', hopwa_fin_assist_type_id, '$(vNullValue)' )	            AS [HOPWA Financial Assistance Type],
+	hopwa_fin_assist_amount													            AS [HOPWA Financial Assistance Amount],
+    vispdat_recordset_id                                                                AS %vispdat_recordset_id,
+    vispdat_recordset_id                                                                AS [Service VI-SPDAT Recordset Id],
+    tayvispdat_recordset_id                                                             AS [Service TAY-VI-SPDAT Recordset Id]
+Resident FACT_sp_need_service_TMP;
+Drop Table FACT_sp_need_service_TMP;
+
+FACT_sp_need_service_group_TMP:
+NOCONCATENATE
+Load 
+	need_service_group_id,
+	cost_of_units,
+	service_units,
+	unit_type_id,
+	cost_per_unit,
+    primary_client_id,
+    date_added,
+    date_updated,
+    provide_provider_id,
+    provider_creating_id,
+    provider_updating_id,
+	distribute_as_voucher,
+    vendor_id,
+    accounting_code,
+    client_copay,
+    accounting_code_value_id,
+    vifspdat_recordset_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_NEED_SERVICE_GROUP.qvd](qvd);
+
+LEFT JOIN (FACT_Need_Service)
+LOAD 
+	"need_service_group_id"										                                                        AS [Need Service Fund Group Id],
+	"cost_of_units"         									                                                        AS [Need Service Group Cost Of Units],
+    if(Frac(service_units) > 0,num(service_units,'#,##0.##', '.' , ',' ),num(service_units,'#,##0', '.' , ',' ))        AS [Need Service Group Service Units],
+    applymap ('MapPickList', unit_type_id, '$(vNullValue)' )	                                                        AS [Need Service Group Unit Type],
+    "cost_per_unit"											                                                            AS [Need Service Group Cost Per Unit],
+    primary_client_id                                                                                                   AS [Primary Client Id],
+    provide_provider_id                                                                                                 AS [Need Service Group Provide Provider Id],
+    applymap('MapProviderName', provide_provider_id, NULL() )                                                           AS [Need Service Group Provide Provider],
+	distribute_as_voucher										                                                        AS [Need Service Group Distribute As Voucher],
+    vendor_id													                                                        AS [Need Service Group Vendor Id],
+    accounting_code												                                                        AS [Need Service Group Accounting Code],
+    client_copay												                                                        AS [Need Service Group Client Copay],
+    applymap ('MapPickList', accounting_code_value_id, NULL())	                                                        AS [Need Service Group Accounting Code Value],
+    "vifspdat_recordset_id"                                                                                             AS [Service VI-FSPDAT Recordset Id]
+Resident FACT_sp_need_service_group_TMP;
+Drop Table FACT_sp_need_service_group_TMP;
+
+
+FACT_sp_need_service_group_fund_TMP:
+NOCONCATENATE
+Load 
+	need_service_group_id,
+	active,
+	fund_id,
+    date_added,
+    date_updated,
+	amount,
+	last_action_id,                                     
+    last_action_reason_id,
+    last_action_note,
+    user_updating_id,
+    current_status_id,
+    voucher_id,
+    voucher_memo,
+    check_request_id,
+    generated_check_request_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_NEED_SERVICE_GROUP_FUND.qvd](qvd);
+
+LEFT JOIN (FACT_Need_Service)
+LOAD 
+    "need_service_group_id"												AS [Need Service Fund Group Id],
+    if ( active = 1, 'Yes', 'No' ) 						                AS [Need Service Group Fund Is Active],
+    applymap ('MapFund', fund_id, NULL() )						        AS [Need Service Group Fund], 
+    "amount"															AS [Need Service Group Fund Amount],
+	applymap ('MapPickList', last_action_id, NULL())					AS [Need Service Group Fund Last Action],
+    (date(floor(date_updated) ) )									    AS [Need Service Group Fund Last Action Date],	
+	applymap ('MapPickList', last_action_reason_id, NULL())				AS [Need Service Group Fund Last Action Reason Id],
+    last_action_note													AS [Need Service Group Fund Last Action Note],
+    applymap ('MapUserName', user_updating_id, NULL())                  AS [Need Service Group Fund Last Action User],
+    user_updating_id                                                    AS [Need Service Group Fund Last Action User Id],
+    applymap ('MapPickList', current_status_id, NULL())					AS [Need Service Group Fund Current Status],	
+    voucher_id															AS [Need Service Group Fund Voucher Id],
+    voucher_memo														AS [Need Service Group Fund Voucher Memo],
+    check_request_id													AS [Need Service Group Fund Check Request Id],
+    generated_check_request_id										    AS [Need Service Group Fund Generated Check Request Id]	
+Resident FACT_sp_need_service_group_fund_TMP;
+Drop Table FACT_sp_need_service_group_fund_TMP;
+
+//=============================================
+// Create Service Provider CoC Code
+//=============================================
+FACT_sp_needservice_provider_coc_TMP:
+NoConcatenate
+Load
+    provider_id,
+    provider_coc_code_id,
+    start_date,
+	end_date,
+	coc_code_id,
+	geocode,
+	postal_code,
+	geography_type_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_COC_CODE.qvd]
+(qvd);
+
+LEFT JOIN (FACT_Need_Service)
+LOAD
+    provider_coc_code_id									        AS [Service Provider CoC Code Id],
+    "provider_id"                                                   AS %needserviceproviderlink,
+    applymap ('MapPickList', coc_code_id, NULL() )                  AS [Service Provider CoC Code],
+    (date(floor( start_date ) ) )	         				        AS [Service Provider CoC Code Start Date],                                                                   
+    (date(floor( end_date ) ) )				         		        AS [Service Provider CoC Code End Date],
+    geocode													        AS [Service Provider CoC Geo Code],
+	postal_code												        AS [Service Provider CoC ZIP Code],
+	applymap ('MapPickList',geography_type_id , NULL() )            AS [Service Provider CoC Geography Type]
+
+Resident FACT_sp_needservice_provider_coc_TMP;
+Drop Table FACT_sp_needservice_provider_coc_TMP;
+
+FACT_sp_needservice_provider_TMP:
+NoConcatenate
+Load
+    provider_id,
+    program_type_code_value_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER.qvd]
+(qvd);
+
+LEFT JOIN (FACT_Need_Service)
+LOAD
+    "provider_id"                                                    AS %needserviceproviderlink,
+    applymap ('MapPickList', program_type_code_value_id, NULL() )    AS [Service Provider Project Type]
+Resident FACT_sp_needservice_provider_TMP;
+Drop Table FACT_sp_needservice_provider_TMP;
+
+
+
+//=============================================
+// Create Need Provider CoC Code
+//=============================================
+FACT_sp_need_provider_coc_TMP:
+NoConcatenate
+Load
+    provider_id,
+    provider_coc_code_id,
+    start_date,
+	end_date,
+	coc_code_id,
+	geocode,
+	postal_code,
+	geography_type_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_COC_CODE.qvd]
+(qvd);
+
+LEFT JOIN (FACT_Need_Service)
+LOAD
+    provider_coc_code_id									        AS [Need Provider CoC Code Id],
+    "provider_id"                                                   AS %needproviderlink,
+    applymap ('MapPickList', coc_code_id, NULL() )                  AS [Need Provider CoC Code],
+    (date(floor( start_date ) ) )	         				        AS [Need Provider CoC Code Start Date],                                                                   
+    (date(floor( end_date ) ) )				         		        AS [Need Provider CoC Code End Date],
+    geocode													        AS [Need Provider CoC Geo Code],
+	postal_code												        AS [Need Provider CoC ZIP Code],
+	applymap ('MapPickList',geography_type_id , NULL() )            AS [Need Provider CoC Geography Type]
+Resident FACT_sp_need_provider_coc_TMP;
+Drop Table FACT_sp_need_provider_coc_TMP;
+
+
+FACT_sp_need_provider_TMP:
+NoConcatenate
+Load
+    provider_id,
+    program_type_code_value_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER.qvd]
+(qvd);
+
+LEFT JOIN (FACT_Need_Service)
+LOAD
+    "provider_id"                                                    AS %needproviderlink,
+    applymap ('MapPickList', program_type_code_value_id, NULL() )    AS [Need Provider Project Type]
+Resident FACT_sp_need_provider_TMP;
+Drop Table FACT_sp_need_provider_TMP;
+
+FACT_sp_reporting_group_provider_TMP: //RUNNING TOTAL: Rows/Fields 212/74
+Load 	
+	provider_id,
+	reporting_group_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_REPORTING_GROUP_PROVIDER.qvd]
+(qvd);
+
+//LEFT JOIN(FACT_Need_Service)
+Need_Reporting_Group:
+LOAD 
+    "provider_id"															AS %needproviderlink,
+ 	applymap ('MapReportingGroup', reporting_group_id, NULL() )				AS [Need Reporting Group]
+
+Resident FACT_sp_reporting_group_provider_TMP;
+Drop Table FACT_sp_reporting_group_provider_TMP;
+
+FACT_sp_reporting_group_provider_TMP: //RUNNING TOTAL: Rows/Fields 212/74
+Load 	
+	provider_id,
+	reporting_group_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_REPORTING_GROUP_PROVIDER.qvd]
+(qvd);
+
+//LEFT JOIN(FACT_Need_Service)
+Service_Reporting_Group:
+LOAD 
+    "provider_id"															AS %needserviceproviderlink,
+ 	applymap ('MapReportingGroup', reporting_group_id, NULL() )				AS [Service Reporting Group]
+
+Resident FACT_sp_reporting_group_provider_TMP;
+Drop Table FACT_sp_reporting_group_provider_TMP;
+
+FACT_sp_reporting_group_provider_TMP: //RUNNING TOTAL: Rows/Fields 212/74
+Load 	
+	provider_id AS [referto_provider_id],
+	reporting_group_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_REPORTING_GROUP_PROVIDER.qvd]
+(qvd);
+
+//LEFT JOIN(FACT_Need_Service)
+Referto_Reporting_Group:
+LOAD 
+    "referto_provider_id"													AS [Service Referto Provider Id],
+ 	applymap ('MapReportingGroup', reporting_group_id, NULL() )				AS [Referto Reporting Group]
+
+Resident FACT_sp_reporting_group_provider_TMP;
+Drop Table FACT_sp_reporting_group_provider_TMP;
+
+FACT_sp_claim837_TMP:
+NOCONCATENATE
+Load 
+	export837_id,
+	service_id,
+	last_action_id,
+//	last_action_note,
+	last_action_details,
+	process_status_id,
+	status_category_id,
+	service_type,
+    accepted_date,
+    date_added,
+    date_updated,
+    eob_date,
+    initial_submit_date,
+    received_era_date
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLAIM837.qvd](qvd);
+
+FACT_sp_claim837:
+//LEFT JOIN (FACT_Need_Service)
+LOAD 
+    "export837_id"													AS [Medicaid Export837 Id],
+    "service_id"													AS [Need Service Id],
+    applymap ('MapPickList', last_action_id, '$(vNullValue)' )		AS [Medicaid Claim837 Last Action],    
+   // "last_action_note"												AS [Medicaid Claim837 Last Action Note],
+    "last_action_details"											AS [Medicaid Claim837 Last Action Details],
+    applymap ('MapPickList', process_status_id, '$(vNullValue)' )	AS [Medicaid Claim837 Process Status],
+    applymap ('MapPickList', status_category_id, '$(vNullValue)' )	AS [Medicaid Claim837 Status Category],     
+    (date(floor(eob_date)))                                         AS [Medicaid Claim837 EOB Date],
+    (date(floor( initial_submit_date)))                             AS [Medicaid Claim837 Initial Submit Date],
+    time(initial_submit_date)                                       AS [Medicaid Claim837 Initial Submit Time],
+	//time( floor(initial_submit_date,1/(24*60)),'hh:mm' )			  AS [Medicaid Claim837 Initial Submit Time],
+    (date(floor(received_era_date)))                                AS [Medicaid Claim837 Received Era Date],
+    time(received_era_date)                                         AS [Medicaid Claim837 Received Era Time]
+	//time( floor(received_era_date,1/(24*60)),'hh:mm' )				 AS [Medicaid Claim837 Received Era Time]
+Resident FACT_sp_claim837_TMP;
+Drop Table FACT_sp_claim837_TMP;
+
+
+FACT_sp_export837_TMP:
+NOCONCATENATE
+Load 
+	export837_id,
+	generated_date,
+    date_added,
+    date_updated,
+	submit_date
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_EXPORT837.qvd](qvd);
+
+LEFT JOIN (FACT_sp_claim837)
+LOAD 
+	"export837_id"												AS [Medicaid Export837 Id],
+    (date(floor( generated_date ) ) )							AS [Medicaid Export837 Generated Date],
+    time ( generated_date )				                 		AS [Medicaid Export837 Generated Time]
+	//time ( floor(generated_date,1/(24*60)),'hh:mm' ) 				AS [Medicaid Export837 Generated Time]
+Resident FACT_sp_export837_TMP;
+Drop Table FACT_sp_export837_TMP;
+
+Left Join (FACT_Need_Service)
+Load 
+	*
+Resident FACT_sp_claim837;
+Drop Table FACT_sp_claim837;
+
+
+
+FACT_sp_provider_service_staff_TMP:
+NOCONCATENATE
+Load
+provider_service_staff_id,
+name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_SERVICE_STAFF.qvd](qvd);
+
+LEFT JOIN (FACT_Need_Service)
+//Service_staff_name:
+LOAD
+    "provider_service_staff_id"                                     AS %servicestaffid,
+    provider_service_staff_id                                        AS [Service Staff Id],
+    name                                                             AS [Service Staff Name]
+Resident FACT_sp_provider_service_staff_TMP;
+Drop Table FACT_sp_provider_service_staff_TMP;
+
+
+//Get Recordset id for VISPDAT Both Variables V1 and V2
+
+//Get the v1 score version
+
+FACT_da_recordset_answer_vispdat_TMP_V1:
+NoConcatenate
+Load 
+    "recordset_id",
+    "val_int"
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_RECORDSET_ANSWER.qvd]
+(qvd)
+WHERE question_id=2948;
+LEFT JOIN (FACT_Need_Service)
+LOAD
+    "recordset_id"    AS %vispdat_recordset_id,
+    "recordset_id"    AS [Service VI-SPDAT Recordset Id],
+    "val_int"         AS [Service VI-SPDAT v1 Score]
+Resident FACT_da_recordset_answer_vispdat_TMP_V1;
+Drop Table FACT_da_recordset_answer_vispdat_TMP_V1;
+
+//Get v2 Version
+
+FACT_da_recordset_answer_vispdat_TMP_V2:
+NoConcatenate
+LOAD
+    recordset_id,
+    val_int
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_RECORDSET_ANSWER.qvd]
+(qvd)
+WHERE question_id=2947;
+LEFT JOIN (FACT_Need_Service)
+LOAD
+    "recordset_id"    AS %vispdat_recordset_id,
+    "recordset_id"    AS [Service VI-SPDAT Recordset Id],
+    "val_int"         AS [Service VI-SPDAT v2 Score]
+Resident FACT_da_recordset_answer_vispdat_TMP_V2;
+Drop Table FACT_da_recordset_answer_vispdat_TMP_V2;
+
+//Get both variables END
+
+
+//Get Recordset id for TAY VISPDAT
+FACT_da_recordset_answer_tayspdat_TMP:
+NoConcatenate
+Load 
+    recordset_id,
+    val_int
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_RECORDSET_ANSWER.qvd]
+(qvd)
+WHERE question_id=3139;
+LEFT JOIN (FACT_Need_Service)
+LOAD
+    "recordset_id"    AS [Service TAY-VI-SPDAT Recordset Id],
+    "val_int"         AS [Service TAY-VI-SPDAT Score]
+Resident FACT_da_recordset_answer_tayspdat_TMP;
+Drop Table FACT_da_recordset_answer_tayspdat_TMP;
+
+
+//Get Recordset id for VI-FSPDAT
+
+FACT_da_recordset_answer_fsspdat_TMP:
+NoConcatenate
+Load 
+    recordset_id,
+    val_int
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_RECORDSET_ANSWER.qvd]
+(qvd)
+WHERE question_id=3039;
+LEFT JOIN (FACT_Need_Service)
+LOAD
+    "recordset_id"    AS [Service VI-FSPDAT Recordset Id],
+    "val_int"         AS [Service VI-FSPDAT Score]
+Resident FACT_da_recordset_answer_fsspdat_TMP;
+Drop Table FACT_da_recordset_answer_fsspdat_TMP;
+
+
+DROP FIELDS %JoinKey,%ClientIdNeedId  FROM FACT_Need_Service;
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE FACT_Need_Service INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_FACT_Need_Service.qvd];
+DROP Table FACT_Need_Service;

@@ -1,0 +1,91 @@
+Goal_Actionstep_Group:
+LOAD DISTINCT 
+ 	provider_id,
+    visibility_group_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT USER_GROUP; 
+
+Goal_Actionstep_tmp:
+LOAD
+    goal_actionstep_id,
+    active,
+	goal_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_GOAL_ACTIONSTEP.qvd]
+(qvd)
+WHERE num(date_set) >= '$(vNumDateSet)';
+
+Goal_Actionstep:
+NOCONCATENATE
+LOAD
+	goal_actionstep_id,
+	goal_id
+RESIDENT Goal_Actionstep_tmp
+WHERE match(active, 1);
+
+DROP TABLE Goal_Actionstep_tmp;
+
+INNER JOIN (Goal_Actionstep)
+LOAD
+    goal_actionstep_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_GOAL_ACTIONSTEPVISIBILITY.qvd]
+(qvd);
+
+Goal_Actionstep_visibility:
+LEFT JOIN (Goal_Actionstep_Group)
+LOAD DISTINCT
+    visibility_group_id,
+    visible,
+    goal_actionstep_id,
+	goal_id
+RESIDENT Goal_Actionstep;
+
+DROP TABLE Goal_Actionstep;
+
+Visible:
+Load DISTINCT
+	provider_id,
+    goal_actionstep_id,
+    1 AS Visible,
+	goal_id
+RESIDENT Goal_Actionstep_Group
+WHERE visible = 1;
+
+not_Visible:
+LEFT JOIN(Visible)
+Load DISTINCT
+	provider_id,
+    goal_actionstep_id,
+    1 AS not_Visible,
+	goal_id
+RESIDENT Goal_Actionstep_Group
+WHERE visible = 0;
+
+DROP TABLE Goal_Actionstep_Group;
+
+Goal_Actionstep_visibility:
+NOCONCATENATE
+LOAD DISTINCT
+	provider_id,
+	goal_actionstep_id AS [Goal Actionstep Id],
+	goal_id AS %goalactionstepgoalid
+RESIDENT Visible
+WHERE match(Visible, 1)  AND isNull(not_Visible);
+
+DROP TABLE Visible;
+
+//Goal_Actionstep_visibility_tmp:
+LEFT JOIN(Goal_Actionstep_visibility)
+LOAD
+    [Goal Actionstep Id]
+RESIDENt DIM_Goal_Actionstep;
+
+//STORE Goal_Actionstep_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)Goal_Actionstep_visibility.qvd];
+
+
+STORE Goal_Actionstep_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Goal_Actionstep_visibility.qvd];
+Drop table Goal_Actionstep_visibility;
+

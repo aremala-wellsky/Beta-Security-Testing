@@ -1,0 +1,145 @@
+TEMP_Interim:
+Noconcatenate
+SELECT
+b.entry_exit_review_id,
+--plv(b.point_in_time_type_id) as entry_exit_review_pit_type,
+--plv(b.review_type_id) as entry_exit_review_type,
+--b.review_date::DATE as entry_exit_review_date,
+b.entry_exit_id,
+b.question_id,
+dq3.virt_field_name,
+CASE WHEN b.code = 'lookup' THEN plv(da3.val_int)::VARCHAR
+     WHEN b.code = 'yes_no' THEN yn(da3.val_int)::VARCHAR
+     WHEN b.code = 'date' THEN (da3.val_date::DATE)::VARCHAR
+     WHEN b.code = 'int' THEN da3.val_int::VARCHAR
+     WHEN b.code = 'textbox' THEN left(da3.val_textfield::VARCHAR,200)
+     WHEN b.code = 'textarea' THEN left(da3.val_textfield::VARCHAR,200)
+     WHEN b.code = 'money' THEN da3.val_float::VARCHAR
+     WHEN b.code = 'service_code' THEN da3.val_int::VARCHAR
+     ELSE '' 
+END AS answer_val
+FROM
+(
+	SELECT 
+			a.entry_exit_id,
+			a.question_id,
+			a.code,
+			a.entry_exit_review_id,
+			a.point_in_time_type_id,
+			a.review_type_id,
+			a.review_date,
+	(SELECT da2.answer_id FROM da_answer da2 INNER JOIN da_question dq2 on (dq2.question_id = da2.question_id)
+	        WHERE (da2.client_id = a.client_id) AND (da2.question_id = a.question_id) AND (da2.date_effective = a.date_effective) 
+	        ORDER BY da2.answer_id DESC LIMIT 1) as answer_id
+	FROM 
+	(
+		SELECT 
+        ee.entry_exit_review_id, ee.review_date, ee.point_in_time_type_id, ee.review_type_id,
+		ee.entry_exit_id, ee.client_id, da.question_id, dqt.code, max(date_effective) as date_effective, ee.exit_date	
+		FROM (
+			SELECT DISTINCT eer2.entry_exit_review_id, ee2.entry_exit_id, ee2.client_id, ee2.provider_id, eer2.review_date, eer2.point_in_time_type_id, eer2.review_type_id, ee2.exit_date
+			FROM sp_entry_exit_review eer2
+			INNER JOIN sp_entry_exit ee2 ON (ee2.entry_exit_id = eer2.entry_exit_id)
+			INNER JOIN sp_picklist_value pv2 ON (pv2.picklist_value_id = eer2.point_in_time_type_id)
+			WHERE (eer2.active = TRUE) AND (eer2.date_updated > '$(varDeltaDate)')
+			--AND (eer2.review_date >= '1/01/2015')
+			AND (ee2.active = true) AND ((ee2.exit_date IS NULL) OR (ee2.exit_date >= '1/01/2015'))
+                        AND pv2.code NOT IN ('EEPOINTINTIME_EXIT','EEPOINTINTIME_ENTRY')
+			UNION
+			SELECT DISTINCT eer3.entry_exit_review_id, ee3.entry_exit_id, ee3.client_id, ee3.provider_id, eer3.review_date, eer3.point_in_time_type_id, eer3.review_type_id, ee3.exit_date
+			FROM sp_entry_exit_review eer3
+			INNER JOIN sp_entry_exit ee3 ON (ee3.entry_exit_id = eer3.entry_exit_id)
+			INNER JOIN da_answer da3 ON (da3.client_id = ee3.client_id)
+			INNER JOIN da_question dq3 ON (dq3.question_id = da3.question_id)
+			INNER JOIN da_question_type dqt3 ON (dqt3.question_type_id = dq3.question_type_id)
+			INNER JOIN sp_picklist_value pv3 ON (pv3.picklist_value_id = eer3.point_in_time_type_id)
+			WHERE (dq3.active = TRUE) AND (dq3.parent_id IS NULL) AND (eer3.active = TRUE) AND (ee3.active = true)
+			AND pv3.code NOT IN ('EEPOINTINTIME_EXIT','EEPOINTINTIME_ENTRY')
+			AND (dqt3.code IN ('lookup','yes_no','date','int','money','textbox','textarea'))
+			AND ((dq3.reportable_flag = TRUE) OR (dq3.ee_reportable_flag = TRUE) OR (dq3.service_reportable_flag = TRUE))
+			AND
+			(
+			  ((da3.date_added > '$(varDeltaDate)') AND (da3.active = TRUE))
+			  OR
+			  ((da3.date_inactive > '$(varDeltaDate)') AND (da3.active = FALSE))
+			)
+			AND ((da3.date_effective::DATE <= eer3.review_date::DATE) OR (ee3.exit_date IS NULL))
+			AND ((ee3.exit_date IS NULL) OR (ee3.exit_date >= '1/01/2015'))
+			--AND (eer3.review_date >= '1/01/2015')
+                     ) ee
+		INNER JOIN da_answer da ON (da.client_id = ee.client_id)
+		INNER JOIN da_question dq ON (dq.question_id = da.question_id)
+		INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+
+            LEFT OUTER JOIN sp_provider_tree belowtree ON (belowtree.ancestor_provider_id = ee.provider_id)
+            LEFT OUTER JOIN sp_provider_tree abovetree ON (abovetree.provider_id = ee.provider_id)
+		
+		WHERE (dq.active = TRUE) AND (dq.parent_id IS NULL)
+                AND (dqt.code IN ('lookup','yes_no','date','int','money','textbox','textarea'))
+                AND ((dq.reportable_flag = TRUE) OR (dq.ee_reportable_flag = TRUE) OR (dq.service_reportable_flag = TRUE)) 
+		AND (da.active = true)
+		--AND (da.date_effective >= '$(vEntryExitDate)')
+		AND ((da.date_effective::DATE <= ee.review_date::DATE) OR (ee.exit_date IS NULL))
+
+		AND (((belowtree.provider_id IS NOT NULL) AND (belowtree.provider_id = da.provider_id)) OR ((abovetree.ancestor_provider_id IS NOT NULL) AND (abovetree.ancestor_provider_id = da.provider_id))
+		OR (dq.virt_field_name IN ('SVPPROFGENDER','RHYMISTERTIARYRACE','RHYMISQUATERNARYRACE','RHYMISQUINARYRACE','SVPPROFSECONDARYRACE','SVPPROFRACE','SVPPROFETH','SVPPROFDOB','SVPPROFDOBTYPE')))	
+		GROUP BY ee.entry_exit_review_id, ee.review_date, ee.point_in_time_type_id, ee.review_type_id, ee.entry_exit_id, ee.client_id, da.question_id, dqt.code, ee.exit_date
+	) a
+) b
+INNER JOIN da_answer da3 ON (da3.answer_id = b.answer_id)
+INNER JOIN da_question dq3 ON (dq3.question_id = da3.question_id);
+
+
+EntryExitReview_Answer:
+LOAD 
+entry_exit_review_id							AS [Entry Exit Review Id], 
+question_id										AS [Entry Exit Review Answer Question Id], 
+virt_field_name									AS [Entry Exit Review Answer Virtual Field Name],
+left(answer_val,200)							AS [Entry Exit Review Answer Value]
+RESIDENT TEMP_Interim;
+DROP TABLE TEMP_Interim;
+
+
+Interim_Question_List:
+Noconcatenate
+LOAD DISTINCT
+[Entry Exit Review Answer Virtual Field Name] as virt_name
+RESIDENT EntryExitReview_Answer;
+
+//Client_Interim_Answer:
+Client_Review_Answer:
+Noconcatenate
+Load Distinct
+[Entry Exit Review Id]
+RESIDENT EntryExitReview_Answer;
+
+
+//*****************************************************Interim Answer*****************************************
+
+LET NumRows=NoOfRows('Interim_Question_List');
+FOR i=0 to $(NumRows)-1
+
+ //LET varClientInterimAnswerTableName=Peek('virt_name',$(i),'Interim_Question_List') & '_interim';
+ LET varClientInterimAnswerTableName=Peek('virt_name',$(i),'Interim_Question_List') & '_review';
+ LET varClientInterimAnswerTableNameMatch=Peek('virt_name',$(i),'Interim_Question_List');
+  
+  LET varStepName='STEP_' & $(i) & '_of_' & $(NumRows);
+  $(varStepName): select 1;
+  DROP TABLE $(varStepName);
+
+
+join(Client_Review_Answer)  
+LOAD
+[Entry Exit Review Id],
+left([Entry Exit Review Answer Value],200) AS '$(varClientInterimAnswerTableName)'
+RESIDENT EntryExitReview_Answer
+WHERE 
+[Entry Exit Review Answer Virtual Field Name] = '$(varClientInterimAnswerTableNameMatch)';
+
+NEXT;
+
+//******************************************************************************************
+
+
+DROP TABLE EntryExitReview_Answer;
+DROP TABLE Interim_Question_List;

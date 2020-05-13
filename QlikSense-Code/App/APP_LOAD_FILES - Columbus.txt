@@ -1,0 +1,12 @@
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNSiteFolder)/$(vSiteName).txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/StartTime.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Main.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Variables - Columbus.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Subroutines.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Calendar.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3C_Load.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3C_User_Access.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3C_Client_Call_Record_Access.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3C_Section_Access.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/EndTime.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/ExitScript.txt]);

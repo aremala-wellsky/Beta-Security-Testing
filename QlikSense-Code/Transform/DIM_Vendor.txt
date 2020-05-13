@@ -1,0 +1,87 @@
+FACT_sp_vendor_TMP:
+NoConcatenate
+Load 
+  vendor_id, 
+  active,
+  name, 
+  tax_id_number, 
+  description,  
+  check_request_address_id, 
+  voucher_address_id 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_VENDOR.qvd]
+(qvd);
+
+DIM_Vendor:
+LOAD
+  vendor_id													AS [Vendor Id], 
+  vendor_id													AS %DIM_VENDOR_KEY,
+  if ( active = 1, 'Yes', 'No' )							AS [Vendor Is Active],
+  name														AS [Vendor Name], 
+  tax_id_number												AS [Vendor Tax Id Number], 
+  check_request_address_id									AS [Vendor Check Request Address Id], 
+  voucher_address_id										AS [Vendor Voucher Address Id] 
+Resident FACT_sp_vendor_TMP;
+Drop Table FACT_sp_vendor_TMP;
+
+FACT_sp_vendor_account_number_TMP:
+NoConcatenate
+Load 
+  vendor_account_number_id,
+  vendor_id,
+  provider_id, 
+  finance_account_number, 
+  active 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_VENDOR_ACCOUNT_NUMBER.qvd]
+(qvd);
+LEFT JOIN(DIM_Vendor)
+LOAD
+  vendor_account_number_id									AS [Vendor Account Number Id],
+  vendor_id													AS [Vendor Id], 
+  provider_id												AS [Vendor Provider Id], 
+  finance_account_number									AS [Vendor Finance Account Number],
+  if ( active = 1, 'Yes', 'No' )							AS [Vendor Account Number Is Active]
+Resident FACT_sp_vendor_account_number_TMP;
+Drop Table FACT_sp_vendor_account_number_TMP;
+
+FACT_sp_vendor_address_TMP:
+NoConcatenate
+Load 
+  vendor_address_id,
+  vendor_id, 
+  active,
+  line1, 
+  line2,
+  city, 
+  province,
+  postal_code, 
+  county,
+  latitude,
+  longitude,
+  address_type_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_VENDOR_ADDRESS.qvd]
+(qvd);
+LEFT JOIN(DIM_Vendor)
+LOAD
+  vendor_address_id											AS [Vendor Address Id],
+  vendor_id													AS [Vendor Id],  
+  applymap ('MapPickList', address_type_id, NULL() )		AS [Vendor Address Type],  
+    trim ( line1 & 
+    if ( len ( line2 ) > 0, ', ' & line2 ) &
+    if ( len ( line2 ) > 0, ', ' & city ) &
+    if ( len ( line2 ) > 0, ', ' & province ) &
+    if ( len ( line2 ) > 0, ', ' & postal_code )) 			AS [Vendor Address],
+    line1													AS [Vendor Address 1],
+    line2													AS [Vendor Address 2],
+    city													AS [Vendor City],
+    province												AS [Vendor State],
+    text ( postal_code )									AS [Vendor ZIP],
+    county													AS [Vendor County],
+    if ( active = 1, 'Yes', 'No' ) 
+    														AS [Vendor Address Is Active]
+Resident FACT_sp_vendor_address_TMP;
+Drop Table FACT_sp_vendor_address_TMP;
+
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE DIM_Vendor INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Vendor.qvd];
+DROP Table DIM_Vendor;

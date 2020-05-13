@@ -1,0 +1,47 @@
+CLIENT_RELEASE_OF_INFO_ACCESS:
+LOAD DISTINCT 
+    [Release of Info Id] AS %RELEASE_OF_INFO_KEY_SEC,
+	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST	
+//	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST_TIER1
+RESIDENT RELEASE_OF_INFO_ACCESS;
+
+DROP TABLE RELEASE_OF_INFO_ACCESS;
+
+/*
+explicit_release_of_info_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+release_of_info_security:
+NOCONCATENATE
+LOAD
+    [Release_of_Info Id],
+    provider_id,
+	%releaseofinfoclientid
+RESIDENT Release_of_Info_visibility;
+DROP TABLE Release_of_Info_visibility;
+
+
+LEFT JOIN(explicit_release_of_info_security)
+LOAD 
+    [Release of Info Id],
+    provider_id,
+	%releaseofinfoclientid
+RESIDENT release_of_info_security;
+
+DROP TABLE release_of_info_security;
+
+CONCATENATE(CLIENT_RELEASE_OF_INFO_ACCESS)
+LOAD
+	[Release of Info Id] AS %RELEASE_OF_INFO_KEY_SEC,
+	[TIER_LINK] & '|' & %releaseofinfoclientid AS %SA_CLIENT_TEST
+	//[TIER_LINK] & '|' & %releaseofinfoclientid AS %SA_CLIENT_TEST_TIER1
+RESIDENT explicit_release_of_info_security;
+
+DROP TABLE explicit_release_of_info_security;
+*/

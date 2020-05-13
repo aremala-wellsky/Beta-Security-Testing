@@ -1,0 +1,113 @@
+//===============================
+//sp_matrix_answer
+//===============================
+FACT_sp_matrix_answer_TMP:
+NoConcatenate
+Load 
+	"matrix_answer_id",
+	"matrix_question_id",
+	answer_value,
+	date_added,
+	date_updated,
+	provider_updating_id,
+	user_updating_id,
+	user_creating_id,
+	provider_creating_id,
+	matrix_measurement_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_MATRIX_ANSWER.qvd](qvd);
+
+DIM_Measurement_Answer:	
+
+LOAD 
+	'Matrix'												    			  	  AS [Measurement Answer Type],
+	"matrix_answer_id"                                                            AS [Measurement Answer Id], 
+	"matrix_question_id"														  AS [Measurement Question Id],
+    "answer_value"																  AS [Measurement Answer], 
+    "date_added"														          AS [Measurement Date Effective], 
+    if ( len ( provider_updating_id ) > 0, provider_updating_id, provider_creating_id )
+                                                                                  AS [Measurement Provider Updated By Id],
+	matrix_measurement_id														AS [Measurement Measurement Id]																				  
+Resident FACT_sp_matrix_answer_TMP;
+Drop Table FACT_sp_matrix_answer_TMP;
+
+//===============================
+//SP_Matrix_measurement
+//===============================
+
+FACT_sp_matrix_measurement_TMP:
+NoConcatenate
+Load 
+	"group_id",
+     matrix_measurement_id,
+	 active,
+	 info_user_id,
+	 info_name,
+     measurement_date,
+     type_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_MATRIX_MEASUREMENT.qvd](qvd);
+
+FACT_sp_matrix_measurement:
+LOAD 
+	"group_id"                                                                  AS [Measurement Group Id], 
+    matrix_measurement_id														AS [Measurement Measurement Id],
+	info_user_id																AS [Measurement User Id],
+	info_name																	AS [Measurement User Name],
+    (date(floor( measurement_date ) ) )											AS [Measurement Date], 
+    applymap ('MapPickList', type_id, NULL() )									AS [Point of Measurement Type] 
+Resident FACT_sp_matrix_measurement_TMP;
+Drop Table FACT_sp_matrix_measurement_TMP;
+
+
+//===============================
+//sp_matrix_group
+//===============================
+FACT_sp_matrix_group_TMP:
+NoConcatenate
+Load 
+	matrix_group_id,
+	matrix_id,
+    provider_id,
+    provider_creating_id,
+    provider_updating_id,
+	client_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_MATRIX_GROUP.qvd](qvd);
+
+LEFT JOIN (FACT_sp_matrix_measurement)
+LOAD 
+ 	"matrix_group_id"                  AS [Measurement Group Id],
+	"matrix_group_id"				   AS %MATRIX_GROUP_KEY_SEC,	
+	client_id 						   AS [Measurement Answer Client Id],
+	client_id 						   AS %DIM_MATRIX_KEY,
+    provider_id                        AS [Measurement Group Provider Id],	
+	applymap('MapProviderName', provider_id, NULL())      AS [Measurement Group Provider Name],
+	matrix_id						   AS [Measurement Id]
+Resident FACT_sp_matrix_group_TMP;
+Drop Table FACT_sp_matrix_group_TMP;
+
+LEFT JOIN (DIM_Measurement_Answer)
+Load	
+	*
+Resident FACT_sp_matrix_measurement;
+Drop Table FACT_sp_matrix_measurement;
+
+FACT_sp_matrix_question_TMP:
+NoConcatenate
+Load 
+	matrix_question_id,
+	matrix_id,
+	name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_MATRIX_QUESTION.qvd]
+(qvd);
+LEFT JOIN (DIM_Measurement_Answer)
+LOAD
+    matrix_question_id										AS [Measurement Question Id],	
+	name													AS [Measurement Question]
+Resident FACT_sp_matrix_question_TMP;
+Drop Table FACT_sp_matrix_question_TMP;
+
+
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE DIM_Measurement_Answer INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Measurement_Answer.qvd];
+//DROP Table DIM_Measurement_Answer;
+

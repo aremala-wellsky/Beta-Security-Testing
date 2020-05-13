@@ -1,0 +1,28 @@
+
+NEED_ACCESS_TIER1:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+//     provider_id,
+// 	user_access_tier,
+    [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd)
+where user_access_tier = 1;
+//RESIDENT INHERENT_SECURITY; 
+
+
+
+INNER JOIN(NEED_ACCESS_TIER1)
+LOAD
+    IF(LEN(client_id) = 0,-(call_record_id),client_id) AS [Client Id],
+    need_id AS [Need Id],
+//     provider_id,
+    provider_creating_id AS [Client Provider Created By Id],
+    1 AS [INHERENT SECURITY]
+RESIDENT need_security
+WHERE match(active, 1)
+ // AND client_id > 0
+  AND need_id > 0;
+
+DROP TABLE need_security;

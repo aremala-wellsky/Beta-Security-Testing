@@ -1,0 +1,93 @@
+FACT_Assessment_Answer_TMP:
+NoConcatenate
+Load * 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_ANSWER.qvd]
+(qvd);
+
+FACT_Assessment_Answer:
+NoConcatenate
+LOAD 	
+	*,
+     'Assessment'													AS [Answer Type],
+	// 'Assessment' & '|' & [Question Id]								AS %ASSESSMENTQUESTIONTYPE_KEY,
+    //[Answer Client Id] & '|' & [Question Id]						AS %MaxAnswerKey,
+	//[Provider Id]														AS %PROVIDERID_KEY,
+    AnswerTemp3														AS Answer;
+LOAD    
+    *,
+    //Counter for Answers
+    if (len(AnswerTemp2)>0,1,0)										AS [Count Answer],      
+    //Inserting Null Value for NULLs
+    if (Len(AnswerTemp2)>0, AnswerTemp2, '$(vNullValue)' )			AS AnswerTemp3;    
+LOAD *,
+     if ( isYesNo and AnswerTemp <> null(),
+     if ( AnswerTemp = 1, 'Yes', 'No'), AnswerTemp )	AS AnswerTemp2;        
+LOAD 
+	 *,
+	 if (isLookup, applymap ('MapPickList', val_int, NULL() ), val_int & date(val_date) & val_textfield & val_float) AS AnswerTemp,
+     applymap ('MapPickListValueCode', val_int, NULL())             AS [Answer Picklist Code];
+LOAD    
+    date_effective													AS date_effective,
+    //(date(floor( date_effective ) ) )						AS %DateKey,
+    if ( active = 1, 'Yes', 'No' ) 
+    																AS [Answer Is Active],
+    client_id														AS [Answer Client Id],    
+	client_id  														AS %DIM_CLIENT_KEY_RECORD,   	
+   	answer_id														AS [Answer Id],
+	answer_id 														AS %ANSWER_KEY_SEC,
+    question_id														AS [Question Id],    
+    applymap ('MapQuestionIsLookup', question_id, 0 ) 				AS isLookup,
+    applymap ('MapQuestionIsYesNo', question_id, 0 ) 				AS isYesNo,
+    applymap ('MapQuestion', question_id, 0 ) 						AS Question,
+ //   applymap ('MapQuestionParentId', question_id, NULL()) 			AS [Subassessment Id],
+  //  null() 															AS [Subassessment Virt Field Name],
+    (date(floor( date_added ) ) )				        			AS [Answer Added Date],
+    time ( date_added ) 	                						AS [Answer Added Time],
+    (date(floor( date_effective ) ) )		        				AS [Answer Effective Date],
+    time ( date_effective )                							AS [Answer Effective Time],
+    if ( len ( user_inactive_id ) > 0, 
+    	applymap ('MapUserName', user_inactive_id, NULL() ), 
+    	applymap ('MapUserName', user_id, NULL() ) )                AS User,	
+    //if ( len ( provider_inactive_id ) > 0, provider_inactive_id, provider_id ) AS [Provider Id],
+	//provider_id														AS [Provider Id],
+	(date(floor( date_inactive ) ) )								AS [Answer Inactive Date],
+    time ( date_inactive ) 		             						AS [Answer Inactive Time],
+    //provider_inactive_id 											AS [Answer Provider Updated By Id],
+	provider_inactive_id 											AS [Answer Provider Inactive By Id],
+    //applymap ('MapProviderName', provider_id, NULL() ) 				AS [Answer Provider Updated By],
+	applymap ('MapProviderName', provider_inactive_id, NULL() ) 	AS [Answer Provider Inactive By],
+	provider_id														AS [Answer Provider Created By Id],
+	applymap ('MapProviderName', provider_id, NULL() ) 				AS [Answer Provider Created By],
+    val_int,
+    val_date,
+    val_textfield,
+    val_float,
+    if ( covered_by_roi = 0, 'No', 'Yes' ) 							AS [Answer Is Covered By ROI],    //Testing new security logic
+	//if ( covered_by_roi = 1, 'Yes', 'No' ) 							AS [Answer Is Covered By ROI]
+ //   applymap ('MapAssessmentAnswerVisibility', answer_id, NULL() ) AS [Client Answer Visibility Group],
+	//applymap ('MapAssessmentAnswerVisibility', answer_id, NULL() ) AS [Answer Visibility Group],
+  	//if ( applymap ('MapAssessmentAnswerVisibleVisibility', answer_id, NULL() ) = 1, 'Yes', 'No' ) AS [Answer Visible] 
+//	if ( applymap ('MapAssessmentAnswerVisibleVisibility', answer_id, NULL() ) = 0, 'No', 'Yes' ) AS [Client Answer Visible]    //Testing new security logic 
+	//if ( applymap ('MapAssessmentAnswerVisibleVisibility', answer_id, NULL() ) = 1, 'Yes', 'No' ) AS [Client Answer Visible] 
+Resident FACT_Assessment_Answer_TMP;
+Drop Table FACT_Assessment_Answer_TMP;
+
+
+DROP Fields       
+	date_effective,   
+    AnswerTemp,
+    AnswerTemp2,
+    AnswerTemp3,
+	isLookup,
+   	isYesNo,
+    //[Answer Updated Date],
+    //[Answer Inactive Date],
+    val_int,
+    val_date,
+    val_textfield,
+    val_float;
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE FACT_Assessment_Answer INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_FACT_Assessment_Answer.qvd];
+//DROP Table FACT_Assessment_Answer;
+

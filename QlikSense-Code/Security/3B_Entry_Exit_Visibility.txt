@@ -1,0 +1,59 @@
+CLIENT_EE_ACCESS:
+LOAD DISTINCT 
+    [Entry Exit Id] AS %DIM_EE_KEY_SEC,
+	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST,	
+	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_TEST,
+	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_ENTRY_ANSWER,
+	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_EXIT_ANSWER
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_ENTRY_EXIT_ACCESS.qvd]
+(qvd);
+
+
+explicit_entry_exit_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd)
+where user_access_tier <>1;
+//RESIDENT INHERENT_SECURITY; 
+
+entry_exit_security:
+NOCONCATENATE
+LOAD
+    [Entry Exit Id],
+    provider_id,
+	%EEClientId
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Entry_Exit_visibility.qvd]
+(qvd);
+//RESIDENT Entry_Exit_visibility;
+
+//DROP TABLE Entry_Exit_visibility;
+
+LEFT JOIN(explicit_entry_exit_security)
+LOAD 
+    [Entry Exit Id],
+    provider_id,
+    1 AS [EXPLICIT SECURITY],
+	%EEClientId
+RESIDENT entry_exit_security;
+
+DROP TABLE entry_exit_security;
+
+CONCATENATE(CLIENT_EE_ACCESS)
+LOAD
+	[TIER_LINK] & '|' & %EEClientId AS %SA_CLIENT_TEST,	
+	[Entry Exit Id] AS %DIM_EE_KEY_SEC,
+	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_TEST,
+	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_ENTRY_ANSWER,
+	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_EXIT_ANSWER
+RESIDENT explicit_entry_exit_security;
+
+
+DROP TABLE explicit_entry_exit_security;
+
+
+
+
+

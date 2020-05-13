@@ -1,0 +1,42 @@
+USER:
+select DISTINCT u1.username,e.user_id, p.provider_id from sp_user_eda_group e JOIN sp_eda_group_provider_tree p ON (e.eda_group_id = p.eda_group_id)
+join sp_user u1 on e.user_id = u1.user_id
+where u1.active = true
+  AND u1.username <> 'SVPDELETED'
+  and length(trim(u1.username)) > 0
+UNION 
+select DISTINCT u.username,u.user_id, u.provider_id from sp_user u
+where u.active = true
+  AND u.username <> 'SVPDELETED'
+  and length(trim(u.username)) > 0;
+
+visibility_group_provider:
+LEFT JOIN(USER)
+LOAD
+    visibility_group_id,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_VISIBILITY_GROUP_PROVIDER_TREE.qvd]
+(qvd);
+
+USER_GROUP:
+LOAD Distinct
+	user_id,
+	UPPER('$(vUserDirectory)' & '\' & username & '_' & user_id & '_' & provider_id) AS USERID,
+	//Upper('$(vUserDirectory)' & '\' & username & provider_id) AS USERID,
+    provider_id,
+    visibility_group_id
+RESIDENT USER;
+DROP TABLE USER;
+
+INNER JOIN(USER_GROUP)
+LOAD DISTINCT
+USERID,
+user_access_tier
+RESIDENT USER_ACCESS;
+
+
+STORE USER_GROUP INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd];
+DROP TABLE USER_GROUP;
+
+
+

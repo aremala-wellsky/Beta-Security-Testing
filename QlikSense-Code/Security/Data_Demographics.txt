@@ -1,0 +1,34 @@
+Client_Recent_Answer:
+Noconcatenate
+SELECT ans.client_id,
+  MAX(case when ans.demo_field = 'SVPPROFGENDER' then ans.answer_val end ) as gender,
+  MAX(case when ans.demo_field = 'SVPPROFSECONDARYRACE' then ans.answer_val end)  as secondary_race,
+  MAX(case when ans.demo_field = 'SVPPROFRACE' then ans.answer_val end ) as primary_race,
+  MAX(case when ans.demo_field = 'SVPPROFDOB' then ans.answer_val end ) as birthdate,
+  MAX(case when ans.demo_field = 'SVPPROFDOBTYPE' then ans.answer_val end)  as birthdate_type,
+  MAX(case when ans.demo_field = 'SVPPROFETH' then ans.answer_val end ) as ethnicity
+FROM(
+SELECT cl.client_id   ,  dq.virt_field_name  as demo_field,   date_effective, case when  da.val_int is null then  (date(da.val_date::DATE))::VARCHAR  else pl.name end as answer_val
+FROM sp_client cl
+INNER JOIN da_answer da ON (da.client_id = cl.client_id)
+INNER JOIN da_question dq ON (dq.question_id = da.question_id)
+LEFT JOIN sp_picklist_value pl ON da.val_int = pl.picklist_value_id
+where dq.virt_field_name in ('SVPPROFGENDER','SVPPROFSECONDARYRACE','SVPPROFRACE','SVPPROFDOB','SVPPROFDOBTYPE','SVPPROFETH')  
+ ) as ans
+GROUP BY ans.client_id; 
+
+Demographics_Answer1:
+LOAD
+client_id AS %DemoClientId,
+gender AS [SVPPROFGENDER_recent],
+secondary_race AS [SVPPROFSECONDARYRACE_recent],
+primary_race AS [SVPPROFRACE_recent],
+birthdate AS [SVPPROFDOB_recent],
+birthdate_type AS [SVPPROFDOBTYPE_recent],
+ethnicity AS [SVPPROFETH_recent]
+
+RESIDENT Client_Recent_Answer;
+DROP TABLE Client_Recent_Answer;
+
+RENAME TABLE Demographics_Answer1 TO Client_Recent_Answer;
+ 

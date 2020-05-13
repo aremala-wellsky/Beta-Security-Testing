@@ -1,0 +1,416 @@
+
+  
+DROP_ANSWER_VIEWS:                     
+SELECT qlik_remove_all_qlik_view();    
+DROP TABLE DROP_ANSWER_VIEWS;           
+
+
+BUILD_RECORDSET_VIEWS:                 
+SELECT qlik_flatten_all_suba_view('1/01/2015');   
+
+DROP TABLE BUILD_RECORDSET_VIEWS;
+
+Recordset_security_entry:
+Noconcatenate
+LOAD * INLINE [
+	entry_exit_id,entry_recordset_id
+];
+
+Recordset_security_exit:
+Noconcatenate
+LOAD * INLINE [
+	entry_exit_id,exit_recordset_id
+];
+
+
+
+RECORDSET_LIST_ENTRY:
+//SELECT table_name AS sp_table_name, 'sa_' || SUBSTRING(table_name, 14, CHAR_LENGTH(table_name)) AS qlik_table_name,  SUBSTRING(table_name, 14, CHAR_LENGTH(table_name)) AS table_name_only
+SELECT table_name AS sp_table_name, 'client_' || SUBSTRING(table_name, 14, CHAR_LENGTH(table_name)) AS qlik_table_name,  SUBSTRING(table_name, 14, CHAR_LENGTH(table_name)) AS table_name_only
+FROM information_schema.tables
+WHERE table_name ILIKE 'qlik_sclient_%'
+ORDER BY table_name;
+
+
+LET NumRows=NoOfRows('RECORDSET_LIST_ENTRY');
+//LET NumRows=5;
+FOR i=0 to $(NumRows)-1
+
+  LET varRecordSetTableName=Peek('sp_table_name',$(i),'RECORDSET_LIST_ENTRY');
+  LET varRecordSetQlikName=Peek('qlik_table_name',$(i),'RECORDSET_LIST_ENTRY');
+  LET varRecordSetTableNameOnly=Peek('table_name_only',$(i),'RECORDSET_LIST_ENTRY');
+  LET varRecordSetTableNameOnlyTruncCustomEndDate = If((len('$(varRecordSetTableNameOnly)') <= 20),'$(varRecordSetTableNameOnly)' & 'end_1',left('$(varRecordSetTableNameOnly)', 20)& 'end_1');
+  LET varRecordSetTableNameOnlyTruncEndDate = '$(varRecordSetTableNameOnly)' & 'enddate';
+  LET varRecordSetQlikName_Entry= '$(varRecordSetQlikName)' & '_entry';
+  LET varRecordSetQlikName_Exit='$(varRecordSetQlikName)'& '_exit';
+  //LET varRecordSetQlikName_Interim='$(varRecordSetQlikName)' & '_interim';
+  LET varRecordSetQlikName_Interim='$(varRecordSetQlikName)' & '_review';
+  LET varRecordSetQlikName_Ucase_Entry=Upper(right('$(varRecordSetQlikName)', (len('$(varRecordSetQlikName)'))-7));
+  
+  $(varRecordSetQlikName):
+  SELECT * FROM $(varRecordSetTableName);
+  
+  CustomEndFieldCheck:
+  SELECT *
+  FROM INFORMATION_SCHEMA.columns ft Where ft.column_name ilike '$(varRecordSetTableNameOnlyTruncCustomEndDate)';
+  
+  
+  LET varRecordSetTableNameOnlyUseEndDate = If(NoOfRows('CustomEndFieldCheck') <> 0,'$(varRecordSetTableNameOnlyTruncCustomEndDate)','$(varRecordSetTableNameOnlyTruncEndDate)');
+
+  //***************************************************Entry
+  $(varRecordSetQlikName_Entry):
+  Noconcatenate
+  LOAD DISTINCT
+  *,
+     recordset_id as %client_$(varRecordSetQlikName_Ucase_Entry)_recordset_id,
+  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Entry)RECORDSET_ID_entry'
+  RESIDENT $(varRecordSetQlikName);
+
+
+  RS_Entry:
+  SELECT DISTINCT ee.entry_exit_id, ft.recordset_id, dr.provider_creating_id, p.name, dr.user_creating_id, u.name AS user_name,dr.question_id
+  FROM $(varRecordSetTableName) ft
+  JOIN da_recordset dr ON dr.recordset_id = ft.recordset_id
+  INNER JOIN sp_provider p on p.provider_id = dr.provider_creating_id
+  INNER JOIN sp_user u on u.user_id = dr.user_creating_id
+  INNER JOIN sp_entry_exit ee ON (ee.client_id = ft.client_id)
+  INNER JOIN sp_provider_tree belowtree ON (belowtree.ancestor_provider_id = ee.provider_id)
+  WHERE
+-- (dr.date_effective >= '$(vEntryExitDate)')AND 
+--  (ee.active = TRUE) AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '$(vEntryExitDate)'))
+  (ee.active = TRUE) AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '$(vEntryExitDate)'))
+  AND (belowtree.provider_id = dr.provider_creating_id)
+   AND ((((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.entry_date::DATE)) AND (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL)) 
+                   OR (((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.entry_date::DATE)) AND ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= ee.entry_date::DATE) OR ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= date(now()))))))				   
+  UNION
+  SELECT DISTINCT ee.entry_exit_id, ft.recordset_id, dr.provider_creating_id, p.name, dr.user_creating_id, u.name AS user_name,dr.question_id
+  FROM $(varRecordSetTableName) ft
+  JOIN da_recordset dr ON dr.recordset_id = ft.recordset_id
+  INNER JOIN sp_provider p on p.provider_id = dr.provider_creating_id
+  INNER JOIN sp_user u on u.user_id = dr.user_creating_id
+  INNER JOIN sp_entry_exit ee ON (ee.client_id = ft.client_id)
+  INNER JOIN sp_provider_tree abovetree ON (abovetree.provider_id = ee.provider_id)
+  WHERE 
+  --(dr.date_effective >= '$(vEntryExitDate)'::DATE)AND 
+  (ee.active = TRUE) AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '$(vEntryExitDate)'))
+  AND (abovetree.ancestor_provider_id = dr.provider_creating_id)
+  AND ((((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.entry_date::DATE)) AND (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL)) 
+                   OR (((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.entry_date::DATE)) AND ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= ee.entry_date::DATE) OR ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= date(now()))))));
+	
+  
+  
+  RS_Entry_Explicit:
+  Noconcatenate
+    SELECT DISTINCT ee.entry_exit_id, ft.recordset_id,dr.question_id,dr.provider_creating_id
+  FROM $(varRecordSetTableName) ft
+  JOIN da_recordset dr ON dr.recordset_id = ft.recordset_id
+  INNER JOIN sp_entry_exit ee ON (ee.client_id = ft.client_id)
+  WHERE 
+  (ee.active = TRUE) AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '$(vEntryExitDate)'))
+  AND ((((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.entry_date::DATE)) 
+  AND (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL)) 
+                   OR (((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.entry_date::DATE)) 
+				   AND ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= ee.entry_date::DATE) 
+				   OR ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= date(now()))))));
+  
+  
+CONCATENATE(Recordset_security_entry)
+  LOAD
+  entry_exit_id, 
+  recordset_id as %client_$(varRecordSetQlikName_Ucase_Entry)_recordset_id,
+   recordset_id as %entry_recordset_id,
+  provider_creating_id
+  RESIDENT RS_Entry_Explicit;
+  DROP TABLE RS_Entry_Explicit;
+  
+  
+
+
+ // DROP TABLE RS_Entry;
+
+  INNER JOIN($(varRecordSetQlikName_Entry))
+  LOAD DISTINCT
+  entry_exit_id AS [Entry Exit Id],
+  recordset_id,
+  provider_creating_id AS [client_$(varRecordSetQlikName_Ucase_Entry)_Provider_Creating_Entry],
+  name AS [client_$(varRecordSetQlikName_Ucase_Entry)_Provider_Name_Creating_Entry],
+  user_creating_id AS [client_$(varRecordSetQlikName_Ucase_Entry)_User_Created_By_Id_Entry],
+  user_name AS [client_$(varRecordSetQlikName_Ucase_Entry)_User_Created_By_Entry]
+  RESIDENT RS_Entry;
+  
+  DROP TABLE RS_Entry;
+  
+  DROP FIELDS client_id FROM $(varRecordSetQlikName_Entry);
+  DROP FIELDS recordset_id FROM $(varRecordSetQlikName_Entry);
+  DROP FIELDS [Entry Exit Id] FROM $(varRecordSetQlikName_Entry);
+  
+
+  FieldMapSaClientEntry:
+  Mapping SQL
+    SELECT lower(dq.virt_field_name) AS oldnames, 'client_' || dq.virt_field_name || '_entry'  AS newnames  
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+      AND ((dq.start_date_flag = FALSE) AND (dq.end_date_flag = FALSE))
+      AND ((dq.virt_field_name <> (dq_p.virt_field_name || 'ENDDATE'))) AND ((dq.virt_field_name <> (dq_p.virt_field_name || 'STARTDATE')))
+    UNION
+    SELECT lower(dq.virt_field_name) ||'_1' AS oldnames, 'client_' || dq.virt_field_name || '1_entry'  AS newnames  
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+      AND ((dq.start_date_flag = FALSE) OR (dq.end_date_flag = FALSE))
+      AND ((dq.virt_field_name = (dq_p.virt_field_name || 'ENDDATE'))) OR ((dq.virt_field_name = (dq_p.virt_field_name || 'STARTDATE')))  
+     UNION
+     SELECT lower(dq.virt_field_name) ||'_1' AS oldnames, 'client_' || dq.virt_field_name || '1_entry'  AS newnames  
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+      AND ((dq.start_date_flag = FALSE))
+      AND (((dq.virt_field_name = (dq_p.virt_field_name || 'START')))) 
+          --OR (dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND length(dq_p.virt_field_name) > 20))	  
+    UNION
+
+    SELECT lower(dq.virt_field_name) ||'_1' AS oldnames, 'client_' || dq.virt_field_name || '_entry'  AS newnames  
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+      AND ((dq.end_date_flag = FALSE))
+      AND (((dq.virt_field_name = (dq_p.virt_field_name || 'END'))) 
+          OR (dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND length(dq_p.virt_field_name) > 20))	  
+    UNION   
+    SELECT
+    CASE WHEN dq.start_date_flag = TRUE THEN lower(dq_p.virt_field_name) || 'startdate'
+		  WHEN (dq.virt_field_name = (dq_p.virt_field_name || 'END') AND length(dq_p.virt_field_name) <= 20) AND dq.end_date_flag = TRUE THEN lower(dq_p.virt_field_name) || 'enddate'
+		WHEN (dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND dq.end_date_flag = TRUE AND length(dq_p.virt_field_name) > 20) THEN lower(dq_p.virt_field_name) || 'enddate'
+    END AS oldnames, 'client_' || dq.virt_field_name || '_entry' AS newnames 
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+	  AND ((dq.start_date_flag = TRUE) OR (dq.virt_field_name = (dq_p.virt_field_name || 'END') AND length(dq_p.virt_field_name) <= 20) OR ((dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND length(dq_p.virt_field_name) > 20)))
+    UNION
+	SELECT
+    CASE WHEN (dq.virt_field_name = (dq_p.virt_field_name || 'END') AND length(dq_p.virt_field_name) <= 20) AND dq.end_date_flag = FALSE THEN lower(dq_p.virt_field_name) || 'enddate'
+		WHEN (dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND dq.end_date_flag = FALSE AND length(dq_p.virt_field_name) > 20) THEN lower(dq_p.virt_field_name) || 'enddate'
+    END AS oldnames, 'client_' || dq.virt_field_name || '1_entry' AS newnames 
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+	  AND ((dq.start_date_flag = TRUE) OR (dq.virt_field_name = (dq_p.virt_field_name || 'END') AND length(dq_p.virt_field_name) <= 20) OR ((dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND length(dq_p.virt_field_name) > 20)));
+	Rename Fields using FieldMapSaClientEntry;
+  
+    DROP TABLE $(varRecordSetQlikName);
+
+  LET varStepName='STEPENTRY_' & $(i) & '_of_' & $(NumRows);
+  $(varStepName): select 1;
+  DROP TABLE $(varStepName);
+  DROP TABLE CustomEndFieldCheck; 
+
+NEXT;
+
+DROP TABLE RECORDSET_LIST_ENTRY;
+
+//***************************************************Exit
+RECORDSET_LIST_EXIT:
+//SELECT table_name AS sp_table_name, 'sa_' || SUBSTRING(table_name, 14, CHAR_LENGTH(table_name)) AS qlik_table_name,  SUBSTRING(table_name, 14, CHAR_LENGTH(table_name)) AS table_name_only
+SELECT table_name AS sp_table_name, 'client_' || SUBSTRING(table_name, 14, CHAR_LENGTH(table_name)) AS qlik_table_name,  SUBSTRING(table_name, 14, CHAR_LENGTH(table_name)) AS table_name_only
+FROM information_schema.tables
+WHERE table_name ILIKE 'qlik_sclient_%'
+ORDER BY table_name;
+
+LET NumRows=NoOfRows('RECORDSET_LIST_EXIT');
+//LET NumRows=5;
+FOR i=0 to $(NumRows)-1
+
+  LET varRecordSetTableName=Peek('sp_table_name',$(i),'RECORDSET_LIST_EXIT');
+  LET varRecordSetQlikName=Peek('qlik_table_name',$(i),'RECORDSET_LIST_EXIT');
+  LET varRecordSetTableNameOnly=Peek('table_name_only',$(i),'RECORDSET_LIST_EXIT');
+  LET varRecordSetTableNameOnlyTruncCustomEndDate = If((len('$(varRecordSetTableNameOnly)') <= 20),'$(varRecordSetTableNameOnly)' & 'end_1',left('$(varRecordSetTableNameOnly)', 20)& 'end_1');
+  LET varRecordSetTableNameOnlyTruncEndDate = '$(varRecordSetTableNameOnly)' & 'enddate';
+  LET varRecordSetQlikName_Entry= '$(varRecordSetQlikName)' & '_entry';
+  LET varRecordSetQlikName_Exit='$(varRecordSetQlikName)'& '_exit';
+  //LET varRecordSetQlikName_Interim='$(varRecordSetQlikName)' & '_interim';
+  LET varRecordSetQlikName_Interim='$(varRecordSetQlikName)' & '_review';
+  LET varRecordSetQlikName_Ucase_Exit=Upper(right('$(varRecordSetQlikName)', (len('$(varRecordSetQlikName)'))-7));
+  
+  $(varRecordSetQlikName):
+  SELECT * FROM $(varRecordSetTableName);
+
+
+  $(varRecordSetQlikName_Exit):
+  Noconcatenate
+  LOAD DISTINCT
+  *,
+   recordset_id as %client_$(varRecordSetQlikName_Ucase_Exit)_recordset_id,
+  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Exit)RECORDSET_ID_exit'
+  RESIDENT $(varRecordSetQlikName);
+  
+  $(varRecordSetQlikName):
+  SELECT * FROM $(varRecordSetTableName);
+  
+  CustomEndFieldCheck:
+  SELECT *
+  FROM INFORMATION_SCHEMA.columns ft Where ft.column_name ilike '$(varRecordSetTableNameOnlyTruncCustomEndDate)';
+  
+  
+  LET varRecordSetTableNameOnlyUseEndDate = If(NoOfRows('CustomEndFieldCheck') <> 0,'$(varRecordSetTableNameOnlyTruncCustomEndDate)','$(varRecordSetTableNameOnlyTruncEndDate)');
+  
+  
+  RS_Exit:
+  SELECT DISTINCT ee.entry_exit_id, ft.recordset_id, dr.provider_creating_id, p.name, dr.user_creating_id, u.name AS user_name,dr.question_id
+  FROM $(varRecordSetTableName) ft
+  JOIN da_recordset dr ON dr.recordset_id = ft.recordset_id
+  INNER JOIN sp_provider p on p.provider_id = dr.provider_creating_id
+  INNER JOIN sp_user u on u.user_id = dr.user_creating_id
+  INNER JOIN sp_entry_exit ee ON (ee.client_id = ft.client_id)
+  INNER JOIN sp_provider_tree belowtree ON (belowtree.ancestor_provider_id = ee.provider_id)
+  WHERE 
+  --(dr.date_effective >= '$(vEntryExitDate)')AND
+  (ee.active = TRUE) AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '$(vEntryExitDate)'))
+  AND (belowtree.provider_id = dr.provider_creating_id)
+  --AND (ee.exit_date IS NOT NULL) 
+  AND ((((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.exit_date::DATE) OR ((ft.$(varRecordSetTableNameOnly)startdate::DATE <= date(now())AND (ee.exit_date IS NULL)))) AND (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL)) 
+                   OR (((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.exit_date::DATE) OR ((ft.$(varRecordSetTableNameOnly)startdate::DATE <= date(now()) AND (ee.exit_date IS NULL))))  AND ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= ee.exit_date::DATE) OR ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= date(now()))AND (ee.exit_date IS NULL)))))		
+  
+  UNION
+  SELECT DISTINCT ee.entry_exit_id, ft.recordset_id, dr.provider_creating_id, p.name, dr.user_creating_id, u.name AS user_name,dr.question_id
+  FROM $(varRecordSetTableName) ft
+  JOIN da_recordset dr ON dr.recordset_id = ft.recordset_id
+  INNER JOIN sp_provider p on p.provider_id = dr.provider_creating_id
+  INNER JOIN sp_user u on u.user_id = dr.user_creating_id
+  INNER JOIN sp_entry_exit ee ON (ee.client_id = ft.client_id)
+  INNER JOIN sp_provider_tree abovetree ON (abovetree.provider_id = ee.provider_id)
+  WHERE 
+  --(dr.date_effective >= '$(vEntryExitDate)'::DATE)AND
+  (ee.active = TRUE) AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '$(vEntryExitDate)'))
+  AND (abovetree.ancestor_provider_id = dr.provider_creating_id)
+  -- AND (ee.exit_date IS NOT NULL)  
+  AND ((((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.exit_date::DATE) OR ((ft.$(varRecordSetTableNameOnly)startdate::DATE <= date(now())AND (ee.exit_date IS NULL)))) AND (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL)) 
+                   OR (((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.exit_date::DATE) OR ((ft.$(varRecordSetTableNameOnly)startdate::DATE <= date(now()) AND (ee.exit_date IS NULL))))  AND ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= ee.exit_date::DATE) OR ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= date(now()))AND (ee.exit_date IS NULL)))));
+	
+
+	
+  RS_Exit_Explicit:
+  Noconcatenate
+  SELECT DISTINCT ee.entry_exit_id, ft.recordset_id, dr.question_id,dr.provider_creating_id
+  FROM $(varRecordSetTableName) ft
+  JOIN da_recordset dr ON dr.recordset_id = ft.recordset_id
+  INNER JOIN sp_entry_exit ee ON (ee.client_id = ft.client_id)
+  WHERE 
+  (ee.active = TRUE) AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '$(vEntryExitDate)')) 
+  AND ((((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.exit_date::DATE) OR ((ft.$(varRecordSetTableNameOnly)startdate::DATE <= date(now())AND (ee.exit_date IS NULL)))) AND (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL)) 
+                   OR (((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.exit_date::DATE) OR ((ft.$(varRecordSetTableNameOnly)startdate::DATE <= date(now()) AND (ee.exit_date IS NULL))))  AND ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= ee.exit_date::DATE) OR ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= date(now()))AND (ee.exit_date IS NULL)))));
+		  
+
+  
+CONCATENATE(Recordset_security_exit)
+  LOAD
+  entry_exit_id, 
+  recordset_id as %exit_recordset_id,
+   recordset_id as  %client_$(varRecordSetQlikName_Ucase_Exit)_recordset_id,
+  provider_creating_id
+  RESIDENT RS_Exit_Explicit;
+  DROP TABLE RS_Exit_Explicit;
+  
+  INNER JOIN($(varRecordSetQlikName_Exit))
+  LOAD DISTINCT
+  entry_exit_id AS [Entry Exit Id],
+  recordset_id,
+  recordset_id as %client_$(varRecordSetQlikName_Ucase_Exit)_recordset_id,
+  provider_creating_id AS [client_$(varRecordSetQlikName_Ucase_Exit)_Provider_Creating_Exit],
+  name AS [client_$(varRecordSetQlikName_Ucase_Exit)_Provider_Name_Creating_Exit],
+  user_creating_id AS [client_$(varRecordSetQlikName_Ucase_Exit)_User_Created_By_Id_Exit],
+  user_name AS [client_$(varRecordSetQlikName_Ucase_Exit)_User_Created_By_Exit]
+  RESIDENT RS_Exit;
+  
+  DROP TABLE RS_Exit;
+  
+  DROP FIELDS client_id FROM $(varRecordSetQlikName_Exit);
+  DROP FIELDS recordset_id FROM $(varRecordSetQlikName_Exit);
+ DROP FIELDS [Entry Exit Id] FROM $(varRecordSetQlikName_Exit);
+ 
+
+  FieldMapSaClientExit:
+  Mapping SQL
+    SELECT lower(dq.virt_field_name) AS oldnames, 'client_' || dq.virt_field_name || '_exit'  AS newnames  
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+      AND ((dq.start_date_flag = FALSE) AND (dq.end_date_flag = FALSE))
+      AND ((dq.virt_field_name <> (dq_p.virt_field_name || 'ENDDATE'))) AND ((dq.virt_field_name <> (dq_p.virt_field_name || 'STARTDATE')))
+    UNION
+    SELECT lower(dq.virt_field_name) ||'_1' AS oldnames, 'client_' || dq.virt_field_name || '1_exit'  AS newnames  
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+      AND ((dq.start_date_flag = FALSE) OR (dq.end_date_flag = FALSE))
+      AND ((dq.virt_field_name = (dq_p.virt_field_name || 'ENDDATE'))) OR ((dq.virt_field_name = (dq_p.virt_field_name || 'STARTDATE')))  
+     UNION
+     SELECT lower(dq.virt_field_name) ||'_1' AS oldnames, 'client_' || dq.virt_field_name || '1_exit'  AS newnames  
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+      AND ((dq.start_date_flag = FALSE))
+      AND (((dq.virt_field_name = (dq_p.virt_field_name || 'START')))) 
+          --OR (dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND length(dq_p.virt_field_name) > 20))	  
+    UNION
+
+    SELECT lower(dq.virt_field_name) ||'_1' AS oldnames, 'client_' || dq.virt_field_name || '_exit'  AS newnames  
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+      AND ((dq.end_date_flag = FALSE))
+      AND (((dq.virt_field_name = (dq_p.virt_field_name || 'END'))) 
+          OR (dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND length(dq_p.virt_field_name) > 20))	  
+    UNION   
+    SELECT
+    CASE WHEN dq.start_date_flag = TRUE THEN lower(dq_p.virt_field_name) || 'startdate'
+		  WHEN (dq.virt_field_name = (dq_p.virt_field_name || 'END') AND length(dq_p.virt_field_name) <= 20) AND dq.end_date_flag = TRUE THEN lower(dq_p.virt_field_name) || 'enddate'
+		WHEN (dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND dq.end_date_flag = TRUE AND length(dq_p.virt_field_name) > 20) THEN lower(dq_p.virt_field_name) || 'enddate'
+    END AS oldnames, 'client_' || dq.virt_field_name || '_exit' AS newnames 
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+	  AND ((dq.start_date_flag = TRUE) OR (dq.virt_field_name = (dq_p.virt_field_name || 'END') AND length(dq_p.virt_field_name) <= 20) OR ((dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND length(dq_p.virt_field_name) > 20)))
+    UNION
+	SELECT
+    CASE WHEN (dq.virt_field_name = (dq_p.virt_field_name || 'END') AND length(dq_p.virt_field_name) <= 20) AND dq.end_date_flag = FALSE THEN lower(dq_p.virt_field_name) || 'enddate'
+		WHEN (dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND dq.end_date_flag = FALSE AND length(dq_p.virt_field_name) > 20) THEN lower(dq_p.virt_field_name) || 'enddate'
+    END AS oldnames, 'client_' || dq.virt_field_name || '1_exit' AS newnames 
+    FROM da_question dq
+    INNER JOIN da_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE
+      ((dq_p.reportable_flag = TRUE) OR (dq_p.ee_reportable_flag = TRUE) OR (dq_p.service_reportable_flag = TRUE))
+	  AND ((dq.start_date_flag = TRUE) OR (dq.virt_field_name = (dq_p.virt_field_name || 'END') AND length(dq_p.virt_field_name) <= 20) OR ((dq.virt_field_name = (left(dq_p.virt_field_name, (length(dq.virt_field_name) - 3)) || 'END') AND length(dq_p.virt_field_name) > 20)));
+   Rename Fields using FieldMapSaClientExit;
+  
+  DROP TABLE $(varRecordSetQlikName);
+
+  LET varStepName='STEPEXIT_' & $(i) & '_of_' & $(NumRows);
+  $(varStepName): select 1;
+  DROP TABLE $(varStepName);
+  DROP TABLE CustomEndFieldCheck; 
+  
+NEXT;  
+
+DROP TABLE RECORDSET_LIST_EXIT;
+
+
+
+DROP_ANSWER_VIEWS:
+SELECT qlik_remove_all_qlik_view();
+
+DROP TABLE DROP_ANSWER_VIEWS;
+
+
+

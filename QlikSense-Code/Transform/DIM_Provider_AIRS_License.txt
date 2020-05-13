@@ -1,0 +1,22 @@
+FACT_sp_provider_license_accredit_value_TMP: 
+NoConcatenate
+Load 
+	provider_id,
+	accrediting_body_value_id,
+	provider_license_accredit_value_id,
+	license_value_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_LICENSE_ACCREDIT_VALUE.qvd](qvd);
+ 
+DIM_Provider_AIRS_License:
+LOAD 
+    "provider_id"											AS %ProviderId,
+ 	applymap ('MapPickList', accrediting_body_value_id, NULL() )		AS [AIRS Accrediting Bodies] ,
+	applymap ('MapPickList', license_value_id, NULL() )		AS [AIRS License Type] ,
+	provider_license_accredit_value_id  					AS [AIRS License Accredit Record Id]  
+Resident FACT_sp_provider_license_accredit_value_TMP;
+
+Drop Table FACT_sp_provider_license_accredit_value_TMP;
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE DIM_Provider_AIRS_License INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Provider_AIRS_License.qvd];
+DROP Table DIM_Provider_AIRS_License;

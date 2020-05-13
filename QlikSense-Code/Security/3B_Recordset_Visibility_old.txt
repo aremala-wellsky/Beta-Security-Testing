@@ -1,0 +1,49 @@
+CLIENT_RECORDSET_ACCESS:
+LOAD DISTINCT 
+    [Recordset Id] AS %CLIENT_RECORDSET_KEY_SEC,
+	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST	
+	//[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST_TIER1
+RESIDENT RECORDSET_ACCESS;
+
+DROP TABLE RECORDSET_ACCESS;
+
+/*
+	
+explicit_answer_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+answer_security:
+NOCONCATENATE
+LOAD
+    [Recordset Id],
+    provider_id,
+	%recordsetclientid
+RESIDENT Recordset_visibility;
+DROP TABLE Recordset_visibility;
+
+JOIN(explicit_answer_security)
+LOAD 
+    [Recordset Id],
+    provider_id,
+	%recordsetclientid
+RESIDENT answer_security;
+
+DROP TABLE answer_security;
+
+CONCATENATE(CLIENT_RECORDSET_ACCESS)
+LOAD
+	[Recordset Id] AS %CLIENT_RECORDSET_KEY_SEC,
+	[TIER_LINK] & '|' & %answerclientid AS %SA_CLIENT_TEST
+	//[TIER_LINK] & '|' & %answerclientid AS %SA_CLIENT_TEST_TIER1
+RESIDENT explicit_answer_security;
+
+DROP TABLE explicit_answer_security;
+
+*/
+	

@@ -1,0 +1,51 @@
+// GOAL_ACTIONSTEP_ACCESS:
+// NOCONCATENATE
+// LOAD DISTINCT
+// 	TIER_LINK,
+//     [Client Id],
+//     [Goal Id]
+// //     [Client Provider Created By Id]
+// RESIDENT GOAL_ACCESS;
+
+
+GOAL_ACTIONSTEP_ACCESS:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+//     provider_id,
+// 	user_access_tier,
+    [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+
+goal_actionstep_security:
+LOAD
+    goal_actionstep_id,
+    active,
+    client_id,
+    goal_id,
+//     provider_id,
+    provider_creating_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_GOAL_ACTIONSTEP.qvd]
+(qvd)
+WHERE num(date_set) >= '$(vNumDateSet)';
+
+INNER JOIN(GOAL_ACTIONSTEP_ACCESS)
+LOAD
+    client_id AS [Client Id],
+    goal_id AS [Goal Id],
+    goal_actionstep_id AS [Goal Actionstep Id],
+//     provider_id,
+    provider_creating_id AS [Client Provider Created By Id],
+    1 AS [INHERENT SECURITY]
+RESIDENT goal_actionstep_security
+WHERE 
+  exists([Goal Id], goal_id)
+  AND match(active, 1)
+  AND goal_id > 0
+  AND goal_actionstep_id > 0;
+
+DROP TABLE goal_actionstep_security;
+

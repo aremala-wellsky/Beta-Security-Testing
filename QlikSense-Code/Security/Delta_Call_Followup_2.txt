@@ -1,0 +1,130 @@
+Temp_Call_Followup:
+Noconcatenate
+SELECT
+b.call_record_id, b.question_id, dq3.virt_field_name, --b.code,
+CASE WHEN b.code = 'lookup' THEN plv(ca3.val_int)::VARCHAR
+     WHEN b.code = 'yes_no' THEN yn(ca3.val_int)::VARCHAR
+     WHEN b.code = 'date' THEN (ca3.val_date::DATE)::VARCHAR
+     WHEN b.code = 'int' THEN ca3.val_int::VARCHAR
+     WHEN b.code = 'textbox' THEN ca3.val_textfield::VARCHAR
+     WHEN b.code = 'textarea' THEN ca3.val_textfield::VARCHAR
+     WHEN b.code = 'money' THEN ca3.val_float::VARCHAR
+     WHEN b.code = 'service_code' THEN ca3.val_int::VARCHAR
+     ELSE '' 
+END AS answer_val
+FROM
+(
+	SELECT a.call_record_id, a.question_id, a.code,
+	(
+		SELECT ca2.call_answer_id 
+		FROM call_answer ca2 
+		INNER JOIN da_question dq2 on (dq2.question_id = ca2.question_id)
+	    WHERE (ca2.call_record_id = a.call_record_id) 
+		AND (ca2.question_id = a.question_id) 
+		AND (ca2.date_effective = a.date_effective) 
+	    ORDER BY ca2.call_answer_id DESC LIMIT 1
+	) as answer_id
+	FROM 
+	(
+		SELECT cr.call_record_id, ca.question_id, dqt.code, max(date_effective) as date_effective
+		FROM 
+		(
+			SELECT DISTINCT cr2.call_record_id, cr2.actual_followup_date
+			FROM sp_call_record cr2
+			WHERE (cr2.active = TRUE) AND (cr2.actual_followup_date IS NOT NULL)
+			UNION
+			SELECT DISTINCT  cr3.call_record_id, cr3.actual_followup_date
+			FROM sp_call_record cr3
+			INNER JOIN call_answer ca3 ON (ca3.call_record_id = cr3.call_record_id)
+			INNER JOIN da_question dq3 ON (dq3.question_id = ca3.question_id)
+			INNER JOIN da_question_type dqt3 ON (dqt3.question_type_id = dq3.question_type_id)
+			WHERE (dq3.active = TRUE) AND (dq3.parent_id IS NULL) AND (cr3.active = TRUE)
+			AND (dqt3.code IN ('lookup','yes_no','date','int','money','textbox', 'textarea'))
+			AND (
+				(dq3.reportable_flag = TRUE) OR (dq3.ee_reportable_flag = TRUE) 
+				OR (dq3.service_reportable_flag = TRUE))             
+			AND
+			(
+			  ((ca3.date_added > '$(varDeltaDate)') AND (ca3.active = TRUE))   
+			  OR
+			  ((ca3.date_inactive > '$(varDeltaDate)') AND (ca3.active = FALSE))
+			)
+			AND ((ca3.date_effective::DATE <= cr3.actual_followup_date::DATE) )
+		) cr
+		INNER JOIN call_answer ca ON (ca.call_record_id = cr.call_record_id)
+		INNER JOIN da_question dq ON (dq.question_id = ca.question_id)
+		INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+		WHERE (dq.active = TRUE) AND (dq.parent_id IS NULL)
+            AND (dqt.code IN ('lookup','yes_no','date','int','money','textbox', 'textarea'))
+            AND (
+				(dq.reportable_flag = TRUE) OR (dq.ee_reportable_flag = TRUE) 
+				OR (dq.service_reportable_flag = TRUE))
+		AND (ca.active = true)
+		AND (ca.date_effective::DATE <= cr.actual_followup_date::DATE)
+		GROUP BY cr.call_record_id, ca.question_id, dqt.code
+	) a
+) b
+INNER JOIN call_answer ca3 ON (ca3.call_answer_id = b.answer_id)
+INNER JOIN da_question dq3 ON (dq3.question_id = ca3.question_id);
+
+Call_Followup_Overall_Answer:
+LOAD 
+call_record_id									AS [Call Followup Record Id],
+virt_field_name									AS [Call Followup Answer Virtual Field Name],
+answer_val										AS [Call Followup Answer Value]
+RESIDENT Temp_Call_Followup;
+DROP TABLE Temp_Call_Followup;
+
+Call_Followup_Question_List:
+Noconcatenate
+LOAD DISTINCT
+[Call Followup Answer Virtual Field Name] as virt_name
+RESIDENT Call_Followup_Overall_Answer;
+
+Call_Followup_Answer:
+Noconcatenate
+Load Distinct
+//[Call Followup Record Id]
+[Call Followup Record Id]				AS %Call_Followup_Record_Id
+RESIDENT Call_Followup_Overall_Answer;
+
+
+//*****************************************************Call Followup Answer*****************************************
+LET NumRows=NoOfRows('Call_Followup_Question_List');
+FOR i=0 to $(NumRows)-1
+
+ 	LET varCallFollowupAnswerTableName=Peek('virt_name',$(i),'Call_Followup_Question_List') & '_callfollow';
+ 	LET varCallFollowupAnswerTableNameMatch=Peek('virt_name',$(i),'Call_Followup_Question_List');
+  
+  	LET varStepName='STEP_' & $(i) & '_of_' & $(NumRows);
+  	$(varStepName): select 1;
+  	DROP TABLE $(varStepName);
+
+	join(Call_Followup_Answer)  
+	LOAD 
+	//[Call Followup Record Id],
+	[Call Followup Record Id]				AS %Call_Followup_Record_Id,
+	left([Call Followup Answer Value],200) AS '$(varCallFollowupAnswerTableName)'
+	RESIDENT Call_Followup_Overall_Answer
+	WHERE [Call Followup Answer Virtual Field Name] = '$(varCallFollowupAnswerTableNameMatch)';
+
+NEXT;
+
+DROP TABLE Call_Followup_Overall_Answer;
+DROP TABLE Call_Followup_Question_List;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

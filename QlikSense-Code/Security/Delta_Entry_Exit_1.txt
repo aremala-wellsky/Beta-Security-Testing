@@ -1,0 +1,88 @@
+//---------------------------------------------------------------------------
+// Entry Answers
+//---------------------------------------------------------------------------
+
+LET varDeltaDate = '1/01/2015';
+
+
+LET varQVDExists = not isnull(QvdCreateTime('lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_DELTA_RUNDATE_V0.qvd'));
+
+IF $(varQVDExists) THEN
+  DeltaDate:
+  Noconcatenate
+  LOAD
+    DeltaDateVal
+  FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_DELTA_RUNDATE_V0.qvd](qvd);
+  LET varDeltaDate=Peek('DeltaDateVal',0,'DeltaDate');
+ ELSE
+ DeltaDate:
+   LOAD * INLINE [
+    DeltaDateVal
+    '9/9/9999'];
+END IF;
+
+//DROP TABLE DeltaDate;
+
+EEs_To_Rebuild_Answers_For:
+Noconcatenate
+SELECT DISTINCT ee.entry_exit_id   //added/updated EEs
+FROM sp_entry_exit ee
+WHERE (ee.active = TRUE) AND (ee.date_updated > '$(varDeltaDate)')
+AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '1/01/2015'))
+UNION
+SELECT DISTINCT ee.entry_exit_id  //added/deleted Answers
+FROM sp_entry_exit ee
+INNER JOIN da_answer da ON (da.client_id = ee.client_id)
+INNER JOIN da_question dq ON (dq.question_id = da.question_id)
+INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+WHERE (dq.active = TRUE) AND (dq.parent_id IS NULL) AND (ee.active = TRUE)
+AND (dqt.code IN ('lookup','yes_no','date','int','money','textbox', 'textarea'))
+AND ((dq.reportable_flag = TRUE) OR (dq.ee_reportable_flag = TRUE) OR (dq.service_reportable_flag = TRUE))             
+AND
+(
+  ((da.date_added > '$(varDeltaDate)') AND (da.active = TRUE))   
+  OR
+  ((da.date_inactive > '$(varDeltaDate)') AND (da.active = FALSE))
+)
+AND ((da.date_effective::DATE <= ee.entry_date::DATE) OR (da.date_effective::DATE <= ee.exit_date::DATE) OR (ee.exit_date IS NULL))
+AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '1/01/2015'));
+
+
+EEs_To_Remove_From_Current_QVD:
+Noconcatenate
+SELECT DISTINCT ee.entry_exit_id as match_ee_id  //deleted EEs
+FROM sp_entry_exit ee
+WHERE (ee.active = false) AND (ee.date_updated > '$(varDeltaDate)')
+AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '1/01/2015'));
+
+
+CONCATENATE(EEs_To_Remove_From_Current_QVD)
+LOAD DISTINCT      //EEs with changes
+  entry_exit_id AS match_ee_id
+RESIDENT EEs_To_Rebuild_Answers_For;
+
+
+
+
+LET varTempClientEntryQVDExists = not isnull(QvdCreateTime('lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_ENTRY_ANSWER_V2.qvd'));
+
+IF $(varTempClientEntryQVDExists) THEN
+  Temp_Client_Entry_Answer_Table:
+  Noconcatenate
+  LOAD
+    *
+  FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_ENTRY_ANSWER_V2.qvd](qvd)
+  WHERE NOT EXISTS(match_ee_id, %ENTRY_ANSWER_KEY_SEC); 
+ END IF;
+
+
+LET varTempClientExitQVDExists = not isnull(QvdCreateTime('lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_EXIT_ANSWER_V2.qvd'));
+
+IF $(varTempClientExitQVDExists) THEN
+  Temp_Client_Exit_Answer_Table:
+  Noconcatenate
+  LOAD
+    *
+  FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_EXIT_ANSWER_V2.qvd](qvd)
+  WHERE NOT EXISTS(match_ee_id, %EXIT_ANSWER_KEY_SEC);
+ END IF;

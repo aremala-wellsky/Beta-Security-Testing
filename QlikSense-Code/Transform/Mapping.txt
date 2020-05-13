@@ -1,0 +1,557 @@
+//===============================
+//Picklist-Values Mapping
+//===============================
+Temp_PICKLIST:
+LOAD
+    picklist_id,
+    name    
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_sp_picklist.qvd]
+(qvd);
+
+Temp_PICKLIST_VALUE:
+LOAD
+    picklist_id,
+    code, // WM Added 3-27-17
+    picklist_value_id,
+    name    
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_sp_picklist_value.qvd]
+(qvd);
+
+PICKLIST:
+LOAD
+    picklist_id,
+    name AS PickListName
+Resident Temp_PICKLIST;
+Drop table Temp_PICKLIST;
+
+LEFT JOIN(PICKLIST)
+Load
+	picklist_value_id,
+    code,//WM Added 3-27-17
+	name AS ValueName
+Resident Temp_PICKLIST_VALUE;
+Drop table Temp_PICKLIST_VALUE;    
+    
+MapPickList:
+Mapping
+LOAD distinct
+	picklist_value_id,
+	ValueName
+Resident PICKLIST;
+
+
+MapPickListValueCode:  // WM Added PickListValueCode 3-27-17
+Mapping
+Load Distinct
+	picklist_value_id,
+    code
+Resident PICKLIST;
+Drop table PICKLIST;
+
+
+
+//===============================
+//Question Type Mapping
+//===============================
+Temp_DaQuestionType:
+Load
+	question_type_id,
+	code
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_QUESTION_TYPE.qvd]
+(qvd);
+
+MapQuestionTypeIdLookup:
+MAPPING
+LOAD
+    question_type_id,
+    if ( wildmatch ( code, 'lookup' ), 1, 0) as isLookup
+Resident Temp_DaQuestionType;
+
+MapQuestionTypeIdYesNo: //Needs Resident
+MAPPING
+LOAD
+    question_type_id,
+    if ( wildmatch ( code, 'yes_no' ), 1, 0) as isYesNo
+Resident Temp_DaQuestionType;
+Drop Table Temp_DaQuestionType;
+
+
+//===================================================
+//Question Mapping
+//===================================================
+Temp_DaQuestion:
+Load
+	question_id,
+    question_type_id,
+	description,
+	parent_id,
+	virt_field_name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_QUESTION.qvd]
+(qvd);	
+
+MapQuestionTypeId:
+MAPPING
+LOAD
+	question_id,
+    question_type_id
+Resident Temp_DaQuestion;
+
+MapQuestionIsLookup:
+MAPPING
+LOAD
+    question_id,
+    applymap ( 'MapQuestionTypeIdLookup', question_type_id, 0 ) AS isLookup
+Resident Temp_DaQuestion;
+
+MapQuestionIsYesNo:
+MAPPING
+LOAD
+    question_id,
+    applymap ( 'MapQuestionTypeIdYesNo', question_type_id, 0 ) AS isYesNo
+Resident Temp_DaQuestion;
+
+MapQuestion:
+MAPPING
+LOAD
+	question_id,
+    description  
+Resident Temp_DaQuestion;
+
+MapQuestionParentId:
+MAPPING
+LOAD
+	question_id,
+    parent_id  
+Resident Temp_DaQuestion;
+
+MapQuestionVFN:
+MAPPING
+LOAD
+	question_id,
+    virt_field_name  
+Resident Temp_DaQuestion;
+DROP TABLE Temp_DaQuestion;
+
+
+//===================================================
+//Service Code Mapping
+//===================================================
+Temp_SpServiceCode: //Mar 20
+Load 
+	service_code_id,
+	description,
+	code
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_SERVICE_CODE.qvd]
+(qvd);	
+
+LEFT JOIN //Mar 20
+Load 
+	service_code_id,
+	external_code,
+	name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_SERVICE_CODE_EXTERNAL_TERM.qvd]
+(qvd);
+
+MapServiceCodeExternalCode: //Mar 20
+MAPPING
+LOAD
+    service_code_id,
+    external_code
+Resident Temp_SpServiceCode;
+
+MapServiceCodeExternalName: //Mar 20
+MAPPING
+LOAD
+    service_code_id,
+    name
+Resident Temp_SpServiceCode;
+
+MapNeedServiceDescription:
+MAPPING
+LOAD
+    service_code_id,
+    description
+Resident Temp_SpServiceCode;
+
+MapNeedServiceCode:
+MAPPING
+LOAD
+    service_code_id,
+    code
+Resident Temp_SpServiceCode;
+Drop Table Temp_SpServiceCode;
+
+//===================================================
+//Da Recordset Mapping
+//===================================================
+Temp_Da_Recordset:
+LOAD
+	recordset_id,
+	client_id,
+	question_id,
+	active,
+	date_effective,
+    provider_creating_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_RECORDSET.qvd]
+(qvd);
+
+MapRecordsetAnswerClientId:
+MAPPING
+LOAD
+    recordset_id,
+    client_id
+Resident Temp_Da_Recordset;
+
+MapRecordsetProviderCreatingId: 
+MAPPING
+LOAD
+    recordset_id,
+    provider_creating_id
+Resident Temp_Da_Recordset;
+
+MapRecordsetQuestionId:
+MAPPING
+LOAD
+    recordset_id,
+    question_id
+Resident Temp_Da_Recordset;
+
+MapRecordsetAnswerActive: 
+MAPPING
+LOAD
+    recordset_id,
+    active
+Resident Temp_Da_Recordset;
+
+MapRecordsetDateEffective: 
+MAPPING
+LOAD
+    recordset_id,
+    date_effective
+Resident Temp_Da_Recordset;
+Drop Table Temp_Da_Recordset;
+
+
+//===================================================
+//Da Recordset Answer Mapping
+//===================================================
+
+Temp_Da_Recordset_Answer:
+LOAD
+	covered_by_roi,
+	recordset_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_RECORDSET.qvd]
+(qvd);
+/*
+MapRecordsetAnswerQuestionId: 
+MAPPING
+LOAD
+    recordset_answer_id,
+    question_id
+Resident Temp_Da_Recordset_Answer;
+*/
+MapRecordsetRecordsetIdRoi: 
+MAPPING
+LOAD
+    recordset_id,
+    covered_by_roi
+Resident Temp_Da_Recordset_Answer;
+Drop Table Temp_Da_Recordset_Answer;
+
+//===================================================
+//Misc. Mapping
+//===================================================
+MapAIRSDesignation:
+Mapping
+LOAD  
+ 	airs_designation_id,
+    name
+FROM  [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_TYPE_AIRS_DESIGNATION.qvd] 
+(qvd);
+
+MapCallAnswerClientId:
+Mapping
+LOAD
+    call_record_id,
+    client_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CALL_RECORD.qvd]
+(qvd) WHERE active and len(client_id) > 0;
+
+MapProviderName:
+MAPPING
+LOAD
+    provider_id,
+    name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER.qvd]
+(qvd);
+
+MapCaseManagerName:
+MAPPING
+LOAD
+    case_manager_id,
+    name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CASE_MANAGER.qvd]
+(qvd);
+
+
+MapProviderContact:
+MAPPING
+LOAD
+    provider_contact_id,
+    name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_CONTACT.qvd]
+(qvd);
+
+
+MapUserName:
+MAPPING
+LOAD
+    user_id,
+    name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_USER.qvd]
+(qvd);
+
+MapSetting:
+MAPPING
+LOAD
+    setting_id,
+    name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_SETTING.qvd]
+(qvd);
+
+MapShowSSN: 
+MAPPING
+LOAD
+    name,
+    val_bool
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_SETTING.qvd]
+(qvd);
+
+MapFund:
+MAPPING
+LOAD
+    fund_id,
+    name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_FUND.qvd]
+(qvd);
+
+MapTypeGeographyLevel:
+MAPPING
+LOAD
+    geography_level_id,
+    name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_TYPE_GEOGRAPHY_LEVEL.qvd]
+(qvd);
+
+MapZipCode:
+MAPPING
+LOAD
+    zip_code_id,
+    zip_code
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_ZIP_CODE.qvd]
+(qvd);
+
+MapProviderSpecificService:  
+MAPPING
+LOAD
+	provider_specific_service_id,
+    name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_PROVIDER_SPECIFIC_SERVICE.qvd]
+(qvd);
+
+MapReportingGroup:
+MAPPING
+LOAD
+    reporting_group_id,
+    name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_REPORTING_GROUP.qvd]
+(qvd);
+
+MapCallRecordsetAnswerClientId:
+MAPPING
+LOAD
+	call_record_id,
+    client_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CALL_RECORD.qvd]
+(qvd) WHERE active and len(client_id) > 0;
+
+
+//========================================================================
+//Bed List Mapping
+//========================================================================
+FACT_sp_bedlist_TMP:
+NOCONCATENATE
+Load 
+	bedlist_id,
+	name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_BEDLIST.qvd](qvd);
+
+MapBedlistname: 
+MAPPING
+LOAD
+    bedlist_id,
+    name	
+Resident FACT_sp_bedlist_TMP;
+Drop Table FACT_sp_bedlist_TMP;
+
+FACT_sp_bedlist_bed_TMP:
+NOCONCATENATE
+Load 
+	bedlist_bed_id,
+	name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_BEDLIST_BED.qvd](qvd);
+
+MapBedlistbedname: 
+MAPPING
+LOAD
+    bedlist_bed_id,
+    name	
+Resident FACT_sp_bedlist_bed_TMP;
+Drop Table FACT_sp_bedlist_bed_TMP;
+
+//================================
+//Da Recordset Answer Mapping
+//================================
+Temp_Da_Recordset_Answer:
+LOAD
+    recordset_answer_id,
+    question_id,
+    recordset_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_da_recordset_answer.qvd]
+(qvd);
+
+MapRecordsetAnswerQuestionId: 
+MAPPING
+LOAD
+    recordset_answer_id,
+    question_id
+Resident Temp_Da_Recordset_Answer;
+
+MapRecordsetAnswerRecordsetId: 
+MAPPING
+LOAD
+    recordset_answer_id,
+    recordset_id
+Resident Temp_Da_Recordset_Answer;
+Drop Table Temp_Da_Recordset_Answer;
+
+//===================================================
+//Worksheet Question Mapping
+//===================================================
+Temp_WsQuestion:
+Load
+	question_id,
+    question_type_id,
+	description,
+	parent_id,
+	virt_field_name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_WS_QUESTION.qvd]
+(qvd);	
+
+MapWsQuestionTypeId:
+MAPPING
+LOAD
+	question_id,
+    question_type_id
+Resident Temp_WsQuestion;
+
+MapWsQuestionIsLookup:
+MAPPING
+LOAD
+    question_id,
+    applymap ( 'MapQuestionTypeIdLookup', question_type_id, 0 ) AS isLookup
+Resident Temp_WsQuestion;
+
+MapWsQuestionIsYesNo:
+MAPPING
+LOAD
+    question_id,
+    applymap ( 'MapQuestionTypeIdYesNo', question_type_id, 0 ) AS isYesNo
+Resident Temp_WsQuestion;
+
+MapWsQuestion:
+MAPPING
+LOAD
+	question_id,
+    description  
+Resident Temp_WsQuestion;
+
+MapWsQuestionParentId:
+MAPPING
+LOAD
+	question_id,
+    parent_id  
+Resident Temp_WsQuestion;
+
+MapWsQuestionVFN:
+MAPPING
+LOAD
+	question_id,
+    virt_field_name  
+Resident Temp_WsQuestion;
+Drop TABLE Temp_WsQuestion;
+
+//================================
+//Call Recordset Answer Mapping
+//================================
+Temp_Call_Recordset_Answer:
+LOAD
+    call_recordset_answer_id,
+    question_id,
+    call_recordset_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_call_recordset_answer.qvd]
+(qvd);
+
+MapCallRecordsetAnswerQuestionId: 
+MAPPING
+LOAD
+    call_recordset_answer_id,
+    question_id
+Resident Temp_Call_Recordset_Answer;
+
+MapCallRecordsetAnswerRecordsetId: 
+MAPPING
+LOAD
+    call_recordset_answer_id,
+    call_recordset_id
+Resident Temp_Call_Recordset_Answer;
+Drop Table Temp_Call_Recordset_Answer;
+
+MapWorksheetType:
+Mapping
+LOAD
+    worksheet_type_id,
+    description
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_WS_WORKSHEET_TYPE.qvd]
+(qvd);
+
+MapWorksheet:
+Mapping
+LOAD    
+ 	worksheet_id,
+    name
+FROM  [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_WS_WORKSHEET.qvd] 
+(qvd);
+
+MapTypeService:
+MAPPING
+LOAD    
+    type_service_id,
+    name
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_TYPE_SERVICE.qvd]
+(qvd);
+
+MapTypeServiceModifer:
+MAPPING
+LOAD    
+    type_service_modifier_id,
+    description
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_TYPE_SERVICE_MODIFIER.qvd]
+(qvd);
+
+
+
+
+
+
+

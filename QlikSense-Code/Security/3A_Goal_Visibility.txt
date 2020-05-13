@@ -1,0 +1,92 @@
+Goal_Group:
+LOAD DISTINCT 
+ 	provider_id,
+    visibility_group_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT USER_GROUP; 
+
+Goal_tmp:
+LOAD
+    goal_id,
+    active,
+	client_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_GOAL.qvd]
+(qvd)
+WHERE num(date_set) >= '$(vNumDateSet)';
+
+Goal:
+NOCONCATENATE
+LOAD
+	goal_id,
+	client_id
+RESIDENT Goal_tmp
+WHERE match(active, 1);
+
+DROP TABLE Goal_tmp;
+
+INNER JOIN (Goal)
+LOAD
+    goal_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_GOALVISIBILITY.qvd]
+(qvd);
+
+Goal_visibility:
+LEFT JOIN (Goal_Group)
+LOAD DISTINCT
+    visibility_group_id,
+    visible,
+    goal_id,
+	client_id
+RESIDENT Goal;
+
+DROP TABLE Goal;
+
+Visible:
+Load DISTINCT
+	provider_id,
+    goal_id,
+    1 AS Visible,
+	client_id
+RESIDENT Goal_Group
+WHERE visible = 1;
+
+not_Visible:
+LEFT JOIN(Visible)
+Load DISTINCT
+	provider_id,
+    goal_id,
+    1 AS not_Visible,
+	client_id
+RESIDENT Goal_Group
+WHERE visible = 0;
+
+DROP TABLE Goal_Group;
+
+Goal_visibility:
+NOCONCATENATE
+LOAD DISTINCT
+	provider_id,
+	goal_id AS [Goal Id],
+	client_id AS %goalclientid
+RESIDENT Visible
+WHERE match(Visible, 1)  AND isNull(not_Visible);
+
+DROP TABLE Visible;
+
+//Goal_visibility_tmp:
+LEFT JOIN(Goal_visibility)
+LOAD
+    [Goal Id]
+RESIDENt DIM_Goal;
+
+
+//STORE Goal_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)Goal_visibility.qvd];
+
+
+STORE Goal_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Goal_visibility.qvd];
+Drop table Goal_visibility;
+

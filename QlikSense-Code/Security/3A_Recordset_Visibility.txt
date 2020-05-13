@@ -1,0 +1,99 @@
+Recordset_security_entry_in:
+NOCONCATENATE
+LOAD DISTINCT
+*
+RESIDENT Recordset_security_entry;
+
+Recordset_security_exit_in:
+NOCONCATENATE
+LOAD DISTINCT
+*
+RESIDENT Recordset_security_exit;
+
+Recordset_Group:
+LOAD DISTINCT 
+ 	provider_id,
+    visibility_group_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT USER_GROUP; 
+
+
+INNER JOIN (Recordset_security_entry)
+LOAD
+    recordset_id as %entry_recordset_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT_RECORDSETVISIBILITY.qvd]
+(qvd);
+
+INNER JOIN (Recordset_security_exit)
+LOAD
+    recordset_id as %exit_recordset_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT_RECORDSETVISIBILITY.qvd]
+(qvd);
+
+Recordset:
+NOCONCATENATE
+LOAD
+* 
+RESIDENT Recordset_security_entry;
+DROP TABLE Recordset_security_entry;
+
+
+CONCATENATE(Recordset)
+LOAD
+* 
+RESIDENT Recordset_security_exit;
+DROP TABLE Recordset_security_exit;
+
+
+LEFT JOIN (Recordset_Group)
+LOAD DISTINCT
+	*
+RESIDENT Recordset;
+
+DROP TABLE Recordset;
+
+Visible:
+Load DISTINCT
+*,
+    1 AS Visible
+RESIDENT Recordset_Group
+WHERE visible = 1;
+
+
+LEFT JOIN(Visible)
+Load DISTINCT
+*,
+    1 AS not_Visible
+RESIDENT Recordset_Group
+WHERE visible = 0;
+
+DROP TABLE Recordset_Group;
+
+
+
+Recordset_visibility:
+NOCONCATENATE
+LOAD DISTINCT
+*,
+	entry_exit_id AS [Entry Exit Id]
+RESIDENT Visible
+WHERE match(Visible, 1)  AND isNull(not_Visible);
+
+DROP TABLE Visible;
+//DROP FIELDS %entry_recordset_id,%exit_recordset_id FROM Recordset_visibility;
+
+STORE Recordset_visibility INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Recordset_visibility.qvd];
+Drop table Recordset_visibility;
+
+
+
+
+
+
+

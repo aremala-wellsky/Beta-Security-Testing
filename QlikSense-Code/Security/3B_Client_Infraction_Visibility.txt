@@ -1,0 +1,49 @@
+CLIENT_CLIENTINFRACTION_ACCESS:
+LOAD DISTINCT 
+    [Client Infraction Id] AS %CLIENT_INFRACTION_KEY_SEC,
+	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST
+	//[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST_TIER1
+RESIDENT CLIENT_INFRACTION_ACCESS;
+
+DROP TABLE CLIENT_INFRACTION_ACCESS;
+
+explicit_client_infraction_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+client_infraction_security:
+NOCONCATENATE
+LOAD
+  [Client Incident Id],
+    provider_id,
+	%clientinfractionclientid
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Client_Infraction_visibility.qvd]
+(qvd);
+//RESIDENT Client_Infraction_visibility;
+//DROP TABLE Client_Infraction_visibility;
+
+LEFT JOIN(explicit_client_infraction_security)
+LOAD 
+   [Client Incident Id],
+    provider_id,
+	%clientinfractionclientid
+RESIDENT client_infraction_security;
+
+DROP TABLE client_infraction_security;
+
+CONCATENATE(CLIENT_CLIENTINFRACTION_ACCESS)
+LOAD
+	[Client Incident Id] AS %CLIENT_INFRACTION_KEY_SEC,
+	[TIER_LINK] & '|' & %clientinfractionclientid AS %SA_CLIENT_TEST
+	//[TIER_LINK] & '|' & %clientinfractionclientid AS %SA_CLIENT_TEST_TIER1
+RESIDENT explicit_client_infraction_security;
+
+DROP TABLE explicit_client_infraction_security;
+
+STORE CLIENT_CLIENTINFRACTION_ACCESS INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_CLIENTINFRACTION_ACCESS.qvd];
+DROP TABLE CLIENT_CLIENTINFRACTION_ACCESS;

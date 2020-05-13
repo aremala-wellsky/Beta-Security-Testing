@@ -1,0 +1,35 @@
+CASE_MANAGER_ACCESS:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+//     provider_id,
+// 	user_access_tier,
+    [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd);
+//RESIDENT INHERENT_SECURITY; 
+
+case_manager_security:
+LOAD
+    case_manager_id,
+    active,
+    client_id,
+//     provider_id,
+    provider_creating_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CASE_MANAGER.qvd]
+(qvd)
+WHERE (isNull(num(date_ended)) OR (num(date_ended) >= '$(vNumDateSet)'));
+
+INNER JOIN(CASE_MANAGER_ACCESS)
+LOAD
+    client_id AS [Client Id],
+    case_manager_id AS [Case Manager Id],
+    provider_creating_id AS [Client Provider Created By Id],
+    1 AS [INHERENT SECURITY]
+RESIDENT case_manager_security
+WHERE match(active, 1)
+  AND client_id > 0
+  AND case_manager_id > 0;
+
+DROP TABLE case_manager_security;
+

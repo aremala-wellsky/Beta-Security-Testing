@@ -1,0 +1,33 @@
+EE_RECORDSET_ACCESS:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    [Client Provider Created By Id]
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT INHERENT_SECURITY; 
+
+Recordset_security_vis:
+NOCONCATENATE
+LOAD DISTINCT
+*
+RESIDENT Recordset_security_entry_in;
+DROP TABLE Recordset_security_entry_in;
+
+CONCATENATE(Recordset_security_vis)
+LOAD DISTINCT
+*
+RESIDENT Recordset_security_exit_in;
+DROP TABLE Recordset_security_exit_in;
+
+
+INNER JOIN(EE_RECORDSET_ACCESS)
+LOAD    
+*,
+    provider_creating_id AS [Client Provider Created By Id],
+	entry_exit_id AS [Entry Exit Id]
+RESIDENT Recordset_security_vis;
+
+
+

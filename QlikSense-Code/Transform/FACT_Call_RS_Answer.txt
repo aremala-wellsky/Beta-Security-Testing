@@ -1,0 +1,146 @@
+FACT_call_recordset_answer_TMP:
+NoConcatenate
+Load * 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_CALL_RECORDSET_ANSWER.qvd]
+(qvd);
+
+FACT_Call_RS_Answer:
+NoConcatenate
+Load
+	*,
+     'Call Recordset'												AS [Call Recordset Answer Type],
+//	 'Assessment' & '|' & [Question Id]								AS %ASSESSMENTQUESTIONTYPE_KEY,
+    //[Answer Client Id] & '|' & [Question Id]									AS %MaxAnswerKey,
+//	[Provider Id]														AS %PROVIDERID_KEY,
+    AnswerTemp3														AS [Call Recordset Answer];
+LOAD    
+    *,
+    //Counter for Answers
+    if (len(AnswerTemp2)>0,1,0)										AS [Call Recordset Count Answer],// WM Prob should have more descriptive name but I don't know what exactly this does    
+    //Inserting Null Value for NULLs
+    if (Len(AnswerTemp2)>0, AnswerTemp2, '$(vNullValue)' )			AS AnswerTemp3;    
+LOAD *,
+     if ( isYesNo and AnswerTemp <> null(),
+     if ( AnswerTemp = 1, 'Yes', 'No'), AnswerTemp ) 				AS AnswerTemp2;                                           
+LOAD       
+	 *,
+	 if (isLookup, applymap ('MapPickList', val_int, NULL() ), val_int & date(val_date) & val_textfield & val_float) AS AnswerTemp,
+     applymap ('MapPickListValueCode', val_int, NULL())             AS [Call Recordset Answer Picklist Code];  
+LOAD       
+    //call_recordset_answer_id										AS [Call Recordset Answer Id],
+    call_recordset_answer_id										AS [Call Recordset Answer Id],
+    question_id														AS [Call Recordset Question Id],
+	//question_id														AS %QuestionId,
+    applymap ('MapQuestionIsLookup', question_id, 0 ) 				AS isLookup,
+    applymap ('MapQuestionIsYesNo', question_id, 0 ) 				AS isYesNo,
+    applymap ('MapQuestion', question_id, 0 ) 						AS [Call Recordset Question],
+    applymap ('MapQuestionParentId', question_id, NULL()) 			AS [Call Recordset Subassessment Id],
+    null() 															AS [Call Recordset Subassessment Virt Field Name],
+    (date(floor( date_added ) ) )	         						AS [Call Recordset Answer Added Date],
+    time ( date_added )              								AS [Call Recordset Answer Added Time],   
+    if ( len ( user_inactive_id ) > 0, 
+    	applymap ('MapUserName', user_inactive_id, NULL() ), 
+    	applymap ('MapUserName', user_creating_id, NULL() ) )       AS [Call Recordset User],
+    //if ( len ( provider_inactive_id ) > 0, provider_inactive_id, provider_creating_id )  AS [Call Recordset Provider Id],                                                             
+	(date(floor( date_inactive ) ) )		        				AS [Call Recordset Answer Inactive Date],
+    time ( date_inactive )      									AS [Call Recordset Answer Inactive Time],
+    //provider_inactive_id 											AS [Call Recordset Answer Provider Updated By Id],
+    //applymap ('MapProviderName', provider_inactive_id, NULL() ) 	AS [Call Recordset Answer Provider Updated By],
+	provider_inactive_id 											AS [Call Recordset Answer Provider Inactive By Id],
+    applymap ('MapProviderName', provider_inactive_id, NULL() ) 	AS [Call Recordset Answer Provider Inactive By],
+	provider_creating_id											AS [Call Recordset Answer Provider Created By Id],
+	applymap ('MapProviderName', provider_creating_id, NULL() ) 	AS [Call Recordset Answer Provider Created By],
+	provider_creating_id											AS [Call Recordset Provider Id],
+    val_int,
+    val_date,
+    val_textfield,
+    val_float,
+    applymap ('MapUserName', user_creating_id, NULL() )         	        AS [Call Recordset Answer User Created By],
+	user_creating_id  												        AS [Call Recordset Answer User Created By Id],
+    provider_creating_id											        AS [Call Recordset Answer Provider Created By Id],
+	applymap ('MapProviderName', provider_creating_id, NULL() ) 	        AS [Call Recordset Answer Provider Created By],
+    (date(floor(date_updated) ) )									AS [Call Recordset Answer Date Updated],
+	time (date_updated)												AS [Call Recordset Answer Time Updated],
+	(date(floor(date_added) ) )										AS [Call Recordset Answer Date Added],
+	time (date_added)												AS [Call Recordset Answer Time Added],
+//  call_recordset_id												AS [Call Recordset Id],
+	call_recordset_id												AS %CallRecordSetJoinKey,
+    applymap ('MapRecordsetProviderCreatingId',recordset_id, NULL() ) AS [Recordset 101 Provider Creating]
+ //   applymap ('MapCallRSAnswerVisibility', call_recordset_id, NULL() ) AS [Call Recordset Visibility Group],
+ // 	if ( applymap ('MapCallRSAnswerVisibleVisibility', call_recordset_id, NULL() ) = 1, 'Yes', 'No' ) AS [Call RS Answer Visible],
+//	 applymap ('MapCallRecordsetSubStartDate', call_recordset_id, NULL() ) 	AS [Call Recordset Subassessment Start Date],
+//	applymap ('MapCallRecordsetSubEndDate', call_recordset_id, NULL() ) 		AS [Call Recordset Subassessment End Date],
+//	applymap ('MapCallRecordsetSubStartTime', call_recordset_id, NULL() ) 	AS [Call Recordset Subassessment Start Time],
+//	applymap ('MapCallRecordsetSubEndTime', call_recordset_id, NULL() ) 		AS [Call Recordset Subassessment End Time]
+Resident FACT_call_recordset_answer_TMP;
+Drop Table FACT_call_recordset_answer_TMP;
+
+
+FACT_call_recordset_TMP:
+NoConcatenate
+Load 
+	call_recordset_id,
+	question_id,
+	user_inactive_id,
+	provider_inactive_id,
+    provider_creating_id,
+	covered_by_roi,
+    date_added,
+	date_effective,
+    date_inactive,
+	recordset_id,
+	call_record_id,
+	active,
+  user_creating_id,
+  provider_creating_id,
+  date_added,
+  date_updated
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_CALL_RECORDSET.qvd](qvd);
+
+FACT_call_recordset:
+NoConcatenate
+LOAD
+    call_recordset_id														AS [Call Recordset Id],
+	call_recordset_id														AS %CALL_RECORDSET_KEY_SEC,
+//	call_record_id													 		AS %SA_CALL_RECORD_CALL_RECORDSET_TIER1,
+    applymap ('MapQuestion', question_id, NULL() )							AS [Call Recordset Question Name],
+    provider_creating_id                                                    AS [Call Recordset Provider Created By Id],
+    (date(floor(date_added)))                                               AS [Call Recordset Date Added],
+    date_effective															AS [Call Recordset Date Effective],
+    recordset_id															AS [Call Link Recordset Id], // WM changed call_recordset_id to [Call Link Recordset Id],
+//	call_record_id															AS [Call Record Id],
+	call_record_id															AS %CallRecordJoinKey,
+	call_recordset_id														AS %CallRecordSetJoinKey,
+    applymap ('MapUserName', user_creating_id, NULL() )         	        AS [Call Recordset User Created By],
+	user_creating_id  												        AS [Call Recordset User Created By Id],
+    provider_creating_id											        AS [Call Recordset Provider Created By Id],
+	applymap ('MapProviderName', provider_creating_id, NULL() ) 	        AS [Call Recordset Provider Created By],
+    (date(floor(date_updated) ) )									AS [Call Recordset Date Updated],
+	time (date_updated)												AS [Call Recordset Time Updated],
+	(date(floor(date_added) ) )										AS [Call Recordset Date Added],
+	time (date_added)												AS [Call Recordset Time Added]
+	
+Resident FACT_call_recordset_TMP;
+Drop Table FACT_call_recordset_TMP;
+
+
+
+DROP Fields       
+	//date_effective,  
+    AnswerTemp,
+    AnswerTemp2,
+    AnswerTemp3,
+	isLookup,
+   	isYesNo,
+    //[Answer Updated Date],
+    //[Answer Inactive Date],
+    val_int,
+    val_date,
+    val_textfield,
+    val_float;
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE FACT_Call_RS_Answer INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_FACT_Call_RS_Answer.qvd];
+
+
+

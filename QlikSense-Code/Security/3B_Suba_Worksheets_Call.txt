@@ -1,0 +1,88 @@
+DROP_ANSWER_VIEWS:                     
+SELECT qlik_remove_all_qlik_view();     
+DROP TABLE DROP_ANSWER_VIEWS; 
+
+BUILD_WORKSHEET_VIEWS:                 
+SELECT qlik_flatten_all_ws_suba_view('1/01/2015');   
+DROP TABLE BUILD_WORKSHEET_VIEWS;
+
+
+WORKSHEET_CALL_LIST:
+SELECT table_name AS sp_table_name, 'call' || SUBSTRING(table_name, 21, CHAR_LENGTH(table_name)) AS qlik_table_name,  SUBSTRING(table_name, 21, CHAR_LENGTH(table_name)) AS table_name_only
+FROM information_schema.tables
+WHERE table_name ILIKE 'qlik_wcall_worksheet_%'
+ORDER BY table_name;
+
+LET NumRows=NoOfRows('WORKSHEET_CALL_LIST');
+FOR i=0 to $(NumRows)-1
+
+  LET varRecordSetTableName=Peek('sp_table_name',$(i),'WORKSHEET_CALL_LIST');
+  LET varRecordSetQlikName=Peek('qlik_table_name',$(i),'WORKSHEET_CALL_LIST');
+  LET varRecordSetTableNameOnly=Peek('table_name_only',$(i),'WORKSHEET_SERVICE_LIST');
+  LET varRecordSetQlikName_Ucase_Entry=Upper(right('$(varRecordSetQlikName)', (len('$(varRecordSetQlikName)'))-4));
+  LET varRecordSetQlikName_Call= '$(varRecordSetQlikName)'& '_wcall';
+  
+  
+$(varRecordSetQlikName):
+SELECT *
+FROM $(varRecordSetTableName);
+  
+
+CALL_WS_LINKAGE:
+SELECT wr.recordset_id,
+c.call_record_id as call_worskeets_link
+ FROM ws_recordset wr 
+JOIN ws_worksheet_type wt on wt.worksheet_type_id = wr.worksheet_type_id 
+JOIN sp_call_record c ON c.call_record_id = wr.entity_id WHERE wt.code = 'CALLHEADERWORKSHEET';
+  
+  INNER JOIN($(varRecordSetQlikName))
+  LOAD DISTINCT
+  call_worskeets_link as %linkwscall,
+  recordset_id
+  RESIDENT CALL_WS_LINKAGE;
+  
+  
+  $(varRecordSetQlikName_Call):
+  Noconcatenate
+  LOAD DISTINCT
+  *,
+  recordset_id AS 'call$(varRecordSetQlikName_Ucase_Entry)RECORDSET_ID_wcall'
+  RESIDENT $(varRecordSetQlikName);
+  
+
+  
+  DROP TABLE CALL_WS_LINKAGE;
+  
+  DROP FIELDS call_record_id FROM $(varRecordSetQlikName_Call);
+  DROP FIELDS recordset_id FROM $(varRecordSetQlikName_Call);
+  
+    DROP TABLE $(varRecordSetQlikName);
+
+
+  FieldMapWsCall:
+  Mapping SQL
+    SELECT lower(dq.virt_field_name) AS oldnames,   'call_'||dq.virt_field_name || '_wcall'  AS newnames
+    FROM ws_question dq
+    INNER JOIN ws_question dq_p ON (dq_p.question_id = dq.parent_id)
+     UNION   
+ SELECT  lower(dq.virt_field_name)|| 'date' AS oldnames,   'call_'||dq.virt_field_name || 'DATE_wcall'  AS newnames
+    FROM ws_question dq
+    INNER JOIN ws_question dq_p ON (dq_p.question_id = dq.parent_id)
+    WHERE  ((dq.virt_field_name <> (dq_p.virt_field_name || 'ENDDATE'))) AND ((dq.virt_field_name <> (dq_p.virt_field_name || 'STARTDATE')));
+	Rename Fields using FieldMapWsCall;
+  
+   // DROP TABLE $(varRecordSetQlikName);
+
+  LET varStepName='STEPENTRY_' & $(i) & '_of_' & $(NumRows);
+  $(varStepName): select 1;
+  DROP TABLE $(varStepName);
+ 
+
+NEXT;
+
+DROP TABLE WORKSHEET_CALL_LIST;
+
+DROP_ANSWER_VIEWS:
+SELECT qlik_remove_all_qlik_view();
+
+DROP TABLE DROP_ANSWER_VIEWS;

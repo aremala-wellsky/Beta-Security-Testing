@@ -1,0 +1,36 @@
+
+CLIENT_NEED_ACCESS:
+LOAD DISTINCT
+    [Need Id] AS %FACT_NEED_KEY_SEC,
+	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST	
+RESIDENT NEED_ACCESS;
+
+DROP TABLE NEED_ACCESS;
+
+explicit_need_security:
+NOCONCATENATE
+LOAD DISTINCT
+	TIER_LINK,
+    provider_id
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
+(qvd)
+WHERE (user_access_tier <> 1);
+//RESIDENT INHERENT_SECURITY; 
+
+
+LEFT JOIN(explicit_need_security)
+LOAD
+    [Need Id],
+    provider_id,
+	%needclientid
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Need_visibility.qvd]
+(qvd);
+
+CONCATENATE(CLIENT_NEED_ACCESS)
+LOAD
+	[Need Id] AS %FACT_NEED_KEY_SEC,
+	[TIER_LINK] & '|' & %needclientid AS %SA_CLIENT_TEST
+RESIDENT explicit_need_security;
+
+DROP TABLE explicit_need_security;	
+

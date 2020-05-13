@@ -1,0 +1,167 @@
+//=============================================
+//Bedlist Tables
+//=============================================
+DIM_sp_bedlist_TMP: //RUNNING TOTAL: Rows/Fields 6/5
+NoConcatenate
+Load 
+	bedlist_id,
+	provider_id,
+	name,
+	type_value_id,
+	active
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_BEDLIST.qvd](qvd);
+
+DIM_sp_bedlist:
+LOAD 
+	"bedlist_id"													AS [Bedlist Id],
+    "provider_id"													AS %PROVIDER_DETAILS_KEY,
+	"provider_id"													AS %PROVIDER_DETAILS_BED_KEY,
+    "name"															AS [Bedlist Name],
+	applymap ('MapPickList', type_value_id, NULL() )				AS [Bedlist Type],        
+   	if ( active = 1, 'Yes', 'No' ) 
+    																AS [Bedlist Is Active]
+Resident DIM_sp_bedlist_TMP;
+Drop Table DIM_sp_bedlist_TMP;
+
+//=============================================
+
+DIM_sp_bedlist_floor_TMP: //RUNNING TOTAL: Rows/Fields 7/8
+NoConcatenate
+Load 
+	bedlist_floor_id,
+	bedlist_id,
+	name,
+    active
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_BEDLIST_FLOOR.qvd]
+(qvd);
+LEFT JOIN(DIM_sp_bedlist)
+LOAD 
+ 	"bedlist_floor_id"												AS [Bedlist Floor Id],
+    "bedlist_id"													AS [Bedlist Id],
+    "name"															AS [Bedlist Floor Name],
+   	if ( active = 1, 'Yes', 'No' ) 
+    																AS [Bedlist Floor Is Active]
+Resident DIM_sp_bedlist_floor_TMP;
+Drop Table DIM_sp_bedlist_floor_TMP;
+
+//=============================================
+
+DIM_sp_bedlist_room_TMP: //RUNNING TOTAL: Rows/Fields 9/11
+NoConcatenate
+Load 
+	bedlist_room_id,
+	bedlist_floor_id,
+	name,
+	active
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_BEDLIST_ROOM.qvd]
+(qvd);
+LEFT JOIN(DIM_sp_bedlist)
+LOAD 
+	"bedlist_room_id"												AS [Bedlist Room Id],
+    "bedlist_floor_id"												AS [Bedlist Floor Id],
+    "name"															AS [Bedlist Room Name],
+   	if ( active = 1, 'Yes', 'No' ) 
+    																AS [Bedlist Room Is Active]
+Resident DIM_sp_bedlist_room_TMP;
+Drop Table DIM_sp_bedlist_room_TMP;
+
+//=============================================
+
+DIM_sp_bedlist_bed_TMP: //RUNNING TOTAL: Rows/Fields 530/13 (TROUBLE) //Mar 20 - 
+NoConcatenate
+Load 
+	bedlist_room_id,
+	name,
+	active,
+	bedlist_bed_id
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_BEDLIST_BED.qvd]
+(qvd);
+LEFT JOIN(DIM_sp_bedlist)
+LOAD 
+    "bedlist_room_id"												AS [Bedlist Room Id],
+    "name"															AS [Bedlist Bed Name],
+   	if ( active = 1, 'Yes', 'No' ) 
+    																AS [Bedlist Bed Is Active],
+	"bedlist_bed_id"												AS [Bedlist Bed Id]																
+Resident DIM_sp_bedlist_bed_TMP;
+Drop Table DIM_sp_bedlist_bed_TMP;
+
+//=============================================
+DIM_sp_inventory_date_TMP:
+Load *
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_BED_UNIT_INVENTORY.qvd]
+(qvd);
+
+LET a = FieldNumber('information_date','DIM_sp_inventory_date_TMP');
+
+DIM_sp_bed_unit_inventory_TMP: //RUNNING TOTAL: Rows/Fields 934/30 (TROUBLE) //Mar 20 - 
+NoConcatenate
+Load 	
+		"provider_id",  
+  	bed_unit_inventory_id,   
+  	name,
+    bed_type_value_id,
+    availability_value_id,
+  	bed_inventory, 
+  	ch_bed_inventory, 
+  	unit_inventory,
+  	inventory_start_date,
+  	inventory_end_date,
+  	hmis_beds,
+  	hmis_start_date,
+  	hmis_end_date,
+  	veteran_bed_inventory,
+  	youth_bed_inventory,
+  	youth_beds_under_18,
+  	youth_beds_18_to_24,
+  	youth_beds_under_24,
+	active,
+	coc_code_id,
+	household_type_value_id,
+	mckinney_vento,
+	if ($(a) > 0 , information_date , Null()) as information_date
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_BED_UNIT_INVENTORY.qvd]
+(qvd);
+//LEFT JOIN(DIM_sp_bedlist)
+DIM_Provider_BUI:
+NoConcatenate
+LOAD 
+   "provider_id"													AS %PROVIDER_DETAILS_BED_KEY,	
+  	name															AS [BUI Name],
+    applymap ('MapPickList', bed_type_value_id, NULL() )			AS [BUI Bed Type],
+    applymap ('MapPickList', availability_value_id, NULL() )		AS [BUI Bed Availability],
+  	bed_inventory													AS [BUI Bed Inventory], 
+  	ch_bed_inventory												AS [BUI Chronic Homeless Bed Inventory], 
+  	unit_inventory													AS [BUI Unit Inventory],
+  	date(floor(inventory_start_date)) 								AS [BUI Inventory Start Date],
+  	date(floor(inventory_end_date))									AS [BUI Inventory End Date],
+  	hmis_beds														AS [BUI HMIS Participating Beds],
+  	date(floor(hmis_start_date))									AS [BUI HMIS Participation Start Date],
+  	date(floor(hmis_end_date))										AS [BUI HMIS Participation End Date],
+  	veteran_bed_inventory 											AS [BUI Veteran Bed Inventory],
+  	youth_bed_inventory 											AS [BUI Youth Bed Inventory],
+  	youth_beds_under_18												AS [BUI Youth Beds Under 18 (Retired)],
+  	youth_beds_18_to_24												AS [BUI Youth Beds 18 to 24 (Retired)],
+  	youth_beds_under_24												AS [BUI Youth Beds Under 24 (Retired)],
+	bed_unit_inventory_id											AS [BUI Id],
+	date(floor(information_date))									AS [BUI Information Date],
+	applymap ('MapPickList', coc_code_id, NULL() )				    AS [BUI CoC Code],
+	applymap ('MapPickList',household_type_value_id, NULL() )		AS [BUI Household Type],
+	 if ( mckinney_vento = 1, 'Yes', 'No' )							AS [BUI McKinney Vento Funding]
+Resident DIM_sp_bed_unit_inventory_TMP;
+Drop Table DIM_sp_bed_unit_inventory_TMP;
+Drop Table DIM_sp_inventory_date_TMP;
+
+//=============================================
+/*
+DIM_Provider_Details:  //RUNNING TOTAL: Rows/Fields 1538/105 (TROUBLE) //Mar 20 
+NoConcatenate
+Load	
+	*
+Resident DIM_sp_bedlist;
+Drop Table DIM_sp_bedlist;
+*/
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE DIM_sp_bedlist INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_DIM_Provider_Details.qvd];
+DROP Table DIM_sp_bedlist;

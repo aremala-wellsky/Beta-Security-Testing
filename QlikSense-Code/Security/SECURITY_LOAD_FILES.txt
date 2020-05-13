@@ -1,0 +1,137 @@
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNSiteFolder)/$(vSiteName).txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/StartTime.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Main.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_USERS.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_User_Access.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_User_Visibility_Group.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Section_Access.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Section_Application.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Recent_Client_Pool.txt]);
+
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Client_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Entry_Exit_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Case_Manager_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Goal_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Goal_Actionstep_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Need_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Client_Infraction_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Matrix_Group_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Call_Record_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Call_Record_Answer_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Call_Recordset_Visibility.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Security.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Client.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Client_Visibility.txt]);
+
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Need.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Need_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Need_TIER1.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Need_Visibility_TIER1.txt])
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Goal.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Goal_Visibility.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Actionstep.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Actionstep_Visibility.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Case_Manager.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Case_Manager_Visibility.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Client_Infractions.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Client_Infraction_Visibility.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Matrix_Group.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Matrix_Group_Visibility.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Release_Of_Info.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Release_Of_Info_Visibility.txt]);
+
+
+
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Delta_Call_1.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Delta_Call_2.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Delta_Call_3.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Delta_Call_Followup_1.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Delta_Call_Followup_2.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Delta_Call_Followup_3.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Delta_EER_Interim_1.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Delta_EER_Interim_2.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Delta_EER_Interim_3.txt]);
+
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Entry_Exit_Answers.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Worksheet.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Call_Record.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Record_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Call_Record_TIER1.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Record_Visibility_TIER1.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Call_Answer.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Answer_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Call_Answer_TIER1.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Answer_Visibility_TIER1.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Call_Recordset.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Recordset_Visibility.txt]);
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Entry_Exit.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Entry_Exit_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Entry_Exit_TIER1.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Entry_Exit_Visibility_TIER1.txt]);
+
+
+
+sp_setting_upgrade_1:
+NoConcatenate
+Load
+//if (val_bool=1, 'Yes',NULL())	AS site_upgrade_setting
+val_bool	AS site_upgrade_setting
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_SETTING.qvd]
+(qvd) where name = 'site_up';
+
+sp_setting_upgrade_2:
+NoConcatenate
+Load
+//if (val_bool=1, 'Yes',NULL())	AS encrypted_upgrade_setting
+val_bool	AS encrypted_upgrade_setting
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_SETTING.qvd]
+(qvd) where name = 'is_encrypted';
+
+LET varsite_upgrade_setting=Peek('site_upgrade_setting',0,'sp_setting_upgrade_1');
+LET varencrypted_upgrade_setting=Peek('encrypted_upgrade_setting',0,'sp_setting_upgrade_2');
+
+IF (($(varsite_upgrade_setting) = 0) AND ($(varencrypted_upgrade_setting) = 1)) THEN
+ELSE
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Suba_Call.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Suba_Call_Followup.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Suba_Client.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Suba_Client_Interim.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Suba_Worksheets_Service.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Suba_Worksheets_Call.txt]);
+END IF;
+
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Recordset_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Recordset.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Recordset_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Recordset_TIER1.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Recordset_Visibility_TIER1.txt]);
+
+
+Drop Table sp_setting_upgrade_1;
+Drop Table sp_setting_upgrade_2;
+
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Drop_Inherent_Security.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/SECURITY_LOAD_QVD_FILES.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/EndTime.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/ExitScript.txt]);
+

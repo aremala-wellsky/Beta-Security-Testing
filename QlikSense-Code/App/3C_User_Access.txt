@@ -1,0 +1,5 @@
+USER_ACCESS:
+LOAD 
+     *
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_ACCESS.qvd]
+(qvd);

@@ -1,0 +1,66 @@
+//******************************************************************//
+//******** Load all date into memory from Transformed QVDs. ********//
+//******************************************************************//
+
+CLIENT_ACTIONSTEP_ACCESS:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_ACTIONSTEP_ACCESS.qvd](qvd);
+
+CLIENT_CALL_ANSWER_ACCESS:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_CALL_ANSWER_ACCESS.qvd](qvd);
+
+CALL_RECORDSET_ACCESS:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CALL_RECORDSET_ACCESS.qvd](qvd);
+
+CLIENT_CASEMANAGER_ACCESS:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_CASEMANAGER_ACCESS.qvd](qvd);
+
+CLIENT_CLIENTINFRACTION_ACCESS:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_CLIENTINFRACTION_ACCESS.qvd](qvd);
+
+
+CLIENT_EE_ACCESS:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_EE_ACCESS.qvd](qvd);
+
+
+CLIENT_GOAL_ACCESS:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_GOAL_ACCESS.qvd](qvd);
+
+
+CLIENT_MATRIX_ACCESS:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_MATRIX_ACCESS.qvd](qvd);;
+
+CLIENT_NEED_ACCESS:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CLIENT_NEED_ACCESS.qvd](qvd);;
+
+EERECORDSET_ACCESS:
+NoConcatenate
+Load 
+	*
+FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_EERECORDSET_ACCESS.qvd](qvd);;

@@ -1,0 +1,120 @@
+/********************
+SITE Variables
+Please Update As Needed
+*********************/
+//***UPDATE the APP ID in comments. It is in the QMC APP section.
+//   This is so we will have track of the original
+//   app if we lose or duplicate by accident.
+//   APP ID: 8e46abb2-8ce7-496e-ad92-a0ef3b3e0dfa
+
+
+//***UDPATE with the Qlik Data Connection, SP DB Name for each new site.
+//   EXAMPLE: SET vConnection = ['sp5_ps_bootcampnew_c'];
+//   EXAMPLE: SET vDBname = 'ps_bootcamp2017';
+//SET vConnection = ['SITE_QLIK_CONNECTION'];
+//SET vDBname = 'SITE_SP_DB_NAME';
+
+
+
+/********************
+Connection Variables
+Please Update As Needed.
+
+The spreadsheets are a
+manual process for
+tracking SP tables
+with active and
+inactive data separately.
+
+This process will be
+replaced after initial
+launch of sites. These
+should not change unless
+we add new tables
+or move the file path.
+*********************/
+SET vStoreConnection = 'SPData_Beta';
+SET vSpreadsheetConnection = 'SPData_Beta';
+SET vQVDType = 'Extract';
+LET vQVDTypePrefix = left(vQVDType, 1);
+LET vFilenamePrefix = vQVDTypePrefix & '_' & lower(vDBname);
+SET vFolder = 'DB';
+SET vDBListExcelName = 'sp_db.xlsx';
+SET vTableName = 'databases';
+SET vActiveExcelName = 'sp_tables_active.xlsx';
+SET vActiveSheetName = 'Sheet1';
+SET vNoActiveExcelName = 'sp_tables_no_active.xlsx';
+SET vNoActiveSheetName = 'Sheet1';
+
+
+DATABASES:
+LOAD
+    database_name
+FROM [lib://$(vSpreadsheetConnection)/$(vQVDType)\$(vFolder)\$(vDBListExcelName)]
+(ooxml, embedded labels, table is $(vTableName));
+
+
+SP_TABLES_ACTIVE:
+NoConcatenate
+LOAD
+    table_name,
+    qlik_table_name
+FROM [lib://$(vSpreadsheetConnection)/$(vQVDType)\$(vFolder)\$(vActiveExcelName)]
+(ooxml, embedded labels, table is $(vActiveSheetName))
+WHERE len(table_name)>0;
+
+
+SP_TABLES_NO_ACTIVE:
+NoConcatenate
+LOAD
+    table_name_no_active,
+    qlik_table_name_no_active
+FROM [lib://$(vSpreadsheetConnection)/$(vQVDType)\$(vFolder)\$(vNoActiveExcelName)]
+(ooxml, embedded labels, table is $(vNoActiveSheetName))
+WHERE len(table_name_no_active)>0;
+
+
+LIB CONNECT TO $(vConnection);
+
+//Get tables with active field and filter out inactive records
+For vCountTablesA = 0 To NoOfRows('SP_TABLES_ACTIVE')-1
+	Let tableIDA = Peek('table_name', $(vCountTablesA), 'SP_TABLES_ACTIVE');
+	Let qlikTableIDA = Peek('qlik_table_name', $(vCountTablesA), 'SP_TABLES_ACTIVE');
+
+	if ($(tableIDA) = 'sp_client_answervisibility', 
+
+			TempA:
+			SQL SELECT * FROM $(vDBname)."public".$(tableIDA);,
+
+			TempA:
+			SQL SELECT client_answer_id, visibility_group_id, visible, client_id, active FROM $(vDBname)."public".$(tableIDA);
+	);
+	
+    $(qlikTableIDA):
+    NoConcatenate
+    LOAD * 
+    RESIDENT TempA
+    Where active;
+
+    STORE $(qlikTableIDA) INTO [lib://$(vStoreConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_$(qlikTableIDA).qvd];
+    DROP Table $(qlikTableIDA), TempA; //and drop temp
+Next vCountTablesA
+
+LIB CONNECT TO $(vConnection);
+//Get tables without active field.
+For vCountTablesN = 0 To NoOfRows('SP_TABLES_NO_ACTIVE')-1
+    Let tableIDN = Peek('table_name_no_active', $(vCountTablesN), 'SP_TABLES_NO_ACTIVE');
+    Let qlikTableIDN = Peek('qlik_table_name_no_active', $(vCountTablesN), 'SP_TABLES_NO_ACTIVE');
+
+    TempN:
+    SQL SELECT * FROM $(vDBname)."public".$(tableIDN);
+
+    $(qlikTableIDN):
+    NoConcatenate
+    LOAD * 
+    RESIDENT TempN;
+
+    STORE $(qlikTableIDN) INTO [lib://$(vStoreConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_$(qlikTableIDN).qvd];
+    DROP Table $(qlikTableIDN), TempN; 
+Next vCountTablesN
+

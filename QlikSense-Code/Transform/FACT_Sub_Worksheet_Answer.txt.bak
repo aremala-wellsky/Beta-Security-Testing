@@ -1,0 +1,94 @@
+FACT_ws_recordset_answer_TMP:
+NoConcatenate
+Load * 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_WS_RECORDSET_ANSWER.qvd]
+(qvd);
+
+FACT_Subworksheet_Answer:
+NoConcatenate
+Load
+	 *,
+     'Subprovider'													AS [Answer Type],
+	 'Worksheet' & '|' & [Question Id]								AS %ASSESSMENTQUESTIONTYPE_KEY,   
+	[Provider Id]														AS %PROVIDERID_KEY,
+    AnswerTemp3														AS Answer,
+	if ( %coveredByRoi = 0, 'No', 'Yes' ) 	AS [Answer Is Covered By ROI]; //Test
+LOAD    
+    *,
+    //Counter for Answers
+    if (len(AnswerTemp2)>0,1,0)										AS [Count Answer],       
+    //Inserting Null Value for NULLs
+    if (Len(AnswerTemp2)>0, AnswerTemp2, '$(vNullValue)' )			AS AnswerTemp3;    
+LOAD *,
+     if ( isYesNo and AnswerTemp <> null(),
+     if ( AnswerTemp = 1, 'Yes', 'No'), AnswerTemp )				AS AnswerTemp2;                                                                    
+LOAD 
+	 *,
+	 if (isLookup, applymap ('MapPickList', val_int, NULL() ), val_int & date(val_date) & val_textfield & val_float) 
+     																AS AnswerTemp,
+    applymap ('MapPickListValueCode', val_int, NULL())              AS [Answer Picklist Code];
+LOAD  
+    date_added														AS date_effective,
+	applymap ( 'MapWsRecordsetAnswerActive', recordset_id, NULL())	AS [Recordset Active],                                                                
+    recordset_id                                                    AS [Recordset Id],
+    recordset_answer_id							                    AS [Answer Id],
+    question_id														AS [Question Id],
+    applymap ('MapWsQuestionIsLookup', question_id, 0 ) 				AS isLookup,
+    applymap ('MapWsQuestionIsYesNo', question_id, 0 ) 				AS isYesNo,
+    applymap ('MapWsQuestion', question_id, 0 ) 						AS Question,
+    applymap ('MapWsQuestionParentId', question_id, NULL()) 			AS [Worksheet Subassessment Id],
+    applymap ('MapWsQuestionVFN', applymap ('MapWsQuestionParentId', question_id, NULL()), NULL())				
+    																AS [Worksheet Subassessment Virt Field Name],
+    (date(floor( date_added ) ) )	         						AS [Answer Added Date],
+    time ( date_added )             								AS [Answer Added Time],
+    (date(floor( date_added ) ) )	        						AS [Answer Effective Date],
+    time ( date_added )              								AS [Answer Effective Time],
+    (date(floor( date_added ) ) )			        				AS [Answer Updated Date],
+    time ( date_added ) 			            					AS [Answer Updated Time],
+    if ( len ( user_updating_id ) > 0, 
+     	applymap ('MapUserName', user_updating_id, NULL() ), 
+     	applymap ('MapUserName', user_creating_id, NULL() ) ) 		AS User,
+	provider_updating_id 											AS [Answer Provider Updated By Id],
+    applymap ('MapProviderName', provider_updating_id, NULL() ) 	AS [Answer Provider Updated By],
+	provider_creating_id											AS [Answer Provider Created By Id],
+	applymap ('MapProviderName', provider_creating_id, NULL() ) 	AS [Answer Provider Created By],
+	provider_creating_id											AS [Provider Id],
+    val_int,
+    val_date,
+    val_textfield,
+    val_float,
+    NULL()															AS [%coveredByRoi],    
+	if ((((applymap ('MapWsQuestion', (applymap ('MapWsRecordsetAnswerQuestionId', [recordset_answer_id], 0 )),null() ))) like 'start*'
+	and (applymap ('MapWsQuestionTypeId', (applymap ('MapWsRecordsetAnswerQuestionId', [recordset_answer_id], 0 )), 0 )) = 5),date(floor(val_date)),NULL())
+																	AS  [Subassessment Start Date],
+	if((((applymap ('MapWsQuestion', (applymap ('MapWsRecordsetAnswerQuestionId', [recordset_answer_id], 0 )),null() ))) like 'end*'
+	and (applymap ('MapWsQuestionTypeId', (applymap ('MapWsRecordsetAnswerQuestionId', [recordset_answer_id], 0 )), 0 )) = 5),date(floor(val_date)),NULL())
+																	AS [Subassessment End Date],
+    if ((((applymap ('MapWsQuestion', (applymap ('MapWsRecordsetAnswerQuestionId', [recordset_answer_id], 0 )),null() ))) like 'start*'
+	and (applymap ('MapWsQuestionTypeId', (applymap ('MapWsRecordsetAnswerQuestionId', [recordset_answer_id], 0 )), 0 )) = 5),time(val_date),NULL())
+																	AS  [Subassessment Start Time],
+	if((((applymap ('MapWsQuestion', (applymap ('MapWsRecordsetAnswerQuestionId', [recordset_answer_id], 0 )),null() ))) like 'end*'
+	and (applymap ('MapWsQuestionTypeId', (applymap ('MapWsRecordsetAnswerQuestionId', [recordset_answer_id], 0 )), 0 )) = 5),time(val_date),NULL())
+																	AS [Subassessment End Time]																		
+	
+Resident FACT_ws_recordset_answer_TMP;
+Drop Table FACT_ws_recordset_answer_TMP;
+
+
+DROP Fields       
+	date_effective, 
+    AnswerTemp,
+    AnswerTemp2,
+    AnswerTemp3,
+	isLookup,
+   	isYesNo,
+    val_int,
+    val_date,
+    val_textfield,
+    val_float;
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE FACT_Subworksheet_Answer INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_FACT_Sub_Worksheet_Answer.qvd];
+DROP Table FACT_Subworksheet_Answer; 
+
+

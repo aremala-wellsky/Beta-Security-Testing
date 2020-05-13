@@ -1,0 +1,26 @@
+DROP TABLE Calls_To_Rebuild_Answers_For;
+
+DROP TABLE Calls_To_Remove_From_Current_QVD;
+
+
+LET varTempCallStartAnswerQVDExists = not isnull(QvdCreateTime('lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CALL_START_ANSWER_V2.qvd'));
+
+IF $(varTempCallStartAnswerQVDExists) THEN
+Concatenate(Temp_Call_Start_Answer_Table)
+LOAD
+	*
+	RESIDENT Call_Start_Answer;
+	 DROP TABLE Call_Start_Answer;
+
+ELSE
+  Temp_Call_Start_Answer_Table:
+  Noconcatenate
+  LOAD
+    *
+  RESIDENT Call_Start_Answer; 
+  DROP TABLE Call_Start_Answer;
+END IF;
+ 
+RENAME TABLE Temp_Call_Start_Answer_Table to Call_Start_Answer;
+STORE Call_Start_Answer INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CALL_START_ANSWER_V2.qvd];	
+

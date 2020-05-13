@@ -1,0 +1,25 @@
+FACT_Assessment_Answer_TMP:
+NoConcatenate
+Load * 
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_DA_ANSWER.qvd]
+(qvd);
+
+FACT_Assessment_Answer:
+NoConcatenate
+LOAD 	
+    client_id														AS [Answer Client Id],    
+	client_id  														AS %DIM_CLIENT_KEY_RECORD,   	
+   	answer_id														AS [Answer Id],
+	answer_id 														AS %ANSWER_KEY_SEC,
+    (date(floor( date_effective ) ) )		        				AS [Answer Effective Date],
+    time ( date_effective )                							AS [Answer Effective Time],
+	provider_id														AS [Answer Provider Created By Id],
+	applymap ('MapProviderName', provider_id, NULL() ) 				AS [Answer Provider Created By]
+Resident FACT_Assessment_Answer_TMP;
+Drop Table FACT_Assessment_Answer_TMP;
+
+
+//STORE Table in QVD until later to make room for calculations in RAM
+STORE FACT_Assessment_Answer INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_FACT_Assessment_Answer.qvd];
+//DROP Table FACT_Assessment_Answer;
+
