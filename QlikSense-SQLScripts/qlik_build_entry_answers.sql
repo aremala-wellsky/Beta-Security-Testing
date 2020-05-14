@@ -45,14 +45,14 @@ FROM
 			SELECT DISTINCT ee3.entry_exit_id  , ee3.client_id, ee3.provider_id, ee3.entry_date
 			FROM sp_entry_exit ee3
 			INNER JOIN da_answer da3 ON (da3.client_id = ee3.client_id)
-			INNER JOIN qlik_answer_questions_entry dq3 ON (dq3.question_id = da3.question_id)
+			INNER JOIN qlik_answer_questions dq3 ON (dq3.question_id = da3.question_id)
 			WHERE (ee3.active = TRUE)            
 			AND (LEAST(da3.date_inactive, da3.date_added) > '''||_delta_date||''') 
 			AND da3.date_effective::DATE <= ee3.entry_date::DATE
 			AND ((ee3.exit_date IS NULL) OR (ee3.exit_date >= '''||_entry_exit_date||'''))
                      ) ee
 		INNER JOIN da_answer da ON (da.client_id = ee.client_id)
-		INNER JOIN qlik_answer_questions_entry dq ON (dq.question_id = da.question_id)
+		INNER JOIN qlik_answer_questions dq ON (dq.question_id = da.question_id)
 
             LEFT OUTER JOIN sp_provider_tree belowtree ON (belowtree.ancestor_provider_id = ee.provider_id)
             LEFT OUTER JOIN sp_provider_tree abovetree ON (abovetree.provider_id = ee.provider_id)
@@ -69,7 +69,7 @@ FROM
     ) a
 ) b
 INNER JOIN da_answer da3 ON (da3.answer_id = b.answer_id)
-INNER JOIN qlik_answer_questions_entry qaq ON (da3.question_id = qaq.question_id)';
+INNER JOIN qlik_answer_questions qaq ON (da3.question_id = qaq.question_id)';
 
     RAISE NOTICE 'Starting the creation of qlik_entry_answers %',clock_timestamp();
     EXECUTE _dsql;
