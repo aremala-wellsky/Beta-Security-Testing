@@ -10,22 +10,6 @@ DROP TABLE IF EXISTS tmp_table_sec_non_support_exit;
 DROP TABLE IF EXISTS qlik_answer_access_exit;
 DROP TABLE IF EXISTS qlik_answer_questions_exit;
 
-/* GET QLIK USERS */
-CREATE TABLE tmp_table_sec_aa_exit AS
-SELECT DISTINCT provider_id
-FROM qlik_user_access_tier_view uap
-WHERE uap.user_access_tier = 2;
-
-CREATE TABLE tmp_table_sec_cm_exit AS
-SELECT DISTINCT provider_id
-FROM qlik_user_access_tier_view
-WHERE user_access_tier = 3;
-
-CREATE TABLE tmp_table_sec_non_support_exit AS
-SELECT DISTINCT provider_id FROM tmp_table_sec_aa_exit
-UNION
-SELECT DISTINCT provider_id FROM tmp_table_sec_cm_exit;
-
 
 /* **************************************************************************** */
 /* ************************ SETUP EXPLICIT VISIBILITY ************************* */
@@ -83,7 +67,8 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
 
-CREATE TABLE qlik_answer_questions_exit AS
+-- This gets set in multiple places so make sure we change it everywhere
+CREATE OR REPLACE VIEW public.qlik_answer_questions AS 
 SELECT question_id, virt_field_name, qt.code AS question_type_code
 FROM da_question t JOIN da_question_type qt USING (question_type_id)
 WHERE t.active
@@ -91,8 +76,6 @@ WHERE t.active
   AND qt.code IN ('lookup', 'yes_no', 'date', 'int', 'textbox', 'textarea', 'money', 'service_code')
   AND t.published = TRUE
   AND EXISTS(SELECT 1 FROM da_assessment_question aq JOIN da_assessment a USING (assessment_id) WHERE a.art_reportable_flag AND a.active AND aq.question_id = t.question_id AND a.code != 'SUPER_GLOBAL');
-
-ALTER TABLE qlik_answer_questions_exit ADD PRIMARY KEY (question_id);
 
 
 CREATE OR REPLACE FUNCTION qlik_build_answer_access_exit(
@@ -104,6 +87,23 @@ DECLARE
 BEGIN
     DROP TABLE IF EXISTS qlik_answer_access_exit;
     
+    /* GET QLIK USERS */
+    CREATE TEMP TABLE tmp_table_sec_aa_exit AS
+    SELECT DISTINCT provider_id
+    FROM qlik_user_access_tier_view uap
+    WHERE uap.user_access_tier = 2;
+
+    CREATE TEMP TABLE tmp_table_sec_cm_exit AS
+    SELECT DISTINCT provider_id
+    FROM qlik_user_access_tier_view
+    WHERE user_access_tier = 3;
+
+    CREATE TEMP TABLE tmp_table_sec_non_support_exit AS
+    SELECT DISTINCT provider_id FROM tmp_table_sec_aa_exit
+    UNION
+    SELECT DISTINCT provider_id FROM tmp_table_sec_cm_exit;
+    
+    
     /* ***************************************************** */
     /* ***** SETTING INHERENT AND EXPLICIT VISIBILITY ****** */
     /* ***************************************************** */
@@ -113,7 +113,7 @@ BEGIN
     a.answer_id, q.question_type_code, q.virt_field_name, a.client_id, a.covered_by_roi, a.date_effective, (i.answer_id IS NOT NULL) AS has_inherent_vis, 
     ee.entry_exit_id, ee.provider_id AS ee_provider_id, NULL::VARCHAR AS answer_val, NULL::INTEGER AS visibility_id
     FROM da_answer a
-    JOIN qlik_answer_questions_exit q USING (question_id)
+    JOIN qlik_answer_questions q USING (question_id)
     LEFT JOIN (
     -- Setting SA2 top answers
     SELECT answer_id
