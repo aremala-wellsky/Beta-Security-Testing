@@ -23,7 +23,7 @@ BEGIN
     WHERE active AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE);
 
     FOREACH _type IN ARRAY _types LOOP
-        _ee_limit := CASE WHEN _types = 'exit' THEN '(ee.exit_date IS NULL OR qaa.date_effective::DATE <= ee.exit_date::DATE)' ELSE 'qaa.date_effective::DATE <= ee.entry_date::DATE' END;
+        _ee_limit := CASE WHEN _type = 'exit' THEN '(ee.exit_date IS NULL OR qaa.date_effective::DATE <= ee.exit_date::DATE)' ELSE 'qaa.date_effective::DATE <= ee.entry_date::DATE' END;
     
         _question_query := 'SELECT DISTINCT virt_field_name FROM qlik_'||_type||'_answers 
         UNION SELECT DISTINCT virt_field_name FROM qlik_answer_access qaa ORDER BY 1';
@@ -35,10 +35,13 @@ BEGIN
                  JOIN sp_entry_exit ee ON (qea.entry_exit_id = ee.entry_exit_id)
                  JOIN qlik_user_access_tier_view uat ON (ee.provider_id = uat.provider_id AND uat.user_access_tier = 1)
                  UNION
-                 SELECT ee.entry_exit_id, uat.tier_link, virt_field_name, answer_val, date_effective
+                 SELECT DISTINCT ee.entry_exit_id, uat.tier_link, virt_field_name, answer_val, date_effective
                  FROM qlik_answer_access qaa 
                  JOIN tmp_relevant_ees ee ON (ee.client_id = qaa.client_id AND '||_ee_limit||')
-                 JOIN qlik_user_access_tier_view uat ON (ee.provider_id = uat.provider_id AND uat.user_access_tier != 1)
+                 JOIN qlik_user_access_tier_view uat ON (uat.user_access_tier != 1)
+                 WHERE ee.provider_id = uat.provider_id 
+                   OR (qaa.visibility_id IS NOT NULL 
+                       AND EXISTS (SELECT 1 FROM qlik_answer_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = ee.provider_id))
                  ) t
                  ORDER BY entry_exit_id, tier_link, virt_field_name, date_effective DESC';
 
@@ -73,4 +76,7 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
 
-  -- select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', null);
+-- select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', null);
+
+
+select * from qlik_entry_answer_pivot_view

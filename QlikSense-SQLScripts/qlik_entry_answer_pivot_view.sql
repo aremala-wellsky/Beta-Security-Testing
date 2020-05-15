@@ -17,7 +17,7 @@ BEGIN
     END IF;
 
     _question_query := 'SELECT DISTINCT virt_field_name FROM qlik_entry_answers 
-	UNION SELECT DISTINCT virt_field_name FROM qlik_answer_access_entry qaa ORDER BY 1';
+    UNION SELECT DISTINCT virt_field_name FROM qlik_answer_access_entry qaa ORDER BY 1';
 
     _inner_query := 'SELECT DISTINCT ON (tier_link, entry_exit_id, virt_field_name) tier_link||''''|''''||entry_exit_id AS sec_key, virt_field_name, answer_val
                      FROM (
@@ -28,7 +28,10 @@ BEGIN
                          UNION
                          SELECT entry_exit_id, tier_link, virt_field_name, answer_val, date_effective
                          FROM qlik_answer_access_entry qaa 
-                         JOIN qlik_user_access_tier_view uat ON (qaa.ee_provider_id = uat.provider_id AND uat.user_access_tier != 1)
+                         JOIN qlik_user_access_tier_view uat ON (uat.user_access_tier != 1)
+                         WHERE ee.provider_id = uat.provider_id 
+                           OR (qaa.visibility_id IS NOT NULL 
+                               AND EXISTS (SELECT 1 FROM qlik_answer_vis_provider_entry qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = ee.provider_id))
                      ) t
                      ORDER BY entry_exit_id, tier_link, virt_field_name, date_effective DESC';
 
