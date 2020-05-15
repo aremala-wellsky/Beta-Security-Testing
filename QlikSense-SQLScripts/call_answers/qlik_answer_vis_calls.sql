@@ -13,19 +13,8 @@ DROP TABLE IF EXISTS tmp_table_sec_non_support;
 /* ************************ SETUP EXPLICIT VISIBILITY ************************* */
 /* **************************************************************************** */
 
-
--- Gather Data
-CREATE TABLE IF NOT EXISTS public.qlik_answer_vis_array(
-  visibility_id serial PRIMARY KEY,
-  allow_ids integer[],
-  deny_ids integer[]
-);
-
-CREATE TABLE IF NOT EXISTS public.qlik_answer_vis_provider(
-  visibility_id integer,
-  provider_id integer
-);
-
+-- Assume qlik_answer_vis_array already exists and was created in qlik_answer_vis.sql so we don't step on each other
+-- Assume qlik_answer_vis_provider already exists and was set in qlik_answer_vis.sql so we don't step on each other
 -- Assume qlik_get_vis_link already exists and was created in qlik_answer_vis.sql so we don't step on each other
 -- Assume qlik_answer_questions already exists and was set in qlik_answer_vis.sql so we don't step on each other
 
