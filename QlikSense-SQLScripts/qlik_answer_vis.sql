@@ -136,7 +136,7 @@ BEGIN
 
     WHERE a.active AND a.date_added > $1::DATE
     AND (i.answer_id IS NOT NULL OR covered_by_roi) -- Remove non-roi rows
-    ORDER BY a.answer_id, q.question_type_code, q.virt_field_name, a.client_id, a.covered_by_roi, a.provider_id, a.date_effective, i.answer_id;
+    ORDER BY 1,2,3,4,5,6,7,8,9,10;
 
     -- Create primary key index
     ALTER TABLE qlik_answer_access ADD PRIMARY KEY (answer_id);
