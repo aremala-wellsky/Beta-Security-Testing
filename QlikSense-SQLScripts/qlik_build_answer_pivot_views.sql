@@ -15,9 +15,7 @@ BEGIN
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['entry', 'exit'] ELSE $3 END;
 
     CREATE TEMP TABLE tmp_relevant_ees AS
-    SELECT entry_exit_id, client_id, entry_date, exit_date, provider_id,
-    ROW_NUMBER() OVER(PARTITION BY client_id ORDER BY client_id, entry_date DESC, entry_exit_id DESC) AS entry_row,
-    ROW_NUMBER() OVER(PARTITION BY client_id ORDER BY client_id, exit_date DESC, entry_exit_id DESC) AS exit_row
+    SELECT entry_exit_id, tier_link, client_id, entry_date, exit_date, provider_id
     FROM qlik_ee_user_access_tier_view uat
     WHERE uat.user_access_tier != 1 AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE);
 
@@ -29,18 +27,16 @@ BEGIN
 
         _inner_query := 'SELECT DISTINCT ON (tier_link, entry_exit_id, virt_field_name) tier_link||''''|''''||entry_exit_id AS sec_key, virt_field_name, answer_val
                  FROM (
-                 SELECT ee.entry_exit_id, tier_link, virt_field_name, answer_val, date_effective 
+                 SELECT DISTINCT ee.entry_exit_id, tier_link, virt_field_name, answer_val, date_effective 
                  FROM qlik_'||_type||'_answers qea
-                 JOIN sp_entry_exit ee ON (qea.entry_exit_id = ee.entry_exit_id)
-                 JOIN qlik_user_access_tier_view uat ON (ee.provider_id = uat.provider_id AND uat.user_access_tier = 1)
+                 JOIN (SELECT DISTINCT tier_link, entry_exit_id FROM qlik_ee_user_access_tier_view t WHERE t.user_access_tier = 1) ee USING (entry_exit_id)
                  UNION
-                 SELECT DISTINCT ee.entry_exit_id, uat.tier_link, virt_field_name, answer_val, date_effective
+                 SELECT DISTINCT ee.entry_exit_id, ee.tier_link, virt_field_name, answer_val, date_effective
                  FROM qlik_answer_access qaa 
                  JOIN tmp_relevant_ees ee ON (ee.client_id = qaa.client_id AND '||_ee_limit||')
-                 JOIN qlik_user_access_tier_view uat ON (uat.user_access_tier != 1)
-                 WHERE ee.provider_id = uat.provider_id 
+                 WHERE ee.provider_id = qaa.provider_id
                    OR (qaa.visibility_id IS NOT NULL 
-                       AND EXISTS (SELECT 1 FROM qlik_answer_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = ee.provider_id))
+                       AND EXISTS (SELECT 1 FROM qlik_answer_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id))
                  ) t
                  ORDER BY entry_exit_id, tier_link, virt_field_name, date_effective DESC';
 

@@ -1,5 +1,7 @@
+-- DROP VIEW qlik_ee_user_access_tier_view;
+
 CREATE OR REPLACE VIEW qlik_ee_user_access_tier_view AS 
-SELECT DISTINCT entry_date,exit_date,user_access_tier, user_provider_id, client_id, entry_exit_id, sec.provider_id AS provider_id
+SELECT DISTINCT (sec.user_access_tier || '|' || sec.user_provider_id) AS tier_link, entry_date, exit_date, user_access_tier, user_provider_id, client_id, entry_exit_id, sec.provider_id AS provider_id
 FROM sp_entry_exit ee
 JOIN (
 	SELECT DISTINCT 1 as user_access_tier, u.provider_id as user_provider_id, p.provider_id as provider_id --, null::integer as eda_provider_id
@@ -70,7 +72,7 @@ WHERE ee.active
 
 UNION
 
-SELECT DISTINCT entry_date,exit_date,user_access_tier, user_provider_id, client_id, entry_exit_id, sec.provider_id AS provider_id
+SELECT DISTINCT (sec.user_access_tier || '|' || sec.user_provider_id) AS tier_link, entry_date, exit_date, user_access_tier, user_provider_id, client_id, entry_exit_id, sec.provider_id AS provider_id
 FROM sp_entry_exit ee
 JOIN (
 SELECT distinct 2 as user_access_tier, uap.user_provider_id, dp.provider_id as provider_id --, uap.provider_id as eda_provider_id,user_id
