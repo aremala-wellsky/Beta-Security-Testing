@@ -18,9 +18,8 @@ BEGIN
     SELECT entry_exit_id, client_id, entry_date, exit_date, provider_id,
     ROW_NUMBER() OVER(PARTITION BY client_id ORDER BY client_id, entry_date DESC, entry_exit_id DESC) AS entry_row,
     ROW_NUMBER() OVER(PARTITION BY client_id ORDER BY client_id, exit_date DESC, entry_exit_id DESC) AS exit_row
-    FROM sp_entry_exit tee 
-    JOIN (SELECT DISTINCT uat.provider_id FROM qlik_user_access_tier_view uat WHERE uat.user_access_tier != 1) u USING (provider_id)
-    WHERE active AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE);
+    FROM qlik_ee_user_access_tier_view uat
+    WHERE uat.user_access_tier != 1 AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE);
 
     FOREACH _type IN ARRAY _types LOOP
         _ee_limit := CASE WHEN _type = 'exit' THEN '(ee.exit_date IS NULL OR qaa.date_effective::DATE <= ee.exit_date::DATE)' ELSE 'qaa.date_effective::DATE <= ee.entry_date::DATE' END;
