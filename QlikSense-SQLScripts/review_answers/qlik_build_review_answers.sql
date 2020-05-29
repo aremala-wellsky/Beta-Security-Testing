@@ -1,4 +1,4 @@
-﻿CREATE OR REPLACE FUNCTION qlik_build_review_answers_table(
+CREATE OR REPLACE FUNCTION qlik_build_review_answers_table(
     _delta_date character varying,
     _entry_exit_date character varying)
   RETURNS void AS
@@ -12,9 +12,13 @@ DROP TABLE IF EXISTS qlik_review_answers;
 _dsql := ' CREATE TABLE qlik_review_answers AS 
 SELECT
 b.entry_exit_review_id,
+plv(b.point_in_time_type_id) as entry_exit_review_pit_type,
+plv(b.review_type_id) AS entry_exit_review_type,
+b.review_date AS entry_exit_review_date,
 b.entry_exit_id,
 b.question_id,
 dq3.virt_field_name,
+da3.date_effective,
 CASE WHEN b.code = ''lookup'' THEN plv(da3.val_int)::VARCHAR
      WHEN b.code = ''yes_no'' THEN yn(da3.val_int)::VARCHAR
      WHEN b.code = ''date'' THEN (da3.val_date::DATE)::VARCHAR
@@ -42,7 +46,7 @@ FROM
     (
         SELECT 
         ee.entry_exit_review_id, ee.review_date, ee.point_in_time_type_id, ee.review_type_id,
-        ee.entry_exit_id, ee.client_id, da.question_id, dq.question_type_code, max(date_effective) as date_effective, ee.exit_date    
+        ee.entry_exit_id, ee.client_id, da.question_id, dq.question_type_code AS code, max(date_effective) as date_effective, ee.exit_date    
         FROM (
             SELECT DISTINCT eer2.entry_exit_review_id, ee2.entry_exit_id, ee2.client_id, ee2.provider_id, eer2.review_date, eer2.point_in_time_type_id, eer2.review_type_id, ee2.exit_date
             FROM sp_entry_exit_review eer2
