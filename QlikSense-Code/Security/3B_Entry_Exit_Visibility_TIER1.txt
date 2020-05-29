@@ -4,7 +4,8 @@ LOAD DISTINCT
 	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST,	
 	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_TEST,
 	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_ENTRY_ANSWER,
-	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_EXIT_ANSWER
+	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_EXIT_ANSWER,
+	[TIER_LINK] & '|' & [Entry Exit Id] AS %SA_EE_REVIEW_ANSWER
 FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_ENTRY_EXIT_ACCESS_TIER1.qvd]
 (qvd);
 

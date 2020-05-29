@@ -1,34 +1,169 @@
+Client_recent_answer_table_creation_gender:
+SELECT qlik_build_demographic_answers('SVPPROFGENDER');
+DROP TABLE Client_recent_answer_table_creation_gender;
+
+Client_recent_answer_table_creation_racesec:
+SELECT qlik_build_demographic_answers('SVPPROFSECONDARYRACE');
+DROP TABLE Client_recent_answer_table_creation_racesec;
+
+Client_recent_answer_table_creation_race:
+SELECT qlik_build_demographic_answers('SVPPROFRACE');
+DROP TABLE Client_recent_answer_table_creation_race;
+
+Client_recent_answer_table_creation_dob:
+SELECT qlik_build_demographic_answers('SVPPROFDOB');
+DROP TABLE Client_recent_answer_table_creation_dob;
+
+Client_recent_answer_table_creation_dobtype:
+SELECT qlik_build_demographic_answers('SVPPROFDOBTYPE');
+DROP TABLE Client_recent_answer_table_creation_dobtype;
+
+Client_recent_answer_table_creation_eth:
+SELECT qlik_build_demographic_answers('SVPPROFETH');
+DROP TABLE Client_recent_answer_table_creation_eth;
+
+
+
+
+Client_Recent_Answer_Temp:
+Noconcatenate
+SELECT
+CASE
+    WHEN i.client_id is not null THEN i.client_id
+    when j.client_id is not null THEN j.client_id
+ end as demoClientId,
+ SVPPROFGENDER_recent,
+ SVPPROFRACE_recent,
+ SVPPROFDOB_recent,
+ SVPPROFSECONDARYRACE_recent,
+ SVPPROFDOBTYPE_recent,
+ SVPPROFETH_recent
+from
+(SELECT SVPPROFGENDER_recent,SVPPROFRACE_recent,SVPPROFDOB_recent,SVPPROFSECONDARYRACE_recent,SVPPROFDOBTYPE_recent,
+CASE
+    WHEN g.client_id is not null THEN g.client_id
+    when h.client_id is not null THEN h.client_id
+ end as client_id
+from
+(SELECT SVPPROFGENDER_recent,SVPPROFRACE_recent,SVPPROFDOB_recent,SVPPROFSECONDARYRACE_recent,
+CASE
+    WHEN e.client_id is not null THEN e.client_id
+    when  f.client_id is not null THEN f.client_id
+ end as client_id
+from
+(SELECT SVPPROFGENDER_recent,SVPPROFRACE_recent,SVPPROFDOB_recent,
+CASE
+    WHEN c.client_id is not null THEN c.client_id
+    when  d.client_id is not null THEN d.client_id
+ end as client_id
+from
+(SELECT SVPPROFGENDER_recent,SVPPROFRACE_recent,
+CASE
+    WHEN a.client_id is not null THEN a.client_id
+    when  b.client_id is not null THEN b.client_id
+ end as client_id
+from
+(select t.client_id, t.answer_val as SVPPROFGENDER_recent
+from QLIK_SVPPROFGENDER t
+inner join (
+    select client_id, max(date_effective) as MaxDate
+    from QLIK_SVPPROFGENDER
+    group by client_id
+) tm on t.client_id = tm.client_id and t.date_effective = tm.MaxDate ORDER BY 1) a
+FULL OUTER JOIN (select t.client_id, t.answer_val as SVPPROFRACE_recent
+from QLIK_SVPPROFRACE t
+inner join (
+    select client_id, max(date_effective) as MaxDate
+    from QLIK_SVPPROFRACE
+    group by client_id
+) tm on t.client_id = tm.client_id and t.date_effective = tm.MaxDate ORDER BY 1) b
+ON a.client_id = b.client_id) c
+FULL OUTER JOIN (select t.client_id, t.answer_val as SVPPROFDOB_recent
+from QLIK_SVPPROFDOB t
+inner join (
+    select client_id, max(date_effective) as MaxDate
+    from QLIK_SVPPROFDOB
+    group by client_id
+) tm on t.client_id = tm.client_id and t.date_effective = tm.MaxDate ORDER BY 1) d
+ON c.client_id = d.client_id) e
+FULL OUTER JOIN (select t.client_id, t.answer_val as SVPPROFSECONDARYRACE_recent
+from QLIK_SVPPROFSECONDARYRACE t
+inner join (
+    select client_id, max(date_effective) as MaxDate
+    from QLIK_SVPPROFSECONDARYRACE
+    group by client_id
+) tm on t.client_id = tm.client_id and t.date_effective = tm.MaxDate ORDER BY 1) f
+ON e.client_id = f.client_id) g
+FULL OUTER JOIN (select t.client_id, t.answer_val as SVPPROFDOBTYPE_recent
+from QLIK_SVPPROFDOBTYPE t
+inner join (
+    select client_id, max(date_effective) as MaxDate
+    from QLIK_SVPPROFDOBTYPE
+    group by client_id
+) tm on t.client_id = tm.client_id and t.date_effective = tm.MaxDate ORDER BY 1) h
+ON g.client_id = h.client_id) i
+FULL OUTER JOIN (select t.client_id, t.answer_val as SVPPROFETH_recent
+from QLIK_SVPPROFETH t
+inner join (
+    select client_id, max(date_effective) as MaxDate
+    from QLIK_SVPPROFETH
+    group by client_id
+) tm on t.client_id = tm.client_id and t.date_effective = tm.MaxDate ORDER BY 1) j
+ON i.client_id = j.client_id;
+
 Client_Recent_Answer:
 Noconcatenate
-SELECT ans.client_id,
-  MAX(case when ans.demo_field = 'SVPPROFGENDER' then ans.answer_val end ) as gender,
-  MAX(case when ans.demo_field = 'SVPPROFSECONDARYRACE' then ans.answer_val end)  as secondary_race,
-  MAX(case when ans.demo_field = 'SVPPROFRACE' then ans.answer_val end ) as primary_race,
-  MAX(case when ans.demo_field = 'SVPPROFDOB' then ans.answer_val end ) as birthdate,
-  MAX(case when ans.demo_field = 'SVPPROFDOBTYPE' then ans.answer_val end)  as birthdate_type,
-  MAX(case when ans.demo_field = 'SVPPROFETH' then ans.answer_val end ) as ethnicity
-FROM(
-SELECT cl.client_id   ,  dq.virt_field_name  as demo_field,   date_effective, case when  da.val_int is null then  (date(da.val_date::DATE))::VARCHAR  else pl.name end as answer_val
-FROM sp_client cl
-INNER JOIN da_answer da ON (da.client_id = cl.client_id)
-INNER JOIN da_question dq ON (dq.question_id = da.question_id)
-LEFT JOIN sp_picklist_value pl ON da.val_int = pl.picklist_value_id
-where dq.virt_field_name in ('SVPPROFGENDER','SVPPROFSECONDARYRACE','SVPPROFRACE','SVPPROFDOB','SVPPROFDOBTYPE','SVPPROFETH')  
- ) as ans
-GROUP BY ans.client_id; 
-
-Demographics_Answer1:
 LOAD
-client_id AS %DemoClientId,
-gender AS [SVPPROFGENDER_recent],
-secondary_race AS [SVPPROFSECONDARYRACE_recent],
-primary_race AS [SVPPROFRACE_recent],
-birthdate AS [SVPPROFDOB_recent],
-birthdate_type AS [SVPPROFDOBTYPE_recent],
-ethnicity AS [SVPPROFETH_recent]
+ democlientid AS %DemoClientId,
+ svpprofgender_recent AS SVPPROFGENDER_recent,
+ svpprofrace_recent AS SVPPROFRACE_recent,
+ svpprofdob_recent AS SVPPROFDOB_recent,
+ svpprofsecondaryrace_recent AS SVPPROFSECONDARYRACE_recent,
+ svpprofdobtype_recent AS SVPPROFDOBTYPE_recent,
+ svpprofeth_recent AS SVPPROFETH_recent
+RESIDENT Client_Recent_Answer_Temp;
+DROP TABLE Client_Recent_Answer_Temp;
 
-RESIDENT Client_Recent_Answer;
-DROP TABLE Client_Recent_Answer;
 
-RENAME TABLE Demographics_Answer1 TO Client_Recent_Answer;
+
+
+
+Client_remove_recent_answer_table_creation_gender:
+SELECT qlik_remove_build_demographic_answers('SVPPROFGENDER');
+DROP TABLE Client_remove_recent_answer_table_creation_gender;
+
+Client_remove_recent_answer_table_creation_racesec:
+SELECT qlik_remove_build_demographic_answers('SVPPROFSECONDARYRACE');
+DROP TABLE Client_remove_recent_answer_table_creation_racesec;
+
+Client_remove_recent_answer_table_creation_race:
+SELECT qlik_remove_build_demographic_answers('SVPPROFRACE');
+DROP TABLE Client_remove_recent_answer_table_creation_race;
+
+Client_remove_recent_answer_table_creation_dob:
+SELECT qlik_remove_build_demographic_answers('SVPPROFDOB');
+DROP TABLE Client_remove_recent_answer_table_creation_dob;
+
+Client_remove_recent_answer_table_creation_dobtype:
+SELECT qlik_remove_build_demographic_answers('SVPPROFDOBTYPE');
+DROP TABLE Client_remove_recent_answer_table_creation_dobtype;
+
+Client_remove_recent_answer_table_creation_eth:
+SELECT qlik_remove_build_demographic_answers('SVPPROFETH');
+DROP TABLE Client_remove_recent_answer_table_creation_eth;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  

@@ -1,9 +1,10 @@
-  
- 
-BUILD_DELTA_ENTRY_TABLE:        
-SELECT qlik_build_entry_answers_table('2015-01-01', '2015-01-01');
-SELECT qlik_build_entry_answer_pivot_view('2015-01-01', '2015-01-01', true);
-DROP TABLE BUILD_DELTA_ENTRY_TABLE;
+BUILD_DELTA_EE_TABLE:  
+select qlik_build_answer_access('2015-01-01', '2015-01-01');
+select qlik_build_entry_answers_table('2015-01-01', '2015-01-01');
+select qlik_build_exit_answers_table('2015-01-01', '2015-01-01');
+select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', "ARRAY['entry']");
+select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', "ARRAY['exit']");
+DROP TABLE BUILD_DELTA_EE_TABLE; 
 
 Temp_Client_Entry_Answer:
 select * from qlik_entry_answer_pivot_view;
@@ -11,18 +12,13 @@ select * from qlik_entry_answer_pivot_view;
 Client_Entry_Answer:
 Noconcatenate
 LOAD DISTINCT
-sec_key AS %SA_EE_ENTRY_ANSWER,
-sec_key AS %SA_EE_ENTRY_ANSWER_anshu,
+sec_key AS %SA_EE_ENTRY_ANSWER
 *
 RESIDENT Temp_Client_Entry_Answer;
 DROP TABLE Temp_Client_Entry_Answer;
 
 DROP FIELDS sec_key FROM Client_Entry_Answer;
 
-BUILD_DELTA_EXIT_TABLE:        
-SELECT qlik_build_exit_answers_table('2015-01-01', '2015-01-01');
-SELECT qlik_build_exit_answer_pivot_view('2015-01-01', '2015-01-01', true); 
-DROP TABLE BUILD_DELTA_EXIT_TABLE;
 
 Temp_Client_Exit_Answer:
 select * from qlik_exit_answer_pivot_view;
@@ -30,8 +26,7 @@ select * from qlik_exit_answer_pivot_view;
 Client_Exit_Answer:
 Noconcatenate
 LOAD DISTINCT
-sec_key AS %SA_EE_EXIT_ANSWER,
-sec_key AS %SA_EE_EXIT_ANSWER_anshu,
+sec_key AS %SA_EE_EXIT_ANSWER
 *
 RESIDENT Temp_Client_Exit_Answer;
 DROP TABLE Temp_Client_Exit_Answer;
