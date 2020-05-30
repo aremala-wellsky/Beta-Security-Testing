@@ -1,4 +1,4 @@
--- DROP MATERIALIZED VIEW IF EXISTS qlik_user_access_tier_view;
+-- DROP VIEW IF EXISTS qlik_user_access_tier_view;
  
 CREATE OR REPLACE VIEW qlik_user_access_tier_view AS 
 SELECT user_access_tier || '|' || user_provider_id AS tier_link, uat.*
