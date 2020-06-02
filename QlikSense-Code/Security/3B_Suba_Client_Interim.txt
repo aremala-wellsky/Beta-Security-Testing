@@ -109,6 +109,7 @@ RS_Interim:
   TEMP_SUBA_REVIEW:
   Noconcatenate
   LOAD DISTINCT
+  entry_exit_id 									AS [Entry Exit Id],
   entry_exit_review_pit_type						AS [Entry Exit Review PIT Type],
   entry_exit_review_type							AS [Entry Exit Review Type],
   entry_exit_review_date							AS [Entry Exit Review Date],
@@ -118,6 +119,7 @@ RS_Interim:
    
  CONCATENATE(FACT_Entry_Exit_Review)
   LOAD
+ [Entry Exit Id],
  [Entry Exit Review PIT Type],
  [Entry Exit Review Type],
  [Entry Exit Review Date],
