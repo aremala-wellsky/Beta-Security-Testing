@@ -10,6 +10,7 @@ $BODY$
 DECLARE
     _dsql TEXT;
 BEGIN
+    -- Version 20200602-1
 
 DROP TABLE IF EXISTS qlik_exit_answers;
 

@@ -84,6 +84,8 @@ CREATE OR REPLACE FUNCTION qlik_build_answer_access(
 $BODY$
 DECLARE
 BEGIN
+    -- Version 20200602-1
+
     DROP TABLE IF EXISTS qlik_answer_access;
 
     /* GET QLIK USERS */

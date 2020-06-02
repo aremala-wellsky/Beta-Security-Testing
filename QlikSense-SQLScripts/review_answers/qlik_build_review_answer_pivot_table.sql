@@ -9,6 +9,8 @@ DECLARE
     _inner_query TEXT;
     _final_query TEXT;
 BEGIN
+    -- Version 20200602-1
+
     DROP TABLE IF EXISTS tmp_relevant_ees;
 
     CREATE TEMP TABLE tmp_relevant_ees AS
