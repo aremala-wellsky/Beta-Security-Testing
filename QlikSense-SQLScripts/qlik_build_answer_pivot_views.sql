@@ -12,6 +12,8 @@ DECLARE
     _final_query TEXT;
     _ee_limit VARCHAR;
 BEGIN
+    -- Version 20200602-1
+
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['entry', 'exit'] ELSE $3 END;
 
     CREATE TEMP TABLE tmp_relevant_ees AS
