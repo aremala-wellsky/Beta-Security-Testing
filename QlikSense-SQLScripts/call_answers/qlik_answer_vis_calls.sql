@@ -27,22 +27,6 @@ DECLARE
 BEGIN
     DROP TABLE IF EXISTS qlik_call_answer_access;
 
-    /* GET QLIK USERS */
-    CREATE TEMP TABLE tmp_table_sec_aa AS
-    SELECT DISTINCT provider_id
-    FROM qlik_user_access_tier_view uap
-    WHERE uap.user_access_tier = 2;
-
-    CREATE TEMP TABLE tmp_table_sec_cm AS
-    SELECT DISTINCT provider_id
-    FROM qlik_user_access_tier_view
-    WHERE user_access_tier = 3;
-
-    CREATE TEMP TABLE tmp_table_sec_non_support AS
-    SELECT DISTINCT provider_id FROM tmp_table_sec_aa
-    UNION
-    SELECT DISTINCT provider_id FROM tmp_table_sec_cm;
-
     /* ***************************************************** */
     /* ***** SETTING INHERENT AND EXPLICIT VISIBILITY ****** */
     /* ***************************************************** */
@@ -53,27 +37,16 @@ BEGIN
     FROM call_answer a
     JOIN qlik_answer_questions q USING (question_id)
     LEFT JOIN (
-    -- Setting SA2 top answers
+    -- Check if answers are used by SA2, Admin, or CM Qlik users
     SELECT call_answer_id
-    FROM (select DISTINCT ON (client_id, question_id) call_answer_id, provider_id
+    FROM (select DISTINCT call_answer_id
           FROM call_answer a 
-          WHERE a.active AND a.date_added > $1::DATE
-          ORDER BY client_id, question_id, date_effective desc, call_answer_id desc) t
-    -- Setting Admin top answers
-    UNION
-    SELECT call_answer_id
-    FROM (select DISTINCT ON (client_id, question_id) call_answer_id, provider_id
-          FROM call_answer a JOIN tmp_table_sec_aa t USING (provider_id)
-          WHERE a.active AND a.date_added > $1::DATE
-          ORDER BY client_id, question_id, date_effective desc, call_answer_id desc) t
-    -- Setting CM top answers
-    UNION
-    SELECT call_answer_id
-    FROM (select DISTINCT ON (client_id, question_id) call_answer_id, provider_id
-          FROM call_answer a JOIN tmp_table_sec_cm t USING (provider_id)
-          WHERE a.active AND a.date_added > $1::DATE
-          ORDER BY client_id, question_id, date_effective desc, call_answer_id desc) t
-    ) i ON (a.call_answer_id = i.call_answer_id) 
+          JOIN qlik_ee_user_access_tier_view uat USING (client_id)
+          LEFT JOIN sp_entry_exit_review eer ON (uat.entry_exit_id = eer.entry_exit_id)
+          WHERE a.active AND a.date_added > $1::DATE 
+            AND a.date_effective::DATE <= GREATEST(uat.entry_date::DATE, uat.exit_date::DATE, eer.review_date::DATE)
+            AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE)) t
+    ) i ON (a.call_answer_id = i.call_answer_id)
 
     WHERE a.active AND a.date_added > $1::DATE
     AND (i.call_answer_id IS NOT NULL OR covered_by_roi) -- Remove non-roi rows
@@ -85,20 +58,22 @@ BEGIN
     -- Remove all records with no inherent or explicit visiblity
     DELETE FROM qlik_call_answer_access qaa 
     WHERE has_inherent_vis = FALSE 
-      AND NOT EXISTS (SELECT 1 FROM sp_call_answervisibility v WHERE qaa.call_answer_id = v.call_answer_id);
+      AND NOT EXISTS (SELECT 1 FROM sp_call_answervisibility v WHERE qaa.call_answer_id = v.call_answer_id AND v.visible);
 
-    -- Remove any globally denies from the list
-    DELETE FROM qlik_call_answer_access qaa 
-    WHERE has_inherent_vis = FALSE 
-      AND EXISTS (SELECT 1 FROM sp_call_answervisibility v WHERE qaa.call_answer_id = v.call_answer_id AND visibility_group_id = 0 AND visible = FALSE);
+    -- Mark records with only denies as globally denied since denied is the default state
+    UPDATE qlik_answer_access qaa
+    SET visibility_id = _global_deny_vis_id
+    WHERE NOT(SELECT COALESCE(visible, FALSE) FROM sp_call_answervisibility cav WHERE cav.call_answer_id = qaa.call_answer_id ORDER BY visible DESC limit 1);
 
-    -- Create global open visibility record up front to limit queries
-    WITH global_open AS (
-    SELECT qlik_get_vis_link(ARRAY[0], NULL) AS visibility_id
-    )
-    UPDATE qlik_call_answer_access qaa
-    SET visibility_id = (SELECT g.visibility_id FROM global_open g)
-    WHERE EXISTS (SELECT 1 FROM sp_call_answervisibility v WHERE qaa.call_answer_id = v.call_answer_id AND visibility_group_id = 0 AND visible);
+    -- Mark records with only allows and a global allow as just globally allowed to reduce queries
+    UPDATE qlik_answer_access qaa
+    SET visibility_id = _global_allow_vis_id
+    WHERE visibility_id IS NULL AND
+    EXISTS(SELECT 1 
+           FROM sp_call_answervisibility cav 
+           WHERE cav.call_answer_id = qaa.call_answer_id 
+           GROUP BY call_answer_id 
+           MIN(visible::integer) = 1 AND MIN(visibility_group_id) = 0);
 
     -- Now run Explicit after all the other rows are set
     UPDATE qlik_call_answer_access qaa

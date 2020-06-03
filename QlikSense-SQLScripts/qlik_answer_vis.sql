@@ -136,7 +136,7 @@ BEGIN
            FROM sp_client_answervisibility cav 
            WHERE cav.client_answer_id = qaa.answer_id 
            GROUP BY answer_id 
-           MIN(visible::integer) = 1 AND MIN(visibility_group_id) = 0);
+           HAVING MIN(visible::integer) = 1 AND MIN(visibility_group_id) = 0);
 
     -- Now run Explicit after all the other rows are set
     UPDATE qlik_answer_access qaa
@@ -168,8 +168,6 @@ END;
 $BODY$
 LANGUAGE plpgsql VOLATILE
 COST 100;
-
--- SELECT qlik_build_answer_access2('2015-01-01', '2015-01-01');
 
 SELECT qlik_build_answer_access('2015-01-01', '2015-01-01');
 
