@@ -106,7 +106,7 @@ BEGIN
           FROM da_answer a 
           JOIN qlik_ee_user_access_tier_view uat USING (client_id)
           LEFT JOIN sp_entry_exit_review eer ON (uat.entry_exit_id = eer.entry_exit_id)
-          WHERE a.active AND a.date_added > $1::DATE 
+          WHERE a.active AND a.date_added > $1::DATE AND uat.user_access_tier != 1
             AND a.date_effective::DATE <= GREATEST(uat.entry_date::DATE, uat.exit_date::DATE, eer.review_date::DATE)
             AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE)) t
     ) i ON (a.answer_id = i.answer_id) 
