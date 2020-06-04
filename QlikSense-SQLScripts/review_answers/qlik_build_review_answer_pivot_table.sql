@@ -83,6 +83,3 @@ $BODY$
 
 -- select qlik_build_review_answers_table('2015-01-01', '2015-01-01');
 -- select qlik_build_review_answer_pivot_table('2015-01-01', '2015-01-01');
--- select ee.client_id, p.* from qlik_review_answer_pivot p JOIN sp_entry_exit_review eer USING (entry_exit_review_id) JOIN sp_entry_exit ee USING (entry_exit_id) OFFSET 20 limit 30
-
-select DISTINCT entry_exit_review_pit_type from qlik_review_answer_pivot
