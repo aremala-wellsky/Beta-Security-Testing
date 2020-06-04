@@ -25,7 +25,9 @@ BEGIN
                 'FROM (
                  SELECT DISTINCT entry_exit_review_id, tier_link, virt_field_name, answer_val, date_effective 
                  FROM qlik_review_answers qea 
-                 JOIN (SELECT DISTINCT tier_link, entry_exit_id FROM qlik_ee_user_access_tier_view t WHERE t.user_access_tier = 1) ee USING (entry_exit_id)
+                 JOIN (SELECT DISTINCT tier_link, entry_exit_id 
+                       FROM qlik_ee_user_access_tier_view t 
+                       WHERE t.user_access_tier = 1 AND (t.exit_date IS NULL OR t.exit_date::DATE >= '''||$2||'''::DATE)) ee USING (entry_exit_id)
                  UNION
                  SELECT DISTINCT ON (entry_exit_review_id, tier_link, virt_field_name, answer_val, date_effective) 
                  entry_exit_review_id, tier_link, virt_field_name, answer_val, date_effective
