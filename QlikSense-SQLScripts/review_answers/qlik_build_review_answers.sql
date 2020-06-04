@@ -6,16 +6,15 @@ $BODY$
 DECLARE
     _dsql TEXT;
 BEGIN
-    -- Version 20200602-1
+    -- Version 20200604-1
 
 DROP TABLE IF EXISTS qlik_review_answers;
 
 _dsql := ' CREATE TABLE qlik_review_answers AS 
 SELECT
 b.entry_exit_review_id,
-plv(b.point_in_time_type_id) as entry_exit_review_pit_type,
-plv(b.review_type_id) AS entry_exit_review_type,
 b.review_date AS entry_exit_review_date,
+b.exit_date,
 b.entry_exit_id,
 b.question_id,
 dq3.virt_field_name,
@@ -33,13 +32,13 @@ END AS answer_val
 FROM
 (
     SELECT 
+            a.entry_exit_review_id,
             a.entry_exit_id,
             a.question_id,
             a.code,
-            a.entry_exit_review_id,
-            a.point_in_time_type_id,
             a.review_type_id,
             a.review_date,
+            a.exit_date,
     (SELECT da2.answer_id FROM da_answer da2 INNER JOIN da_question dq2 on (dq2.question_id = da2.question_id)
             WHERE (da2.client_id = a.client_id) AND (da2.question_id = a.question_id) AND (da2.date_effective = a.date_effective) 
             ORDER BY da2.answer_id DESC LIMIT 1) as answer_id
@@ -96,3 +95,5 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
+
+-- select qlik_build_review_answers_table('2015-01-01', '2015-01-01');
