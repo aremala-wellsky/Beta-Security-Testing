@@ -29,7 +29,7 @@ BEGIN
                  UNION
                  SELECT DISTINCT ON (entry_exit_review_id, virt_field_name) entry_exit_review_id, virt_field_name, answer_val, date_effective
                  FROM qlik_answer_access qaa 
-                 JOIN (SELECT tee.tier_link, tee.provider_id, client_id, entry_exit_review_id, entry_exit_id, teer.review_date AS entry_exit_review_date 
+                 JOIN (SELECT tee.tier_link, tee.provider_id, client_id, entry_exit_review_id, entry_exit_id, teer.review_date::DATE AS entry_exit_review_date 
                        FROM sp_entry_exit_review teer JOIN tmp_relevant_ees tee USING (entry_exit_id)
                        WHERE teer.active) ee ON (ee.client_id = qaa.client_id AND qaa.date_effective::DATE <= ee.entry_exit_review_date::DATE)
                  WHERE ee.provider_id = qaa.provider_id 
@@ -68,7 +68,7 @@ BEGIN
     SELECT tier_link||'|'||eer.entry_exit_id AS ee_sec_key, tier_link||'|'||eer.entry_exit_review_id AS sec_key,
            plv(eer.point_in_time_type_id) as entry_exit_review_pit_type, 
            plv(eer.review_type_id) AS entry_exit_review_type, 
-           eer.review_date AS entry_exit_review_date, t.*
+           eer.review_date::DATE AS entry_exit_review_date, t.*
     FROM tmp_ee_review_crosstab t 
     JOIN sp_entry_exit_review eer USING (entry_exit_review_id) 
     JOIN (SELECT DISTINCT entry_exit_id, tier_link FROM qlik_ee_user_access_tier_view) uat USING (entry_exit_id);

@@ -15,6 +15,8 @@ BEGIN
     -- Version 20200602-1
 
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['entry', 'exit'] ELSE $3 END;
+	
+	 DROP TABLE IF EXISTS tmp_relevant_ees;
 
     CREATE TEMP TABLE tmp_relevant_ees AS
     SELECT entry_exit_id, tier_link, client_id, entry_date, exit_date, provider_id

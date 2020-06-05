@@ -1,6 +1,5 @@
 BUILD_DELTA_EE_REVIEW_TABLE:  
 select qlik_build_review_answers_table('2015-01-01', '2015-01-01');
-
 select qlik_build_review_answer_pivot_table('2015-01-01', '2015-01-01');
 DROP TABLE BUILD_DELTA_EE_REVIEW_TABLE; 
 
@@ -22,7 +21,7 @@ LOAD
 	entry_exit_review_id				 AS [Entry Exit Review Id],
 	entry_exit_review_pit_type 			 AS [Entry Exit Review PIT Type],
 	entry_exit_review_type 				 AS [Entry Exit Review Type],
-	entry_exit_review_date::DATE 			 AS [Entry Exit Review Date],
+	entry_exit_review_date    			 AS [Entry Exit Review Date],
 	entry_exit_review_id				 AS  match_review_id
 RESIDENT Temp_Client_Review_Answer;
 DROP TABLE Temp_Client_Review_Answer;

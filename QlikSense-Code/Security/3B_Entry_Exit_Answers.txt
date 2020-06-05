@@ -2,7 +2,8 @@ BUILD_DELTA_EE_TABLE:
 select qlik_build_answer_access('2015-01-01', '2015-01-01');
 select qlik_build_entry_answers_table('2015-01-01', '2015-01-01');
 select qlik_build_exit_answers_table('2015-01-01', '2015-01-01');
-select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', null);
+select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', array['entry']);
+select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', array['exit']);
 DROP TABLE BUILD_DELTA_EE_TABLE; 
 
 Temp_Client_Entry_Answer:
