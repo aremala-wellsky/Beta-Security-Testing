@@ -1,0 +1,23 @@
+BUILD_DELTA_CALL_TABLE:  
+select qlik_build_call_access('2015-01-01', '2015-01-01');
+select qlik_build_call_answer_pivot_views('2015-01-01', '2015-01-01');
+DROP TABLE BUILD_DELTA_CALL_TABLE;
+
+Temp_Call_Start_Answer_Table:
+select * from qlik_call_answer_pivot_view;
+
+Call_Start_Answer_Table:
+Noconcatenate
+LOAD DISTINCT
+sec_key AS %SA_CALL_RECORD_CALL_ANSWER,
+*
+RESIDENT Temp_Call_Start_Answer_Table:
+DROP TABLE Temp_Call_Start_Answer_Table:
+
+DROP FIELDS sec_key FROM Call_Start_Answer_Table;
+
+
+
+
+
+

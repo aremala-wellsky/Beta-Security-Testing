@@ -30,7 +30,8 @@ sec_key AS %SA_EE_EXIT_ANSWER,
 *
 RESIDENT Temp_Client_Exit_Answer;
 DROP TABLE Temp_Client_Exit_Answer;
-DROP FIELDS sec_key FROM Client_Entry_Answer;
+
+DROP FIELDS sec_key FROM Client_Exit_Answer;
 
 Virtual_Field_Name_TMP:
 SELECT dq.virt_field_name, dq.description
