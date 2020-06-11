@@ -51,7 +51,7 @@ $BODY$
                 FROM (
                   SELECT provider_id
                   FROM sp_visibility_group_provider_tree vgpt 
-                  JOIN (SELECT DISTINCT provider_id FROM qlik_user_access_tier_view) v USING (provider_id)
+                  JOIN (SELECT DISTINCT provider_id FROM qlik_user_access_tier_view WHERE user_access_tier != 1) v USING (provider_id)
                   WHERE vgpt.visibility_group_id = ANY(allowvg)
                   EXCEPT
                   SELECT provider_id
