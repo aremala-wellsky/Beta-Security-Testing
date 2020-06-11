@@ -1,5 +1,3 @@
--- Time: 34 minutes for both
-
 CREATE OR REPLACE FUNCTION qlik_build_answer_pivot_views(
     _delta_date character varying,
     _entry_exit_date character varying,
