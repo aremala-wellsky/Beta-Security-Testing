@@ -22,7 +22,7 @@ BEGIN
     CREATE TEMP TABLE tmp_relevant_ees AS
     SELECT entry_exit_id, tier_link, client_id, entry_date, exit_date, provider_id
     FROM qlik_ee_user_access_tier_view uat
-    WHERE uat.user_access_tier != 1 AND (exit_date IS NULL OR exit_date::DATE >= '2015-01-01'::DATE);
+    WHERE uat.user_access_tier != 1 AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE);
 
     CREATE TEMP TABLE tmp_qlik_vis_provider AS
     SELECT visibility_id, vgpt.provider_id
@@ -101,9 +101,3 @@ $BODY$
 
 -- select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', null);
 -- select * from qlik_entry_answer_pivot_view;
-
--- Test Queries --
--- select count(1) from qlik_entry_answer_pivot_view where split_part(sec_key, '|', 1) = '1'; --602,394
--- select count(1) from qlik_entry_answer_pivot_view where split_part(sec_key, '|', 1) = '2'; --155
--- select count(1) from qlik_entry_answer_pivot_view where split_part(sec_key, '|', 1) = '3'; --131
--- select * from qlik_entry_answer_pivot_view v JOIN sp_entry_exit ee ON (split_part(sec_key, '|', 3) = ee.entry_exit_id::VARCHAR) where ee.client_id = 8253755
