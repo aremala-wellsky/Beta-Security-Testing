@@ -9,7 +9,7 @@ DECLARE
     _inner_query TEXT;
     _final_query TEXT;
 BEGIN
-    -- Version 20200604-1
+    -- Version 20200612-1
 
     DROP TABLE IF EXISTS tmp_relevant_ees;
 
@@ -18,15 +18,28 @@ BEGIN
     FROM qlik_ee_user_access_tier_view uat
     WHERE uat.user_access_tier != 1 AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE);
 
+    CREATE TEMP TABLE tmp_qlik_vis_provider AS
+    SELECT visibility_id, vgpt.provider_id
+    FROM qlik_answer_vis_array qav 
+    JOIN sp_visibility_group_provider_tree vgpt ON (vgpt.visibility_group_id = ANY(allow_ids))
+    JOIN (SELECT DISTINCT provider_id FROM qlik_user_access_tier_view WHERE user_access_tier != 1) up ON (vgpt.provider_id = up.provider_id)
+    EXCEPT
+    SELECT visibility_id, vgpt.provider_id
+    FROM qlik_answer_vis_array qav 
+    JOIN sp_visibility_group_provider_tree vgpt ON (vgpt.visibility_group_id = ANY(deny_ids))
+    JOIN (SELECT DISTINCT provider_id FROM qlik_user_access_tier_view WHERE user_access_tier != 1) up ON (vgpt.provider_id = up.provider_id);
+
         _question_query := 'SELECT DISTINCT virt_field_name FROM qlik_review_answers 
         UNION SELECT DISTINCT virt_field_name FROM qlik_answer_access qaa ORDER BY 1';
 
         _inner_query := 'SELECT DISTINCT ON (entry_exit_review_id, virt_field_name) entry_exit_review_id, virt_field_name, answer_val '||
                 'FROM (
+                 -- Tier 1 - Top answers
                  SELECT DISTINCT entry_exit_review_id, virt_field_name, answer_val, date_effective 
                  FROM qlik_review_answers qea 
                  WHERE qea.exit_date IS NULL OR qea.exit_date::DATE >= '''''||$2||'''''::DATE
                  UNION
+                 -- Tier 2/3 Inherited and Explicit
                  SELECT DISTINCT ON (entry_exit_review_id, virt_field_name) entry_exit_review_id, virt_field_name, answer_val, date_effective
                  FROM qlik_answer_access qaa 
                  JOIN (SELECT tee.tier_link, tee.provider_id, client_id, entry_exit_review_id, entry_exit_id, teer.review_date AS entry_exit_review_date 
@@ -34,7 +47,7 @@ BEGIN
                        WHERE teer.active) ee ON (ee.client_id = qaa.client_id AND qaa.date_effective::DATE <= ee.entry_exit_review_date::DATE)
                  WHERE ee.provider_id = qaa.provider_id 
                    OR (qaa.visibility_id IS NOT NULL 
-                       AND EXISTS (SELECT 1 FROM qlik_answer_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id))
+                       AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id))
                  ) t
                  ORDER BY entry_exit_review_id, virt_field_name, date_effective DESC';
 
