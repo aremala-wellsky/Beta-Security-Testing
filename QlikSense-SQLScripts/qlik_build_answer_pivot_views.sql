@@ -10,14 +10,15 @@ DECLARE
     _question_query TEXT;
     _inner_query TEXT;
     _final_query TEXT;
-    _ee_join VARCHAR;
-    _ee_where VARCHAR;
+    _ee_limit VARCHAR;
 BEGIN
-    -- Version 20200609-1
+    -- Version 20200612-1
 
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['entry', 'exit'] ELSE $3 END;
 	
 	 DROP TABLE IF EXISTS tmp_relevant_ees;
+
+    DROP TABLE IF EXISTS tmp_relevant_ees;
 
     CREATE TEMP TABLE tmp_relevant_ees AS
     SELECT entry_exit_id, tier_link, client_id, entry_date, exit_date, provider_id
@@ -36,37 +37,27 @@ BEGIN
     JOIN (SELECT DISTINCT provider_id FROM qlik_user_access_tier_view WHERE user_access_tier != 1) up ON (vgpt.provider_id = up.provider_id);
 
     FOREACH _type IN ARRAY _types LOOP
-        _ee_join := CASE WHEN _type = 'exit' 
-                         THEN '(ee.exit_date IS NULL OR qaa.date_effective::DATE <= ee.exit_date::DATE)' 
-                         ELSE 'qaa.date_effective::DATE <= ee.entry_date::DATE' END;
-
-        _ee_where := CASE WHEN _type = 'exit' 
-                          THEN 'exit_date IS NULL OR exit_date::DATE >= '''''||$2||'''''::DATE' 
-                          ELSE 'entry_date::DATE >= '''''||$2||'''''::DATE' END;
+        _ee_limit := CASE WHEN _type = 'exit' THEN '(ee.exit_date IS NULL OR qaa.date_effective::DATE <= ee.exit_date::DATE)' ELSE 'qaa.date_effective::DATE <= ee.entry_date::DATE' END;
     
         _question_query := 'SELECT DISTINCT virt_field_name FROM qlik_'||_type||'_answers 
         UNION SELECT DISTINCT virt_field_name FROM qlik_answer_access qaa ORDER BY 1';
 
         _inner_query := 'SELECT DISTINCT ON (tier_link, entry_exit_id, virt_field_name) tier_link||''''|''''||entry_exit_id AS sec_key, virt_field_name, answer_val
-         FROM (
-         -- Tier 1 - Top answers
-         SELECT DISTINCT ee.entry_exit_id, tier_link, virt_field_name, answer_val, date_effective 
-         FROM qlik_'||_type||'_answers qea
-         JOIN (SELECT DISTINCT tier_link, entry_exit_id FROM qlik_ee_user_access_tier_view t WHERE t.user_access_tier = 1) ee USING (entry_exit_id)
-         UNION
-         -- Tier 2/3 - INHERITED
-         SELECT DISTINCT ee.entry_exit_id, ee.tier_link, virt_field_name, answer_val, date_effective
-         FROM qlik_answer_access qaa 
-         JOIN tmp_relevant_ees ee ON (ee.provider_id = qaa.provider_id AND ee.client_id = qaa.client_id AND '||_ee_join||')
-         UNION
-         -- Tier 2/3 - EXPLICIT
-         SELECT DISTINCT ee.entry_exit_id, uat.user_access_tier||''''|''''||qavp.provider_id AS tier_link, virt_field_name, answer_val, date_effective
-         FROM qlik_answer_access qaa 
-         JOIN tmp_relevant_ees ee ON (ee.client_id = qaa.client_id AND '||_ee_join||')
-         JOIN tmp_qlik_vis_provider qavp USING (visibility_id)
-         CROSS JOIN (SELECT DISTINCT user_access_tier FROM qlik_user_access_tier_view WHERE user_access_tier != 1) uat
-         WHERE '||_ee_where||') t
-         ORDER BY entry_exit_id, tier_link, virt_field_name, date_effective DESC';
+                 FROM (
+                 -- Tier 1 - Top answers
+                 SELECT DISTINCT ee.entry_exit_id, tier_link, virt_field_name, answer_val, date_effective 
+                 FROM qlik_'||_type||'_answers qea
+                 JOIN (SELECT DISTINCT tier_link, entry_exit_id FROM qlik_ee_user_access_tier_view t WHERE t.user_access_tier = 1) ee USING (entry_exit_id)
+                 UNION
+                 -- Tier 2/3 Inherited and Explicit
+                 SELECT DISTINCT ee.entry_exit_id, ee.tier_link, virt_field_name, answer_val, date_effective
+                 FROM qlik_answer_access qaa 
+                 JOIN tmp_relevant_ees ee ON (ee.client_id = qaa.client_id AND '||_ee_limit||')
+                 WHERE ee.provider_id = qaa.provider_id
+                   OR (qaa.visibility_id IS NOT NULL 
+                       AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id))
+                 ) t
+                 ORDER BY entry_exit_id, tier_link, virt_field_name, date_effective DESC';
 
         _dsql := 'SELECT FORMAT(
         $$
@@ -84,7 +75,7 @@ BEGIN
     )
         AS t';
 
-        RAISE NOTICE 'Creating the pivot query %', clock_timestamp();
+        RAISE NOTICE 'Creating the pivot query %',clock_timestamp();
         EXECUTE _dsql INTO _final_query;
         RAISE NOTICE 'Finished creating pivot query %: %', _type, clock_timestamp();
 
