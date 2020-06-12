@@ -14,6 +14,8 @@ DECLARE
 BEGIN
     -- Version 20200612-1
 
+    DROP TABLE IF EXISTS tmp_qlik_vis_provider;
+
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['call', 'call_followup'] ELSE $3 END;
 
     CREATE TEMP TABLE tmp_qlik_vis_provider AS

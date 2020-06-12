@@ -12,6 +12,7 @@ BEGIN
     -- Version 20200612-1
 
     DROP TABLE IF EXISTS tmp_relevant_ees;
+    DROP TABLE IF EXISTS tmp_qlik_vis_provider;
 
     CREATE TEMP TABLE tmp_relevant_ees AS
     SELECT entry_exit_id, tier_link, client_id, entry_date, exit_date, provider_id
