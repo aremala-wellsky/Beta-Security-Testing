@@ -12,7 +12,7 @@ DECLARE
     _final_query TEXT;
     _ee_limit VARCHAR;
 BEGIN
-    -- Version 20200615-1
+    -- Version 20200616-1
 
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['entry', 'exit'] ELSE $3 END;
 
@@ -58,14 +58,24 @@ BEGIN
                  -- Tier 2/3 Inherited EEs and Inherited/Explicit answers
                  SELECT DISTINCT ee.entry_exit_id, ee.tier_link, virt_field_name, answer_val, date_effective
                  FROM qlik_answer_access qaa 
-                 JOIN tmp_relevant_ees ee ON (ee.provider_id = qaa.provider_id AND ee.client_id = qaa.client_id AND '||_ee_limit||')
+                 JOIN tmp_relevant_ees ee ON (ee.client_id = qaa.client_id AND '||_ee_limit||')
+                 WHERE ee.provider_id = qaa.provider_id
+                   -- Inherited/Explicit answers
+                   OR (qaa.visibility_id IS NOT NULL 
+                       AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id))
                  UNION
-                 -- Tier 2/3 Explicit EEs and Inherited/Explicit answers
+                 -- Tier 2/3 Explicit EEs 
                  SELECT DISTINCT ee.entry_exit_id, (user_access_tier||''''|''''||tvp.provider_id) AS tier_link, virt_field_name, answer_val, date_effective
                  FROM qlik_answer_access qaa 
                  JOIN tmp_relevant_ees ee ON (ee.client_id = qaa.client_id AND '||_ee_limit||')
                  JOIN tmp_qlik_vis_provider tvp ON (ee.visibility_id = tvp.visibility_id AND ee.provider_id != tvp.provider_id)
                  WHERE ee.visibility_id IS NOT NULL
+                   -- Inherited/Explicit answers
+                   AND (ee.provider_id = qaa.provider_id 
+                    OR (qaa.visibility_id IS NOT NULL 
+                        AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id)
+                    )
+                   )
                  ) t
                  ORDER BY entry_exit_id, tier_link, virt_field_name, date_effective DESC';
 
@@ -100,5 +110,5 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
 
--- select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', null);
+-- select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', ARRAY['entry']);
 -- select * from qlik_entry_answer_pivot_view;

@@ -12,11 +12,25 @@ DECLARE
     _final_query TEXT;
     _call_limit VARCHAR;
 BEGIN
-    -- Version 20200612-1
+    -- Version 20200616-1
 
+    DROP TABLE IF EXISTS tmp_relevant_calls;
     DROP TABLE IF EXISTS tmp_qlik_vis_provider;
 
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['call', 'call_followup'] ELSE $3 END;
+
+    CREATE TEMP TABLE tmp_relevant_calls AS
+    SELECT call_record_id, tier_link, user_access_tier, client_id, start_date, actual_followup_date, provider_creating_id, NULL::integer visibility_id
+    FROM sp_call_record cr
+    JOIN qlik_user_access_tier_view AS sec ON (cr.provider_creating_id = sec.provider_id)
+    WHERE sec.user_access_tier != 1 AND cr.active AND start_date::DATE >= $2::DATE;
+
+    UPDATE tmp_relevant_calls trc
+    SET visibility_id = (SELECT qlik_get_vis_link(array_agg(CASE WHEN crv.visible THEN crv.visibility_group_id ELSE NULL END), 
+                                                  array_agg(CASE WHEN NOT crv.visible THEN crv.visibility_group_id ELSE NULL END))
+                         FROM sp_callrecordvisibility crv
+                         WHERE crv.callrecord_id = trc.call_record_id 
+                         GROUP BY callrecord_id);
 
     CREATE TEMP TABLE tmp_qlik_vis_provider AS
     SELECT visibility_id, vgpt.provider_id
@@ -44,15 +58,27 @@ BEGIN
                  JOIN (SELECT DISTINCT tier_link, provider_id AS provider_creating_id FROM qlik_user_access_tier_view t WHERE t.user_access_tier = 1) uat USING (provider_creating_id)
                  WHERE end_date IS NULL OR end_date::DATE >= '''''||$2||'''''::DATE
                  UNION
-                 -- Tier 2/3 Inherited and Explicit
-                 SELECT DISTINCT cr.call_record_id, uat.tier_link, virt_field_name, answer_val, date_effective
+                 -- Tier 2/3 Inherited EEs
+                 SELECT DISTINCT cr.call_record_id, cr.tier_link, virt_field_name, answer_val, date_effective
                  FROM qlik_call_answer_access qaa
-                 JOIN sp_call_record cr ON (qaa.call_record_id = cr.call_record_id AND '||_call_limit||')
-                 JOIN (SELECT DISTINCT tier_link, provider_id AS provider_creating_id FROM qlik_user_access_tier_view t WHERE t.user_access_tier = 1) uat USING (provider_creating_id)
-                 WHERE end_date IS NULL OR end_date::DATE >= '''''||$2||'''''::DATE 
-                   AND (cr.provider_creating_id = qaa.provider_id
+                 JOIN tmp_relevant_calls cr ON (qaa.call_record_id = cr.call_record_id AND '||_call_limit||')
+                 WHERE cr.provider_creating_id = qaa.provider_id
+                   -- Inherited/Explicit answers
                    OR (qaa.visibility_id IS NOT NULL 
-                       AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id)))
+                       AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id))
+                 UNION
+                 -- Tier 2/3 Explicit EEs
+                 SELECT DISTINCT cr.call_record_id, (user_access_tier||''''|''''||tvp.provider_id) AS tier_link, virt_field_name, answer_val, date_effective
+                 FROM qlik_call_answer_access qaa 
+                 JOIN tmp_relevant_calls cr ON (cr.call_record_id = qaa.call_record_id AND '||_call_limit||')
+                 JOIN tmp_qlik_vis_provider tvp ON (cr.visibility_id = tvp.visibility_id AND cr.provider_creating_id != tvp.provider_id)
+                 WHERE cr.visibility_id IS NOT NULL
+                   -- Inherited/Explicit answers
+                   AND (cr.provider_creating_id = qaa.provider_id 
+                    OR (qaa.visibility_id IS NOT NULL 
+                        AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id)
+                    )
+                   )
                  ) t
                  ORDER BY call_record_id, tier_link, virt_field_name, date_effective DESC';
 

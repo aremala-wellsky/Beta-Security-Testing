@@ -22,11 +22,6 @@ CREATE TABLE IF NOT EXISTS public.qlik_answer_vis_array(
   deny_ids integer[]
 );
 
-CREATE TABLE IF NOT EXISTS public.qlik_answer_vis_provider(
-  visibility_id integer,
-  provider_id integer
-);
-
 CREATE OR REPLACE FUNCTION public.qlik_get_vis_link(
     allowvg integer[],
     denyvg integer[])
@@ -35,7 +30,7 @@ $BODY$
         DECLARE
                 _visibility_id INTEGER;
         BEGIN
-            -- Function version db99999
+            -- Version 20200602-1
             allowvg := (SELECT ARRAY(SELECT t FROM unnest($1) v(t) WHERE t IS NOT NULL ORDER BY 1));
             denyvg := (SELECT ARRAY(SELECT t FROM unnest($2) v(t) WHERE t IS NOT NULL ORDER BY 1));
 
@@ -45,19 +40,6 @@ $BODY$
                 INSERT INTO qlik_answer_vis_array (allow_ids, deny_ids)
                 VALUES (allowvg, denyvg)
                 RETURNING visibility_id INTO _visibility_id;
-
-                INSERT INTO qlik_answer_vis_provider (visibility_id, provider_id)
-                SELECT _visibility_id, provider_id
-                FROM (
-                  SELECT provider_id
-                  FROM sp_visibility_group_provider_tree vgpt 
-                  JOIN (SELECT DISTINCT provider_id FROM qlik_user_access_tier_view WHERE user_access_tier != 1) v USING (provider_id)
-                  WHERE vgpt.visibility_group_id = ANY(allowvg)
-                  EXCEPT
-                  SELECT provider_id
-                  FROM sp_visibility_group_provider_tree vgpt
-                  WHERE vgpt.visibility_group_id = ANY(denyvg)
-                ) p;
             END IF;
 
             RETURN _visibility_id;
