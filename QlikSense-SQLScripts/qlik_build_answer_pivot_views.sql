@@ -100,5 +100,5 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
 
---   
+-- select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', null);
 -- select * from qlik_entry_answer_pivot_view;
