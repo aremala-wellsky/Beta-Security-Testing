@@ -12,7 +12,7 @@ DECLARE
     _final_query TEXT;
     _ee_limit VARCHAR;
 BEGIN
-    -- Version 20200612-1
+    -- Version 20200615-1
 
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['entry', 'exit'] ELSE $3 END;
 	
@@ -22,9 +22,16 @@ BEGIN
     DROP TABLE IF EXISTS tmp_qlik_vis_provider;
 
     CREATE TEMP TABLE tmp_relevant_ees AS
-    SELECT entry_exit_id, tier_link, client_id, entry_date, exit_date, provider_id
+    SELECT entry_exit_id, tier_link, user_access_tier, client_id, entry_date, exit_date, provider_id, NULL::integer visibility_id
     FROM qlik_ee_user_access_tier_view uat
     WHERE uat.user_access_tier != 1 AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE);
+
+    UPDATE tmp_relevant_ees qaa
+    SET visibility_id = (SELECT qlik_get_vis_link(array_agg(CASE WHEN eev.visible THEN eev.visibility_group_id ELSE NULL END), 
+                                                  array_agg(CASE WHEN NOT eev.visible THEN eev.visibility_group_id ELSE NULL END))
+                         FROM sp_entry_exitvisibility eev
+                         WHERE eev.entry_exit_id = qaa.entry_exit_id 
+                         GROUP BY entry_exit_id);
 
     CREATE TEMP TABLE tmp_qlik_vis_provider AS
     SELECT visibility_id, vgpt.provider_id
@@ -50,13 +57,17 @@ BEGIN
                  FROM qlik_'||_type||'_answers qea
                  JOIN (SELECT DISTINCT tier_link, entry_exit_id FROM qlik_ee_user_access_tier_view t WHERE t.user_access_tier = 1) ee USING (entry_exit_id)
                  UNION
-                 -- Tier 2/3 Inherited and Explicit
+                 -- Tier 2/3 Inherited EEs and Inherited/Explicit answers
                  SELECT DISTINCT ee.entry_exit_id, ee.tier_link, virt_field_name, answer_val, date_effective
                  FROM qlik_answer_access qaa 
+                 JOIN tmp_relevant_ees ee ON (ee.provider_id = qaa.provider_id AND ee.client_id = qaa.client_id AND '||_ee_limit||')
+                 UNION
+                 -- Tier 2/3 Explicit EEs and Inherited/Explicit answers
+                 SELECT DISTINCT ee.entry_exit_id, (user_access_tier||''''|''''||tvp.provider_id) AS tier_link, virt_field_name, answer_val, date_effective
+                 FROM qlik_answer_access qaa 
                  JOIN tmp_relevant_ees ee ON (ee.client_id = qaa.client_id AND '||_ee_limit||')
-                 WHERE ee.provider_id = qaa.provider_id
-                   OR (qaa.visibility_id IS NOT NULL 
-                       AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id))
+                 JOIN tmp_qlik_vis_provider tvp ON (ee.visibility_id = tvp.visibility_id AND ee.provider_id != tvp.provider_id)
+                 WHERE ee.visibility_id IS NOT NULL
                  ) t
                  ORDER BY entry_exit_id, tier_link, virt_field_name, date_effective DESC';
 
