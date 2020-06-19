@@ -16,8 +16,6 @@ BEGIN
     -- Version 20200619-1
 
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['entry', 'exit'] ELSE $3 END;
-    
-     DROP TABLE IF EXISTS tmp_relevant_ees;
 
     DROP TABLE IF EXISTS tmp_relevant_ees;
     DROP TABLE IF EXISTS tmp_qlik_vis_provider;
