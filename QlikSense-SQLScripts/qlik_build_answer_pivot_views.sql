@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION qlik_build_answer_pivot_views(
     _delta_date character varying,
     _entry_exit_date character varying,
-    _types VARCHAR[])
+    _types character varying[])
   RETURNS void AS
 $BODY$
 DECLARE
@@ -11,12 +11,11 @@ DECLARE
     _inner_query TEXT;
     _final_query TEXT;
     _ee_limit VARCHAR;
+    _has_data BOOLEAN;
 BEGIN
-    -- Version 20200616-1
+    -- Version 20200619-1
 
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['entry', 'exit'] ELSE $3 END;
-	
-	 DROP TABLE IF EXISTS tmp_relevant_ees;
 
     DROP TABLE IF EXISTS tmp_relevant_ees;
     DROP TABLE IF EXISTS tmp_qlik_vis_provider;
@@ -97,9 +96,14 @@ BEGIN
     )
         AS t';
 
-        RAISE NOTICE 'Creating the pivot query %',clock_timestamp();
-        EXECUTE _dsql INTO _final_query;
-        RAISE NOTICE 'Finished creating pivot query %: %', _type, clock_timestamp();
+        EXECUTE 'SELECT EXISTS('||_question_query||') AS has_data' INTO _has_data;
+        IF _has_data IS DISTINCT FROM TRUE THEN
+            _final_query := 'SELECT NULL::VARCHAR AS sec_key LIMIT 0';
+        ELSE
+            RAISE NOTICE 'Creating the pivot query %',clock_timestamp();
+            EXECUTE _dsql INTO _final_query;
+            RAISE NOTICE 'Finished creating pivot query %: %', _type, clock_timestamp();
+        END IF;
 
         EXECUTE 'DROP MATERIALIZED VIEW IF EXISTS qlik_'||_type||'_answer_pivot_view';
         EXECUTE 'CREATE MATERIALIZED VIEW qlik_'||_type||'_answer_pivot_view AS '||_final_query;

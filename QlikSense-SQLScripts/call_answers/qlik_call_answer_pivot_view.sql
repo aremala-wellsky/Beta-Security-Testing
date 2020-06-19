@@ -11,8 +11,9 @@ DECLARE
     _inner_query TEXT;
     _final_query TEXT;
     _call_limit VARCHAR;
+    _has_data BOOLEAN;
 BEGIN
-    -- Version 20200616-1
+    -- Version 20200619-1
 
     DROP TABLE IF EXISTS tmp_relevant_calls;
     DROP TABLE IF EXISTS tmp_qlik_vis_provider;
@@ -98,9 +99,14 @@ BEGIN
     )
         AS t';
 
-        RAISE NOTICE 'Creating the pivot query %',clock_timestamp();
-        EXECUTE _dsql INTO _final_query;
-        RAISE NOTICE 'Finished creating pivot query %: %', _type, clock_timestamp();
+        EXECUTE 'SELECT EXISTS('||_question_query||') AS has_data' INTO _has_data;
+        IF _has_data IS DISTINCT FROM TRUE THEN
+            _final_query := 'SELECT NULL::VARCHAR AS sec_key LIMIT 0';
+        ELSE
+            RAISE NOTICE 'Creating the pivot query %',clock_timestamp();
+            EXECUTE _dsql INTO _final_query;
+            RAISE NOTICE 'Finished creating pivot query %: %', _type, clock_timestamp();
+        END IF;
 
         EXECUTE 'DROP MATERIALIZED VIEW IF EXISTS qlik_'||_type||'_answer_pivot_view';
         EXECUTE 'CREATE MATERIALIZED VIEW qlik_'||_type||'_answer_pivot_view AS '||_final_query;
