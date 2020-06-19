@@ -22,3 +22,6 @@ DROP FUNCTION IF EXISTS qlik_get_vis_link_entry(integer[], integer[]);
 DROP FUNCTION IF EXISTS qlik_get_vis_link_exit(integer[], integer[]);
 DROP FUNCTION IF EXISTS qlik_build_entry_answer_pivot_view(VARCHAR, VARCHAR, BOOLEAN);
 DROP FUNCTION IF EXISTS qlik_build_exit_answer_pivot_view(VARCHAR, VARCHAR, BOOLEAN);
+DROP FUNCTION IF EXISTS qlik_build_call_answers_table(VARCHAR, VARCHAR, VARCHAR[]);
+DROP FUNCTION IF EXISTS qlik_build_entry_answers_table(VARCHAR, VARCHAR);
+DROP FUNCTION IF EXISTS qlik_build_exit_answers_table(VARCHAR, VARCHAR);
