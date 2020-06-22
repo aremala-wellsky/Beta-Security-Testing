@@ -8,16 +8,25 @@ DECLARE
     _question_query TEXT;
     _inner_query TEXT;
     _final_query TEXT;
+    _has_data BOOLEAN;
 BEGIN
-    -- Version 20200612-1
+    -- Version 20200622-1
 
     DROP TABLE IF EXISTS tmp_relevant_ees;
     DROP TABLE IF EXISTS tmp_qlik_vis_provider;
 
-    CREATE TEMP TABLE tmp_relevant_ees AS
-    SELECT entry_exit_id, tier_link, client_id, entry_date, exit_date, provider_id
-    FROM qlik_ee_user_access_tier_view uat
-    WHERE uat.user_access_tier != 1 AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE);
+    CREATE TEMP TABLE tmp_relevant_ee_reviews AS
+    SELECT entry_exit_review_id, entry_exit_id, tier_link, user_access_tier, client_id, point_in_time_type_id, review_type_id, 
+           review_date, uat.provider_id, NULL::integer visibility_id
+    FROM sp_entry_exit_review teer JOIN qlik_ee_user_access_tier_view uat USING (entry_exit_id)
+    WHERE teer.active AND uat.user_access_tier != 1 AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE);
+
+    UPDATE tmp_relevant_ee_reviews qaa
+    SET visibility_id = (SELECT qlik_get_vis_link(array_agg(CASE WHEN eev.visible THEN eev.visibility_group_id ELSE NULL END), 
+                                                  array_agg(CASE WHEN NOT eev.visible THEN eev.visibility_group_id ELSE NULL END))
+                         FROM sp_entry_exitvisibility eev
+                         WHERE eev.entry_exit_id = qaa.entry_exit_id 
+                         GROUP BY entry_exit_id);
 
     CREATE TEMP TABLE tmp_qlik_vis_provider AS
     SELECT visibility_id, vgpt.provider_id
@@ -43,10 +52,9 @@ BEGIN
                  -- Tier 2/3 Inherited and Explicit
                  SELECT DISTINCT ON (entry_exit_review_id, virt_field_name) entry_exit_review_id, virt_field_name, answer_val, date_effective
                  FROM qlik_answer_access qaa 
-                 JOIN (SELECT tee.tier_link, tee.provider_id, client_id, entry_exit_review_id, entry_exit_id, teer.review_date::DATE AS entry_exit_review_date 
-                       FROM sp_entry_exit_review teer JOIN tmp_relevant_ees tee USING (entry_exit_id)
-                       WHERE teer.active) ee ON (ee.client_id = qaa.client_id AND qaa.date_effective::DATE <= ee.entry_exit_review_date::DATE)
+                 JOIN tmp_relevant_ee_reviews ee ON (ee.client_id = qaa.client_id AND qaa.date_effective::DATE <= ee.review_date::DATE)
                  WHERE ee.provider_id = qaa.provider_id 
+                   -- Handle Inherited/Explicit answers here and EE visibility afterwards
                    OR (qaa.visibility_id IS NOT NULL 
                        AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id))
                  ) t
@@ -67,9 +75,14 @@ BEGIN
     )
         AS t';
 
-    RAISE NOTICE 'Creating the crosstab query %',clock_timestamp();
-    EXECUTE _dsql INTO _final_query;
-    RAISE NOTICE 'Finished creating crosstab query: %', clock_timestamp();
+    EXECUTE 'SELECT EXISTS('||_question_query||') AS has_data' INTO _has_data;
+    IF _has_data IS DISTINCT FROM TRUE THEN
+        _final_query := 'SELECT NULL::INTEGER AS entry_exit_review_id LIMIT 0';
+    ELSE
+        RAISE NOTICE 'Creating the pivot query %',clock_timestamp();
+        EXECUTE _dsql INTO _final_query;
+        RAISE NOTICE 'Finished creating pivot query: %', clock_timestamp();
+    END IF;
 
     -- We have to create a separate table to define the column structure for the crosstab
     DROP TABLE IF EXISTS tmp_ee_review_crosstab;
@@ -84,8 +97,18 @@ BEGIN
            plv(eer.review_type_id) AS entry_exit_review_type, 
            eer.review_date::DATE AS entry_exit_review_date, t.*
     FROM tmp_ee_review_crosstab t 
-    JOIN sp_entry_exit_review eer USING (entry_exit_review_id) 
-    JOIN (SELECT DISTINCT entry_exit_id, tier_link FROM qlik_ee_user_access_tier_view) uat USING (entry_exit_id);
+    --Handling Inherited EE visibility
+    JOIN tmp_relevant_ee_reviews eer USING (entry_exit_review_id)
+    UNION
+    --Handling Explicit EE visibility
+    SELECT user_access_tier||'|'||tvp.provider_id||'|'||eer.entry_exit_id AS ee_sec_key, user_access_tier||'|'||tvp.provider_id||'|'||eer.entry_exit_review_id AS sec_key,
+           plv(eer.point_in_time_type_id) as entry_exit_review_pit_type, 
+           plv(eer.review_type_id) AS entry_exit_review_type, 
+           eer.review_date::DATE AS entry_exit_review_date, t.*
+    FROM tmp_ee_review_crosstab t 
+    JOIN tmp_relevant_ee_reviews eer USING (entry_exit_review_id)
+    JOIN tmp_qlik_vis_provider tvp ON (eer.visibility_id = tvp.visibility_id AND eer.provider_id != tvp.provider_id)
+    WHERE eer.visibility_id IS NOT NULL;
 
     RAISE NOTICE 'Finished creating pivot table: %', clock_timestamp();
 
