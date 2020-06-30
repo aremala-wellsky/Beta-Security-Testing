@@ -9,7 +9,7 @@ DECLARE
     _date_column TEXT;
     _type VARCHAR;
 BEGIN
-    -- Version 20200609-1
+    -- Version 20200630-1
 
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['call', 'call_followup'] ELSE $3 END;
 
