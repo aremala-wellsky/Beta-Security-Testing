@@ -9,7 +9,7 @@ DECLARE
     _date_column TEXT;
     _type VARCHAR;
 BEGIN
-    -- Version 20200609-1
+    -- Version 20200630-1
 
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['call', 'call_followup'] ELSE $3 END;
 
@@ -21,14 +21,14 @@ BEGIN
         _dsql := 'CREATE TABLE qlik_'||_type||'_answers AS 
         SELECT b.call_record_id, b.question_id, dq3.virt_field_name, b.date_effective,
         CASE WHEN b.code = ''lookup'' THEN plv(ca3.val_int)::VARCHAR
-         WHEN b.code = ''yes_no'' THEN yn(ca3.val_int)::VARCHAR
-         WHEN b.code = ''date'' THEN (ca3.val_date::DATE)::VARCHAR
-         WHEN b.code = ''int'' THEN ca3.val_int::VARCHAR
-         WHEN b.code = ''textbox'' THEN ca3.val_textfield::VARCHAR
-         WHEN b.code = ''textarea'' THEN ca3.val_textfield::VARCHAR
-         WHEN b.code = ''money'' THEN ca3.val_float::VARCHAR
-         WHEN b.code = ''service_code'' THEN ca3.val_int::VARCHAR
-         ELSE '''' 
+             WHEN b.code = ''yes_no'' THEN yn(ca3.val_int)::VARCHAR
+             WHEN b.code = ''date'' THEN TO_CHAR((ca3.val_date)::TIMESTAMP::DATE,''MM/dd/YYYY'')
+             WHEN b.code = ''int'' THEN ca3.val_int::VARCHAR
+             WHEN b.code = ''textbox'' THEN substring(ca3.val_textfield::VARCHAR from 1 for 200)
+             WHEN b.code = ''textarea'' THEN substring(ca3.val_textfield::VARCHAR from 1 for 200)
+             WHEN b.code = ''money'' THEN ca3.val_float::VARCHAR
+             WHEN b.code = ''service_code'' THEN ca3.val_int::VARCHAR
+             ELSE '''' 
         END AS answer_val
         FROM
         (
