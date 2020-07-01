@@ -10,14 +10,14 @@ DECLARE
     _final_query TEXT;
     _has_data BOOLEAN;
 BEGIN
-    -- Version 20200622-1
+    -- Version 20200701-1
 
-    DROP TABLE IF EXISTS tmp_relevant_ees;
+    DROP TABLE IF EXISTS tmp_relevant_ee_reviews;
     DROP TABLE IF EXISTS tmp_qlik_vis_provider;
 
     CREATE TEMP TABLE tmp_relevant_ee_reviews AS
     SELECT entry_exit_review_id, entry_exit_id, tier_link, user_access_tier, client_id, point_in_time_type_id, review_type_id, 
-           review_date, uat.provider_id, NULL::integer visibility_id
+           covered_by_roi, review_date, uat.provider_id, NULL::integer visibility_id
     FROM sp_entry_exit_review teer JOIN qlik_ee_user_access_tier_view uat USING (entry_exit_id)
     WHERE teer.active AND uat.user_access_tier != 1 AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE);
 
@@ -27,6 +27,14 @@ BEGIN
                          FROM sp_entry_exitvisibility eev
                          WHERE eev.entry_exit_id = qaa.entry_exit_id 
                          GROUP BY entry_exit_id);
+
+    -- Set visibility with only denies to null
+    UPDATE tmp_relevant_ee_reviews trc
+    SET visibility_id = NULL
+    WHERE EXISTS (SELECT 1 
+                  FROM qlik_answer_vis_array va 
+                  WHERE trc.visibility_id = va.visibility_id 
+                    AND (allow_ids IS NULL OR array_length(allow_ids, 1) IS NULL));
 
     CREATE TEMP TABLE tmp_qlik_vis_provider AS
     SELECT visibility_id, vgpt.provider_id
@@ -56,7 +64,11 @@ BEGIN
                  WHERE ee.provider_id = qaa.provider_id 
                    -- Handle Inherited/Explicit answers here and EE visibility afterwards
                    OR (qaa.visibility_id IS NOT NULL 
-                       AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id))
+                       AND EXISTS (SELECT 1 
+                                   FROM tmp_qlik_vis_provider qap 
+                                   WHERE qap.visibility_id = qaa.visibility_id 
+                                     AND qap.provider_id = qaa.provider_id 
+                                     AND qaa.covered_by_roi))
                  ) t
                  ORDER BY entry_exit_review_id, virt_field_name, date_effective DESC';
 
@@ -108,7 +120,7 @@ BEGIN
     FROM tmp_ee_review_crosstab t 
     JOIN tmp_relevant_ee_reviews eer USING (entry_exit_review_id)
     JOIN tmp_qlik_vis_provider tvp ON (eer.visibility_id = tvp.visibility_id AND eer.provider_id != tvp.provider_id)
-    WHERE eer.visibility_id IS NOT NULL;
+    WHERE eer.visibility_id IS NOT NULL AND eer.covered_by_roi;
 
     RAISE NOTICE 'Finished creating pivot table: %', clock_timestamp();
 
@@ -120,3 +132,4 @@ $BODY$
 
 -- select qlik_build_review_answers_table('2015-01-01', '2015-01-01');
 -- select qlik_build_review_answer_pivot_table('2015-01-01', '2015-01-01');
+-- select * from qlik_review_answer_pivot

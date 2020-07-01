@@ -13,7 +13,7 @@ DECLARE
     _ee_limit VARCHAR;
     _has_data BOOLEAN;
 BEGIN
-    -- Version 20200619-1
+    -- Version 20200701-1
 
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['entry', 'exit'] ELSE $3 END;
 
@@ -21,7 +21,7 @@ BEGIN
     DROP TABLE IF EXISTS tmp_qlik_vis_provider;
 
     CREATE TEMP TABLE tmp_relevant_ees AS
-    SELECT entry_exit_id, tier_link, user_access_tier, client_id, entry_date, exit_date, provider_id, NULL::integer visibility_id
+    SELECT entry_exit_id, tier_link, user_access_tier, client_id, entry_date, exit_date, provider_id, covered_by_roi, NULL::integer visibility_id
     FROM qlik_ee_user_access_tier_view uat
     WHERE uat.user_access_tier != 1 AND (exit_date IS NULL OR exit_date::DATE >= $2::DATE);
 
@@ -31,6 +31,14 @@ BEGIN
                          FROM sp_entry_exitvisibility eev
                          WHERE eev.entry_exit_id = qaa.entry_exit_id 
                          GROUP BY entry_exit_id);
+
+    -- Set visibility with only denies to null
+    UPDATE tmp_relevant_ees trc
+    SET visibility_id = NULL
+    WHERE EXISTS (SELECT 1 
+                  FROM qlik_answer_vis_array va 
+                  WHERE trc.visibility_id = va.visibility_id 
+                    AND (allow_ids IS NULL OR array_length(allow_ids, 1) IS NULL));
 
     CREATE TEMP TABLE tmp_qlik_vis_provider AS
     SELECT visibility_id, vgpt.provider_id
@@ -70,12 +78,16 @@ BEGIN
                  FROM qlik_answer_access qaa 
                  JOIN tmp_relevant_ees ee ON (ee.client_id = qaa.client_id AND '||_ee_limit||')
                  JOIN tmp_qlik_vis_provider tvp ON (ee.visibility_id = tvp.visibility_id AND ee.provider_id != tvp.provider_id)
-                 WHERE ee.visibility_id IS NOT NULL
+                 WHERE ee.visibility_id IS NOT NULL AND ee.covered_by_roi
                    -- Inherited/Explicit answers
-                   AND (ee.provider_id = qaa.provider_id 
-                    OR (qaa.visibility_id IS NOT NULL 
-                        AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id)
-                    )
+                   AND (tvp.provider_id = qaa.provider_id 
+                     OR (qaa.visibility_id IS NOT NULL 
+                         AND EXISTS (SELECT 1 
+                                     FROM tmp_qlik_vis_provider qap 
+                                     WHERE qap.visibility_id = qaa.visibility_id 
+                                       AND qap.provider_id = qaa.provider_id 
+                                       AND qaa.covered_by_roi))
+                   )
                    )
                  ) t
                  ORDER BY entry_exit_id, tier_link, virt_field_name, date_effective DESC';
