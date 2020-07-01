@@ -63,12 +63,11 @@ BEGIN
                  JOIN tmp_relevant_ee_reviews ee ON (ee.client_id = qaa.client_id AND qaa.date_effective::DATE <= ee.review_date::DATE)
                  WHERE ee.provider_id = qaa.provider_id 
                    -- Handle Inherited/Explicit answers here and EE visibility afterwards
-                   OR (qaa.visibility_id IS NOT NULL 
+                   OR (qaa.visibility_id IS NOT NULL AND qaa.covered_by_roi
                        AND EXISTS (SELECT 1 
                                    FROM tmp_qlik_vis_provider qap 
                                    WHERE qap.visibility_id = qaa.visibility_id 
-                                     AND qap.provider_id = qaa.provider_id 
-                                     AND qaa.covered_by_roi))
+                                     AND qap.provider_id = qaa.provider_id))
                  ) t
                  ORDER BY entry_exit_review_id, virt_field_name, date_effective DESC';
 

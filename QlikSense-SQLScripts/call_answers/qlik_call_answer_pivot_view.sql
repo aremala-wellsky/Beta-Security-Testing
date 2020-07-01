@@ -74,11 +74,7 @@ BEGIN
                  WHERE cr.provider_creating_id = qaa.provider_id
                    -- Inherited/Explicit answers
                    OR (qaa.visibility_id IS NOT NULL 
-                       AND EXISTS (SELECT 1 
-                                   FROM tmp_qlik_vis_provider qap 
-                                   WHERE qap.visibility_id = qaa.visibility_id 
-                                     AND qap.provider_id = qaa.provider_id 
-                                     AND cr.covered_by_roi AND qaa.covered_by_roi))
+                       AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id))
                  UNION
                  -- Tier 2/3 Explicit Call Records
                  SELECT DISTINCT cr.call_record_id, (user_access_tier||''''|''''||tvp.provider_id) AS tier_link, virt_field_name, answer_val, date_effective
@@ -86,14 +82,13 @@ BEGIN
                  JOIN tmp_relevant_calls cr ON (cr.call_record_id = qaa.call_record_id AND '||_call_limit||')
                  JOIN tmp_qlik_vis_provider tvp ON (cr.visibility_id = tvp.visibility_id AND cr.provider_creating_id != tvp.provider_id) -- Creating ID handled with Inherent above
                  WHERE cr.visibility_id IS NOT NULL AND cr.covered_by_roi 
-                 AND tvp.provider_id = qaa.provider_id
+                 AND (tvp.provider_id = qaa.provider_id
                    -- Inherited/Explicit answers
-                   OR (qaa.visibility_id IS NOT NULL 
+                   OR (qaa.visibility_id IS NOT NULL AND qaa.covered_by_roi
                        AND EXISTS (SELECT 1 
                                    FROM tmp_qlik_vis_provider qap 
                                    WHERE qap.visibility_id = qaa.visibility_id 
-                                     AND qap.provider_id = qaa.provider_id
-                                     AND qaa.covered_by_roi))
+                                     AND qap.provider_id = qaa.provider_id)))
                  ) t
                  ORDER BY call_record_id, tier_link, virt_field_name, date_effective DESC';
 

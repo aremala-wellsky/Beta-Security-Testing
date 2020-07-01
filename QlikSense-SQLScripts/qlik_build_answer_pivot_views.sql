@@ -81,12 +81,11 @@ BEGIN
                  WHERE ee.visibility_id IS NOT NULL AND ee.covered_by_roi
                    -- Inherited/Explicit answers
                    AND (tvp.provider_id = qaa.provider_id 
-                     OR (qaa.visibility_id IS NOT NULL 
+                     OR (qaa.visibility_id IS NOT NULL AND qaa.covered_by_roi
                          AND EXISTS (SELECT 1 
                                      FROM tmp_qlik_vis_provider qap 
                                      WHERE qap.visibility_id = qaa.visibility_id 
-                                       AND qap.provider_id = qaa.provider_id 
-                                       AND qaa.covered_by_roi))
+                                       AND qap.provider_id = qaa.provider_id))
                    )
                    )
                  ) t
