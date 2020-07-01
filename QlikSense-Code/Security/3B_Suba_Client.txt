@@ -13,13 +13,13 @@ DROP TABLE BUILD_RECORDSET_VIEWS;
 Recordset_security_entry:
 Noconcatenate
 LOAD * INLINE [
-	entry_exit_id,entry_recordset_id
+	entry_exit_id,entry_recordset_id,%suba_provider_creating_id
 ];
 
 Recordset_security_exit:
 Noconcatenate
 LOAD * INLINE [
-	entry_exit_id,exit_recordset_id
+	entry_exit_id,exit_recordset_id,%suba_provider_creating_id
 ];
 
 
@@ -119,7 +119,7 @@ CONCATENATE(Recordset_security_entry)
   entry_exit_id, 
   recordset_id as %client_$(varRecordSetQlikName_Ucase_Entry)_recordset_id,
    recordset_id as %entry_recordset_id,
-  provider_creating_id
+  provider_creating_id as %suba_provider_creating_id
   RESIDENT RS_Entry_Explicit;
   DROP TABLE RS_Entry_Explicit;
   
@@ -313,7 +313,7 @@ CONCATENATE(Recordset_security_exit)
   entry_exit_id, 
   recordset_id as %exit_recordset_id,
    recordset_id as  %client_$(varRecordSetQlikName_Ucase_Exit)_recordset_id,
-  provider_creating_id
+  provider_creating_id as %suba_provider_creating_id
   RESIDENT RS_Exit_Explicit;
   DROP TABLE RS_Exit_Explicit;
   

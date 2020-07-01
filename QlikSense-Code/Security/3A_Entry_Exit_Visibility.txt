@@ -10,7 +10,8 @@ WHERE (user_access_tier <> 1);
 Entry_Exit_tmp:
 LOAD
     entry_exit_id,
-    active
+    active,
+	client_id
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ENTRY_EXIT.qvd]
 (qvd)
 WHERE (isNull(num(exit_date)) OR (num(exit_date) >= '$(vNumDateSet)'));
@@ -18,38 +19,31 @@ WHERE (isNull(num(exit_date)) OR (num(exit_date) >= '$(vNumDateSet)'));
 Entry_Exit:
 NOCONCATENATE
 LOAD
-	entry_exit_id
+	entry_exit_id,
+	client_id
 RESIDENT Entry_Exit_tmp
 WHERE match(active, 1);
 
 //DROP TABLE Entry_Exit_tmp;
 
+INNER JOIN(Entry_Exit)
+SELECT 
+	ev.entry_exit_id,
+    ev.visibility_group_id,
+    ev.visible
+	from sp_entry_exitvisibility ev inner join sp_entry_exit e on e.entry_exit_id = ev.entry_exit_id 
+WHERE (e.exit_date is null OR ((e.exit_date) >= '1/1/2015'));
 
-INNER JOIN(Entry_Exit_tmp)
-LOAD
-    entry_exit_id,
-    visibility_group_id,
-    visible
-FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ENTRY_EXITVISIBILITY.qvd]
-(qvd);
-
-RENAME table Entry_Exit_tmp to Entry_Exit_VIS;
-
-//enrty_exit_visibility_tmp:
-INNER JOIN (Entry_Exit)
-LOAD
-    entry_exit_id,
-    visibility_group_id,
-    visible
-RESIDENT Entry_Exit_VIS;
-DROP TABLE Entry_Exit_VIS;
+DROP TABLE Entry_Exit_tmp;
+//RENAME table Entry_Exit_tmp to Entry_Exit_VIS;
 
 Entry_Exit_visibility:
 LEFT JOIN (Entry_Exit_Group)
 LOAD DISTINCT
     visibility_group_id,
     visible,
-    entry_exit_id
+    entry_exit_id,
+	client_id
 RESIDENT Entry_Exit;
 
 DROP TABLE Entry_Exit;
@@ -58,7 +52,8 @@ Visible:
 Load DISTINCT
 	provider_id,
     entry_exit_id,
-    1 AS Visible
+    1 AS Visible,
+	client_id
 RESIDENT Entry_Exit_Group
 WHERE visible = 1;
 
@@ -67,7 +62,8 @@ LEFT JOIN(Visible)
 Load DISTINCT
 	provider_id,
     entry_exit_id,
-    1 AS not_Visible
+    1 AS not_Visible,
+	client_id
 RESIDENT Entry_Exit_Group
 WHERE visible = 0;
 
@@ -82,7 +78,6 @@ RESIDENT Visible
 WHERE match(Visible, 1)  AND isNull(not_Visible);
 
 DROP TABLE Visible;
-
 
 LEFT JOIN(Entry_Exit_visibility)
 LOAD

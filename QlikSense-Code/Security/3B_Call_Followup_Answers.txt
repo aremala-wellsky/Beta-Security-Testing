@@ -1,0 +1,20 @@
+
+
+Temp_Call_Followup_Answer_Table:
+select * from qlik_callfollow_answer_pivot_view;
+
+Call_Followup_Answer:
+Noconcatenate
+LOAD DISTINCT
+sec_key AS %SA_CALL_FOLLOWUP_RECORD_CALL_ANSWER,
+*
+RESIDENT Temp_Call_Followup_Answer_Table;
+DROP TABLE Temp_Call_Followup_Answer_Table;
+
+DROP FIELDS sec_key FROM Call_Followup_Answer;
+
+
+
+
+
+

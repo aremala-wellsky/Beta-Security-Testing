@@ -12,7 +12,7 @@ WHERE user_access_tier = 1;
 INNER JOIN(EE_RECORDSET_ACCESS_TIER1)
 LOAD    
 *,
-    provider_creating_id AS [Client Provider Created By Id],
+    %suba_provider_creating_id AS [Client Provider Created By Id],
 	entry_exit_id AS [Entry Exit Id]
 RESIDENT Recordset_security_vis;
 DROP TABLE Recordset_security_vis;

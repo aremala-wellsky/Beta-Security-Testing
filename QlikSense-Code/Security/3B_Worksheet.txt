@@ -65,12 +65,20 @@ DROP TABLE CLIENT_WS_ANSWER_LIST;
 
 FieldMap:
 Mapping SQL 
- SELECT lower(dq.virt_field_name) AS oldnames,  dq.virt_field_name || '_wsrv' AS newnames 
+  SELECT lower(dq.virt_field_name) AS oldnames,  dq.virt_field_name || '_wsrv' AS newnames 
   FROM ws_question dq
   INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
   WHERE
     (dq.active = TRUE) AND (dq.parent_id IS NULL)
-    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'));
+    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'))
+UNION
+ SELECT 'x' || lower(dq.virt_field_name) AS oldnames,  'X' || dq.virt_field_name || '_wsrv' AS newnames 
+  FROM ws_question dq
+  INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+  WHERE
+    (dq.active = TRUE) AND (dq.parent_id IS NULL)
+    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'))
+	AND DQ.category_id IN (4,5,7,8,11);
 
 Rename Fields using FieldMap;
 
@@ -138,7 +146,15 @@ Mapping SQL
   INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
   WHERE
     (dq.active = TRUE) AND (dq.parent_id IS NULL)
-    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'));
+    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'))
+	UNION
+ SELECT 'x' || lower(dq.virt_field_name) AS oldnames,  'X' || dq.virt_field_name || '_wcall' AS newnames 
+  FROM ws_question dq
+  INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+  WHERE
+    (dq.active = TRUE) AND (dq.parent_id IS NULL)
+    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'))
+	AND DQ.category_id IN (4,5,7,8,11);;
 
 Rename Fields using FieldMap2;
 
@@ -199,7 +215,15 @@ Mapping SQL
   INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
   WHERE
     (dq.active = TRUE) AND (dq.parent_id IS NULL)
-    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'));
+    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'))
+	UNION
+ SELECT 'x' || lower(dq.virt_field_name) AS oldnames,  'X' || dq.virt_field_name || '_wpadmin' AS newnames 
+  FROM ws_question dq
+  INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+  WHERE
+    (dq.active = TRUE) AND (dq.parent_id IS NULL)
+    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'))
+	AND DQ.category_id IN (4,5,7,8,11);;
 
 Rename Fields using FieldMap1;
 
@@ -266,7 +290,15 @@ Mapping SQL
   INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
   WHERE
     (dq.active = TRUE) AND (dq.parent_id IS NULL)
-    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'));
+    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'))
+	UNION
+ SELECT 'x' || lower(dq.virt_field_name) AS oldnames,  'X' || dq.virt_field_name || '_wpprof' AS newnames 
+  FROM ws_question dq
+  INNER JOIN da_question_type dqt ON (dqt.question_type_id = dq.question_type_id)
+  WHERE
+    (dq.active = TRUE) AND (dq.parent_id IS NULL)
+    AND (dqt.code in ('lookup','yes_no','date','int','textbox','textarea','money','service_code'))
+	AND DQ.category_id IN (4,5,7,8,11);;
 
 Rename Fields using FieldMap2;
 

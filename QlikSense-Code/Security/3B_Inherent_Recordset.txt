@@ -25,7 +25,7 @@ DROP TABLE Recordset_security_exit_in;
 INNER JOIN(EE_RECORDSET_ACCESS)
 LOAD    
 *,
-    provider_creating_id AS [Client Provider Created By Id],
+    %suba_provider_creating_id AS [Client Provider Created By Id],
 	entry_exit_id AS [Entry Exit Id]
 RESIDENT Recordset_security_vis;
 
