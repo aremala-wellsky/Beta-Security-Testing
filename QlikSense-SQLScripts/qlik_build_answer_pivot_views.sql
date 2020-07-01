@@ -87,7 +87,6 @@ BEGIN
                                      WHERE qap.visibility_id = qaa.visibility_id 
                                        AND qap.provider_id = qaa.provider_id))
                    )
-                   )
                  ) t
                  ORDER BY entry_exit_id, tier_link, virt_field_name, date_effective DESC';
 
