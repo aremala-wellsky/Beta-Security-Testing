@@ -12,7 +12,7 @@ DECLARE
     _global_deny_vis_id INTEGER := (SELECT qlik_get_vis_link(NULL, ARRAY[0]));
     _global_allow_vis_id INTEGER := (SELECT qlik_get_vis_link(ARRAY[0], NULL));
 BEGIN
-    -- Version 20200605-1
+    -- Version 20200701-1
 
     DROP TABLE IF EXISTS qlik_call_answer_access;
 
@@ -21,7 +21,7 @@ BEGIN
     /* ***************************************************** */
 
     CREATE TABLE qlik_call_answer_access AS
-    SELECT DISTINCT call_record_id, a.call_answer_id, q.question_type_code, q.virt_field_name, a.provider_creating_id AS provider_id, a.date_effective, 
+    SELECT DISTINCT call_record_id, a.call_answer_id, q.question_type_code, q.virt_field_name, a.provider_creating_id AS provider_id, a.covered_by_roi, a.date_effective, 
     (i.call_answer_id IS NOT NULL) AS has_inherent_vis, NULL::VARCHAR AS answer_val, NULL::INTEGER AS visibility_id
     FROM call_answer a
     JOIN sp_call_record cr USING (call_record_id)

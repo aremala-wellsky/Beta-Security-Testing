@@ -13,7 +13,7 @@ DECLARE
     _call_limit VARCHAR;
     _has_data BOOLEAN;
 BEGIN
-    -- Version 20200619-1
+    -- Version 20200701-1
 
     DROP TABLE IF EXISTS tmp_relevant_calls;
     DROP TABLE IF EXISTS tmp_qlik_vis_provider;
@@ -21,7 +21,7 @@ BEGIN
     _types := CASE WHEN ($3 IS NULL) THEN ARRAY['call', 'call_followup'] ELSE $3 END;
 
     CREATE TEMP TABLE tmp_relevant_calls AS
-    SELECT call_record_id, tier_link, user_access_tier, client_id, start_date, actual_followup_date, provider_creating_id, NULL::integer visibility_id
+    SELECT call_record_id, tier_link, user_access_tier, client_id, start_date, actual_followup_date, provider_creating_id, covered_by_roi, NULL::integer visibility_id
     FROM sp_call_record cr
     JOIN qlik_user_access_tier_view AS sec ON (cr.provider_creating_id = sec.provider_id)
     WHERE sec.user_access_tier != 1 AND cr.active AND start_date::DATE >= $2::DATE;
@@ -32,6 +32,14 @@ BEGIN
                          FROM sp_callrecordvisibility crv
                          WHERE crv.callrecord_id = trc.call_record_id 
                          GROUP BY callrecord_id);
+                      
+    -- Set visibility with only denies to null
+    UPDATE tmp_relevant_calls trc
+    SET visibility_id = NULL
+    WHERE EXISTS (SELECT 1 
+                  FROM qlik_answer_vis_array va 
+                  WHERE trc.visibility_id = va.visibility_id 
+                    AND (allow_ids IS NULL OR array_length(allow_ids, 1) IS NULL));
 
     CREATE TEMP TABLE tmp_qlik_vis_provider AS
     SELECT visibility_id, vgpt.provider_id
@@ -59,7 +67,7 @@ BEGIN
                  JOIN (SELECT DISTINCT tier_link, provider_id AS provider_creating_id FROM qlik_user_access_tier_view t WHERE t.user_access_tier = 1) uat USING (provider_creating_id)
                  WHERE end_date IS NULL OR end_date::DATE >= '''''||$2||'''''::DATE
                  UNION
-                 -- Tier 2/3 Inherited EEs
+                 -- Tier 2/3 Inherited Call Records
                  SELECT DISTINCT cr.call_record_id, cr.tier_link, virt_field_name, answer_val, date_effective
                  FROM qlik_call_answer_access qaa
                  JOIN tmp_relevant_calls cr ON (qaa.call_record_id = cr.call_record_id AND '||_call_limit||')
@@ -68,18 +76,19 @@ BEGIN
                    OR (qaa.visibility_id IS NOT NULL 
                        AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id))
                  UNION
-                 -- Tier 2/3 Explicit EEs
+                 -- Tier 2/3 Explicit Call Records
                  SELECT DISTINCT cr.call_record_id, (user_access_tier||''''|''''||tvp.provider_id) AS tier_link, virt_field_name, answer_val, date_effective
                  FROM qlik_call_answer_access qaa 
                  JOIN tmp_relevant_calls cr ON (cr.call_record_id = qaa.call_record_id AND '||_call_limit||')
-                 JOIN tmp_qlik_vis_provider tvp ON (cr.visibility_id = tvp.visibility_id AND cr.provider_creating_id != tvp.provider_id)
-                 WHERE cr.visibility_id IS NOT NULL
+                 JOIN tmp_qlik_vis_provider tvp ON (cr.visibility_id = tvp.visibility_id AND cr.provider_creating_id != tvp.provider_id) -- Creating ID handled with Inherent above
+                 WHERE cr.visibility_id IS NOT NULL AND cr.covered_by_roi 
+                 AND (tvp.provider_id = qaa.provider_id
                    -- Inherited/Explicit answers
-                   AND (cr.provider_creating_id = qaa.provider_id 
-                    OR (qaa.visibility_id IS NOT NULL 
-                        AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id)
-                    )
-                   )
+                   OR (qaa.visibility_id IS NOT NULL AND qaa.covered_by_roi
+                       AND EXISTS (SELECT 1 
+                                   FROM tmp_qlik_vis_provider qap 
+                                   WHERE qap.visibility_id = qaa.visibility_id 
+                                     AND qap.provider_id = qaa.provider_id)))
                  ) t
                  ORDER BY call_record_id, tier_link, virt_field_name, date_effective DESC';
 
@@ -120,4 +129,4 @@ $BODY$
   COST 100;
 
 -- select qlik_build_call_answer_pivot_views('2015-01-01', '2015-01-01', NULL);
--- select * from qlik_entry_answer_pivot_view;
+-- select * from qlik_call_answer_pivot_view WHERE split_part(sec_key, '|', 3) = '43027';
