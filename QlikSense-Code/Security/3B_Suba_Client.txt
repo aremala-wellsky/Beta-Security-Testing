@@ -107,6 +107,7 @@ FOR i=0 to $(NumRows)-1
   INNER JOIN sp_entry_exit ee ON (ee.client_id = ft.client_id)
   WHERE 
   (ee.active = TRUE) AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '$(vEntryExitDate)'))
+  AND dr.covered_by_roi
   AND ((((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.entry_date::DATE)) 
   AND (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL)) 
                    OR (((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.entry_date::DATE)) 
@@ -303,6 +304,7 @@ FOR i=0 to $(NumRows)-1
   INNER JOIN sp_entry_exit ee ON (ee.client_id = ft.client_id)
   WHERE 
   (ee.active = TRUE) AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '$(vEntryExitDate)')) 
+  AND dr.covered_by_roi
   AND ((((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.exit_date::DATE) OR ((ft.$(varRecordSetTableNameOnly)startdate::DATE <= date(now())AND (ee.exit_date IS NULL)))) AND (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL)) 
                    OR (((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.exit_date::DATE) OR ((ft.$(varRecordSetTableNameOnly)startdate::DATE <= date(now()) AND (ee.exit_date IS NULL))))  AND ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= ee.exit_date::DATE) OR ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= date(now()))AND (ee.exit_date IS NULL)))));
 		  
