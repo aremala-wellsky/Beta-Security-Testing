@@ -1,7 +1,7 @@
 
 
 Temp_Call_Followup_Answer_Table:
-select * from qlik_callfollow_answer_pivot_view;
+select * from qlik_call_followup_answer_pivot_view;
 
 Call_Followup_Answer:
 Noconcatenate

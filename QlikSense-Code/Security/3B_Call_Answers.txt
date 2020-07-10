@@ -1,7 +1,7 @@
 BUILD_DELTA_CALL_TABLE:  
 SELECT qlik_build_call_answer_access('2015-01-01', '2015-01-01');
 SELECT qlik_build_call_answer_tables('2015-01-01', '2015-01-01',NULL);
-select qlik_build_call_answer_pivot_views('2015-01-01', '2015-01-01', ARRAY['callfollow']);
+select qlik_build_call_answer_pivot_views('2015-01-01', '2015-01-01', ARRAY['call_followup']);
 SELECT qlik_build_call_answer_pivot_views('2015-01-01', '2015-01-01', ARRAY['call']);
 DROP TABLE BUILD_DELTA_CALL_TABLE;
 
