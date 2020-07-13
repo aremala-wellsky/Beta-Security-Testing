@@ -13,7 +13,7 @@ DECLARE
     _call_limit VARCHAR;
     _has_data BOOLEAN;
 BEGIN
-    -- Version 20200701-1
+    -- Version 20200713-1
 
     DROP TABLE IF EXISTS tmp_relevant_calls;
     DROP TABLE IF EXISTS tmp_qlik_vis_provider;
