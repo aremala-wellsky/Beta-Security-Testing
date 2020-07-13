@@ -101,7 +101,7 @@ BEGIN
             %s
         )
         $$,
-        string_agg(FORMAT(''%I %s'', upper(virt_field_name)||''_'||_type||''', ''TEXT''), '', '' ORDER BY virt_field_name)
+        string_agg(FORMAT(''%I %s'', upper(virt_field_name)||''_'||(CASE WHEN _type = 'call_followup' THEN 'callfollow' ELSE _type END)||''', ''TEXT''), '', '' ORDER BY virt_field_name)
     )
     FROM (
         '||_question_query||'
