@@ -13,7 +13,7 @@ DECLARE
     _call_limit VARCHAR;
     _has_data BOOLEAN;
 BEGIN
-    -- Version 20200701-1
+    -- Version 20200713-1
 
     DROP TABLE IF EXISTS tmp_relevant_calls;
     DROP TABLE IF EXISTS tmp_qlik_vis_provider;
@@ -101,7 +101,7 @@ BEGIN
             %s
         )
         $$,
-        string_agg(FORMAT(''%I %s'', upper(virt_field_name)||''_'||_type||''', ''TEXT''), '', '' ORDER BY virt_field_name)
+        string_agg(FORMAT(''%I %s'', upper(virt_field_name)||''_'||(CASE WHEN _type = 'call_followup' THEN 'callfollow' ELSE _type END)||''', ''TEXT''), '', '' ORDER BY virt_field_name)
     )
     FROM (
         '||_question_query||'
