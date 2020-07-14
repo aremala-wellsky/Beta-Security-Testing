@@ -14,7 +14,7 @@ LOAD
 	client_id
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CALL_RECORD.qvd]
 (qvd)
-WHERE (isNull(num(end_date)) OR (num(end_date) >= '$(vNumDateSet)'));
+WHERE covered_by_roi = 1 AND (isNull(num(end_date)) OR (num(end_date) >= '$(vNumDateSet)'));
 
 Call_Record:
 NOCONCATENATE
