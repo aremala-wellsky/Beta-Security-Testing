@@ -14,7 +14,7 @@ LOAD
     client_id
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ENTRY_EXIT.qvd]
 (qvd)
-WHERE covered_by_roi = TRUE AND (isNull(num(exit_date) OR num(exit_date) >= '$(vNumDateSet)'));
+WHERE covered_by_roi = 1 AND (isNull(num(exit_date) OR num(exit_date) >= '$(vNumDateSet)'));
 
 
 Entry_Exit:
