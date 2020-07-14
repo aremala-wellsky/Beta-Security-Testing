@@ -11,10 +11,11 @@ Entry_Exit_tmp:
 LOAD
     entry_exit_id,
     active,
-	client_id
+    client_id
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ENTRY_EXIT.qvd]
 (qvd)
-WHERE (isNull(num(exit_date)) OR (num(exit_date) >= '$(vNumDateSet)'));
+WHERE covered_by_roi = TRUE AND (isNull(num(exit_date) OR num(exit_date) >= '$(vNumDateSet)'));
+
 
 Entry_Exit:
 NOCONCATENATE

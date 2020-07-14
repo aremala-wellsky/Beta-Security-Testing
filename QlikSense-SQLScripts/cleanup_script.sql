@@ -27,3 +27,6 @@ DROP FUNCTION IF EXISTS qlik_build_exit_answer_pivot_view(VARCHAR, VARCHAR, BOOL
 DROP FUNCTION IF EXISTS qlik_build_call_answers_table(VARCHAR, VARCHAR, VARCHAR[]);
 DROP FUNCTION IF EXISTS qlik_build_entry_answers_table(VARCHAR, VARCHAR);
 DROP FUNCTION IF EXISTS qlik_build_exit_answers_table(VARCHAR, VARCHAR);
+
+REASSIGN OWNED BY mloftin TO sp5user;
+REASSIGN OWNED BY lremala TO sp5user;
