@@ -1,6 +1,6 @@
 // --SAII tier
 INHERENT_SECURITY_tmp_EE:
-SELECT entry_date,exit_date,user_access_tier, user_provider_id, client_id, entry_exit_id, sec.provider_id AS provider_id
+SELECT entry_date, exit_date, user_access_tier, user_provider_id, client_id, entry_exit_id, provider_id
 FROM qlik_ee_user_access_tier_view;
 
 	
