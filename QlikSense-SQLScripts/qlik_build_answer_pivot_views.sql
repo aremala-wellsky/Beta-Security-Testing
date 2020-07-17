@@ -126,5 +126,7 @@ $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
 
+ALTER FUNCTION qlik_build_answer_pivot_views(character varying, character varying, character varying[]) OWNER TO sp5user;
+
 -- select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', ARRAY['entry']);
 -- select * from qlik_entry_answer_pivot_view;

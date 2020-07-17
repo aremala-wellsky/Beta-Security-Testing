@@ -96,4 +96,6 @@ $BODY$
 LANGUAGE plpgsql VOLATILE
 COST 100;
 
-SELECT qlik_build_call_answer_access('2015-01-01', '2015-01-01');
+ALTER FUNCTION qlik_build_call_answer_access(character varying, character varying) OWNER TO sp5user;
+
+-- SELECT qlik_build_call_answer_access('2015-01-01', '2015-01-01');

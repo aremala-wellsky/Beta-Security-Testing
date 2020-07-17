@@ -127,6 +127,8 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
+  
+ALTER FUNCTION qlik_build_call_answer_pivot_views(character varying, character varying, character varying[]) OWNER TO sp5user;
 
 -- select qlik_build_call_answer_pivot_views('2015-01-01', '2015-01-01', NULL);
 -- select * from qlik_call_answer_pivot_view WHERE split_part(sec_key, '|', 3) = '43027';

@@ -80,5 +80,7 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
+  
+ALTER FUNCTION qlik_build_answer_tables(character varying, character varying, character varying[]) OWNER TO sp5user;
 
 -- SELECT qlik_build_answer_tables('2015-01-01', '2015-01-01', NULL);

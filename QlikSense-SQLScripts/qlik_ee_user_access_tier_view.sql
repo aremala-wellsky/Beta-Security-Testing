@@ -5,3 +5,5 @@ SELECT DISTINCT (sec.user_access_tier || '|' || sec.user_provider_id) AS tier_li
 FROM sp_entry_exit ee
 JOIN qlik_user_access_tier_view AS sec ON ((ee.provider_id = sec.provider_id) OR (ee.provider_creating_id = sec.provider_id))
 WHERE ee.active;
+
+ALTER TABLE qlik_ee_user_access_tier_view OWNER TO sp5user;

@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS public.qlik_answer_vis_array(
   deny_ids integer[]
 );
 
+ALTER TABLE qlik_answer_vis_array OWNER TO sp5user;
+
 CREATE OR REPLACE FUNCTION public.qlik_get_vis_link(
     allowvg integer[],
     denyvg integer[])
@@ -47,6 +49,8 @@ $BODY$
         $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
+  
+ALTER FUNCTION qlik_get_vis_link (integer[], integer[]) OWNER TO sp5user;
 
 -- This gets set in multiple places so make sure we change it everywhere
 CREATE OR REPLACE VIEW public.qlik_answer_questions AS 
@@ -58,6 +62,7 @@ WHERE t.active
   AND t.published = TRUE
   AND EXISTS(SELECT 1 FROM da_assessment_question aq JOIN da_assessment a USING (assessment_id) WHERE a.art_reportable_flag AND a.active AND aq.question_id = t.question_id AND a.code != 'SUPER_GLOBAL');
 
+ALTER TABLE qlik_answer_questions OWNER TO sp5user;
 
 CREATE OR REPLACE FUNCTION qlik_build_answer_access(
     _delta_date character varying,
@@ -151,7 +156,9 @@ $BODY$
 LANGUAGE plpgsql VOLATILE
 COST 100;
 
-SELECT qlik_build_answer_access('2015-01-01', '2015-01-01');
+ALTER FUNCTION qlik_build_answer_access (character varying, character varying) OWNER TO sp5user;
+
+-- SELECT qlik_build_answer_access('2015-01-01', '2015-01-01');
 
 /* CLEAN UP */
 DROP TABLE IF EXISTS tmp_table_sec_aa;
