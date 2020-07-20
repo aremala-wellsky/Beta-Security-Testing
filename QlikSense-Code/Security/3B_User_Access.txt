@@ -1,5 +1,20 @@
 // --for each user, establish their user_provider_id and user_access_tier
 USER_ACCESS_tmp:
+WITH users_with_client_perm AS (
+  SELECT DISTINCT user_id
+  FROM sp_user u 
+    JOIN sp_provider p USING (provider_id) 
+    JOIN (SELECT DISTINCT role_id, r.name FROM sp_action_in_role ar JOIN sp_role r USING (role_id) JOIN action a USING (action_id) WHERE a.name = 'CLIENT_CLIENT_VIEW') r USING (role_id)
+  WHERE u.active AND p.active AND (
+       (r.name ILIKE 'READ_ONLY%' AND (p.enable_clientpoint OR p.activity_flag OR p.callcenter_flag))
+    OR (p.enable_clientpoint AND u.allow_clientpoint)
+    OR EXISTS (SELECT 1
+               FROM sp_setting 
+               WHERE val_bool IS NOT DISTINCT FROM TRUE 
+                 AND ((name = 'callcenter_211module' AND p.callcenter_flag AND u.allow_callpoint) 
+                   OR (name = 'activitypoint_module' AND p.activity_flag AND u.allow_activitypoint)))
+  )
+)
 SELECT
 u.user_id, u.username, u.provider_id,
 CASE WHEN (SELECT true
@@ -18,7 +33,8 @@ CASE WHEN (SELECT true
 END as user_access_tier
 , r.name
 FROM sp_user u
-INNER JOIN sp_role r on r.role_id = u.role_id
+JOIN users_with_client_perm USING (user_id)
+JOIN sp_role r on (r.role_id = u.role_id)
 UNION
 select DISTINCT e.user_id,u1.username,p.provider_id, 
 CASE WHEN (SELECT true
@@ -36,8 +52,10 @@ CASE WHEN (SELECT true
      ELSE 3
 END as user_access_tier
 ,r1.name 
-from sp_user_eda_group e JOIN sp_eda_group_provider_tree p ON (e.eda_group_id = p.eda_group_id)
-join sp_user u1 on e.user_id = u1.user_id
+FROM sp_user_eda_group e 
+JOIN sp_eda_group_provider_tree p ON (e.eda_group_id = p.eda_group_id)
+JOIN sp_user u1 on (e.user_id = u1.user_id)
+JOIN users_with_client_perm c ON (c.user_id = u1.user_id)
 INNER JOIN sp_role r1 on r1.role_id = u1.role_id
 WHERE u1.active = true
 ORDER BY 1,2,3;
