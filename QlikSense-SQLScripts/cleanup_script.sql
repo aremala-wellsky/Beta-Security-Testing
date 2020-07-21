@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS qlik_answer_vis_provider_exit;
 DROP TABLE IF EXISTS qlik_answer_access_entry;
 DROP TABLE IF EXISTS qlik_answer_access_exit;
 DROP TABLE IF EXISTS qlik_callfollow_answers;
+DROP TABLE IF EXISTS qlik_review_answer_pivot;
 DROP TABLE IF EXISTS tmp_table_sec_aa_entry;
 DROP TABLE IF EXISTS tmp_table_sec_cm_entry;
 DROP TABLE IF EXISTS tmp_table_sec_bypass_entry;
@@ -27,6 +28,7 @@ DROP FUNCTION IF EXISTS qlik_build_exit_answer_pivot_view(VARCHAR, VARCHAR, BOOL
 DROP FUNCTION IF EXISTS qlik_build_call_answers_table(VARCHAR, VARCHAR, VARCHAR[]);
 DROP FUNCTION IF EXISTS qlik_build_entry_answers_table(VARCHAR, VARCHAR);
 DROP FUNCTION IF EXISTS qlik_build_exit_answers_table(VARCHAR, VARCHAR);
+DROP FUNCTION IF EXISTS qlik_build_review_answer_pivot_table(VARCHAR, VARCHAR);
 
 REASSIGN OWNED BY mloftin TO sp5user;
 REASSIGN OWNED BY lremala TO sp5user;

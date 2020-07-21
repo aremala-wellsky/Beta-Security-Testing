@@ -12,10 +12,11 @@ DECLARE
     _final_query TEXT;
     _ee_limit VARCHAR;
     _has_data BOOLEAN;
+    _primary_key VARCHAR;
 BEGIN
-    -- Version 20200701-1
+    -- Version 20200721-1
 
-    _types := CASE WHEN ($3 IS NULL) THEN ARRAY['entry', 'exit'] ELSE $3 END;
+    _types := CASE WHEN ($3 IS NULL) THEN ARRAY['entry', 'exit', 'review'] ELSE $3 END;
 
     DROP TABLE IF EXISTS tmp_relevant_ees;
     DROP TABLE IF EXISTS tmp_qlik_vis_provider;
@@ -52,31 +53,39 @@ BEGIN
     JOIN (SELECT DISTINCT provider_id FROM qlik_user_access_tier_view WHERE user_access_tier != 1) up ON (vgpt.provider_id = up.provider_id);
 
     FOREACH _type IN ARRAY _types LOOP
-        _ee_limit := CASE WHEN _type = 'exit' THEN '(ee.exit_date IS NULL OR qaa.date_effective::DATE <= ee.exit_date::DATE)' ELSE 'qaa.date_effective::DATE <= ee.entry_date::DATE' END;
+        _primary_key := CASE WHEN _type = 'review' THEN 'entry_exit_review_id' ELSE 'entry_exit_id' END;
+        _ee_limit := CASE WHEN _type = 'review'
+                          THEN '(SELECT eer.entry_exit_review_id, eer.review_date, tee.* 
+                                 FROM sp_entry_exit_review eer JOIN tmp_relevant_ees tee USING (entry_exit_id)
+                                 WHERE eer.active) ee ON (ee.client_id = qaa.client_id AND qaa.date_effective::DATE <= ee.review_date::DATE)'
+                          WHEN _type = 'exit' 
+                          THEN 'tmp_relevant_ees ee ON (ee.client_id = qaa.client_id AND (ee.exit_date IS NULL OR qaa.date_effective::DATE <= ee.exit_date::DATE))'
+                          ELSE 'tmp_relevant_ees ee ON (ee.client_id = qaa.client_id AND qaa.date_effective::DATE <= ee.entry_date::DATE)' 
+                     END;
     
         _question_query := 'SELECT DISTINCT virt_field_name FROM qlik_'||_type||'_answers 
         UNION SELECT DISTINCT virt_field_name FROM qlik_answer_access qaa ORDER BY 1';
 
-        _inner_query := 'SELECT DISTINCT ON (tier_link, entry_exit_id, virt_field_name) tier_link||''''|''''||entry_exit_id AS sec_key, virt_field_name, answer_val
+        _inner_query := 'SELECT DISTINCT ON (tier_link, '||_primary_key||', virt_field_name) tier_link||''''|''''||'||_primary_key||' AS sec_key, virt_field_name, answer_val
                  FROM (
                  -- Tier 1 - Top answers
-                 SELECT DISTINCT ee.entry_exit_id, tier_link, virt_field_name, answer_val, date_effective 
+                 SELECT DISTINCT '||_primary_key||', tier_link, virt_field_name, answer_val, date_effective 
                  FROM qlik_'||_type||'_answers qea
                  JOIN (SELECT DISTINCT tier_link, entry_exit_id FROM qlik_ee_user_access_tier_view t WHERE t.user_access_tier = 1) ee USING (entry_exit_id)
                  UNION
                  -- Tier 2/3 Inherited EEs and Inherited/Explicit answers
-                 SELECT DISTINCT ee.entry_exit_id, ee.tier_link, virt_field_name, answer_val, date_effective
+                 SELECT DISTINCT ee.'||_primary_key||', ee.tier_link, virt_field_name, answer_val, date_effective
                  FROM qlik_answer_access qaa 
-                 JOIN tmp_relevant_ees ee ON (ee.client_id = qaa.client_id AND '||_ee_limit||')
+                 JOIN '||_ee_limit||' -- AS ee
                  WHERE ee.provider_id = qaa.provider_id
                    -- Inherited/Explicit answers
                    OR (qaa.visibility_id IS NOT NULL 
                        AND EXISTS (SELECT 1 FROM tmp_qlik_vis_provider qap WHERE qap.visibility_id = qaa.visibility_id AND qap.provider_id = qaa.provider_id))
                  UNION
                  -- Tier 2/3 Explicit EEs 
-                 SELECT DISTINCT ee.entry_exit_id, (user_access_tier||''''|''''||tvp.provider_id) AS tier_link, virt_field_name, answer_val, date_effective
+                 SELECT DISTINCT ee.'||_primary_key||', (user_access_tier||''''|''''||tvp.provider_id) AS tier_link, virt_field_name, answer_val, date_effective
                  FROM qlik_answer_access qaa 
-                 JOIN tmp_relevant_ees ee ON (ee.client_id = qaa.client_id AND '||_ee_limit||')
+                 JOIN '||_ee_limit||' -- AS ee
                  JOIN tmp_qlik_vis_provider tvp ON (ee.visibility_id = tvp.visibility_id AND ee.provider_id != tvp.provider_id)
                  WHERE ee.visibility_id IS NOT NULL AND ee.covered_by_roi
                    -- Inherited/Explicit answers
@@ -88,7 +97,7 @@ BEGIN
                                        AND qap.provider_id = qaa.provider_id))
                    )
                  ) t
-                 ORDER BY entry_exit_id, tier_link, virt_field_name, date_effective DESC';
+                 ORDER BY '||_primary_key||', tier_link, virt_field_name, date_effective DESC';
 
         _dsql := 'SELECT FORMAT(
         $$
@@ -128,5 +137,5 @@ $BODY$
 
 ALTER FUNCTION qlik_build_answer_pivot_views(character varying, character varying, character varying[]) OWNER TO sp5user;
 
--- select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', ARRAY['entry']);
--- select * from qlik_entry_answer_pivot_view;
+-- select qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', ARRAY['review']);
+-- select * from qlik_review_answer_pivot_view;

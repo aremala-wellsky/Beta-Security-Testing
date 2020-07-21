@@ -1,15 +1,21 @@
 BUILD_DELTA_EE_REVIEW_TABLE:  
-select qlik_build_review_answers_table('2015-01-01', '2015-01-01');
-select qlik_build_review_answer_pivot_table('2015-01-01', '2015-01-01');
+SELECT qlik_build_review_answers_table('2015-01-01', '2015-01-01');
+SELECT qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', ARRAY['review']);
 DROP TABLE BUILD_DELTA_EE_REVIEW_TABLE; 
 
 Temp_Client_Review_Answer:
-select * from qlik_review_answer_pivot;
+SELECT eer.entry_exit_review_id,
+plv(eer.point_in_time_type_id) as entry_exit_review_pit_type, 
+plv(eer.review_type_id) AS entry_exit_review_type, 
+eer.review_date::DATE AS entry_exit_review_date,
+t.* 
+FROM qlik_review_answer_pivot_view t 
+JOIN sp_entry_exit_review eer ON (split_part(sec_key, '|', 3) = eer.entry_exit_review_id::VARCHAR);
 
 Client_Review_Answer:
 Noconcatenate
 LOAD DISTINCT
-ee_sec_key AS %SA_EE_REVIEW_ANSWER,
+sec_key AS %SA_EE_REVIEW_ANSWER,
 entry_exit_review_id AS [Entry Exit Review Id],
 *
 RESIDENT Temp_Client_Review_Answer;

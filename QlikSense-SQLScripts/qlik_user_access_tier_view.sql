@@ -30,60 +30,53 @@ users_with_client_perm AS (
 recent_users AS (
   SELECT DISTINCT u.user_id, u.role_id, u.provider_id AS user_provider_id
   FROM sp_user u 
-    JOIN active_art_users bl ON (bl.user_id = u.user_id)
-    JOIN users_with_client_perm c ON (c.user_id = u.user_id)
+  JOIN active_art_users bl ON (bl.user_id = u.user_id)
+  JOIN users_with_client_perm c ON (c.user_id = u.user_id)
   WHERE u.active AND (u.last_login > (now()::date + '-6 months'::interval) OR u.date_added > (now()::date + '-1 month'::interval))
 ),
 recent_eda_users AS (
   SELECT u.user_id, u.role_id, u.user_provider_id, egpt.provider_id AS eda_user_provider_id, egpt.provider_id
   FROM recent_users u
-    JOIN sp_user_eda_group ueg ON (ueg.user_id = u.user_id)
-    JOIN sp_eda_group_provider_tree egpt ON (egpt.eda_group_id = ueg.eda_group_id)
+  JOIN sp_user_eda_group ueg ON (ueg.user_id = u.user_id)
+  JOIN sp_eda_group_provider_tree egpt ON (egpt.eda_group_id = ueg.eda_group_id)
 )
 SELECT user_access_tier || '|' || user_provider_id AS tier_link, uat.*
 FROM (
   SELECT DISTINCT 1 AS user_access_tier, u.user_provider_id, p.provider_id
-  FROM recent_users u
-    JOIN tier1_roles r USING (role_id), 
-    sp_provider p
+  FROM recent_users u JOIN tier1_roles r USING (role_id), sp_provider p
   WHERE p.active
-
 UNION
   SELECT DISTINCT 2 AS user_access_tier, u.user_provider_id, spt.ancestor_provider_id AS provider_id
   FROM recent_users u
-    JOIN tier2_roles r USING (role_id)
-    JOIN sp_provider_tree spt ON (spt.provider_id = u.user_provider_id)
+  JOIN tier2_roles r USING (role_id)
+  JOIN sp_provider_tree spt ON (spt.provider_id = u.user_provider_id)
 UNION
   SELECT DISTINCT 3 AS user_access_tier, u.user_provider_id, spt.ancestor_provider_id AS provider_id
   FROM recent_users u
-    JOIN sp_provider_tree spt ON (spt.provider_id = u.user_provider_id)
-    LEFT JOIN (SELECT role_id FROM tier1_roles t1 UNION SELECT role_id FROM tier2_roles) tlr ON (u.role_id = tlr.role_id) 
+  JOIN sp_provider_tree spt ON (spt.provider_id = u.user_provider_id)
+  LEFT JOIN (SELECT role_id FROM tier1_roles t1 UNION SELECT role_id FROM tier2_roles) tlr ON (u.role_id = tlr.role_id) 
   WHERE tlr.role_id IS NULL
 UNION
   -- EDA Pieces
   SELECT DISTINCT 2 AS user_access_tier, uap.user_provider_id, dp.provider_id
   FROM ( SELECT DISTINCT u.user_provider_id, u.eda_user_provider_id AS provider_id
-         FROM recent_eda_users u JOIN tier2_roles r USING (role_id)
-  ) uap
-  JOIN sp_provider_tree dp ON dp.ancestor_provider_id = uap.provider_id
-  WHERE dp.ancestor_provider_id = uap.user_provider_id
+         FROM recent_eda_users u JOIN tier2_roles r USING (role_id) ) uap
+  JOIN sp_provider_tree dp ON (dp.ancestor_provider_id = uap.provider_id)
 UNION
   SELECT DISTINCT 2 AS user_access_tier, uap.user_provider_id, dp.provider_id
   FROM ( SELECT DISTINCT eda_user_provider_id AS user_provider_id, eda_user_provider_id AS provider_id
-         FROM recent_eda_users u JOIN tier2_roles r USING (role_id) 
-  ) uap
-    JOIN sp_provider_tree dp ON dp.ancestor_provider_id = uap.provider_id
-  WHERE dp.ancestor_provider_id = uap.user_provider_id
+         FROM recent_eda_users u JOIN tier2_roles r USING (role_id) ) uap
+  JOIN sp_provider_tree dp ON dp.ancestor_provider_id = uap.provider_id
 UNION
   SELECT DISTINCT 2 AS user_access_tier, eda_user_provider_id AS user_provider_id, spt.ancestor_provider_id AS provider_id
   FROM recent_eda_users u
-    JOIN tier2_roles r USING (role_id)
-    JOIN sp_provider_tree spt ON (spt.provider_id = u.user_provider_id)
+  JOIN tier2_roles r USING (role_id)
+  JOIN sp_provider_tree spt ON (spt.provider_id = u.user_provider_id)
 UNION
   SELECT DISTINCT 3 AS user_access_tier, eda_user_provider_id AS user_provider_id, spt.ancestor_provider_id AS provider_id
   FROM recent_eda_users u
-    JOIN sp_provider_tree spt ON (spt.provider_id = u.user_provider_id)
-    LEFT JOIN (SELECT role_id FROM tier1_roles t1 UNION SELECT role_id FROM tier2_roles) tlr ON (u.role_id = tlr.role_id) 
+  JOIN sp_provider_tree spt ON (spt.provider_id = u.user_provider_id)
+  LEFT JOIN (SELECT role_id FROM tier1_roles t1 UNION SELECT role_id FROM tier2_roles) tlr ON (u.role_id = tlr.role_id) 
   WHERE tlr.role_id IS NULL
 ) uat
 ORDER BY 1, 2;
