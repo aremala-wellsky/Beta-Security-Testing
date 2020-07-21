@@ -1,12 +1,32 @@
 USER:
-select DISTINCT u1.username,e.user_id, p.provider_id from sp_user_eda_group e JOIN sp_eda_group_provider_tree p ON (e.eda_group_id = p.eda_group_id)
-join sp_user u1 on e.user_id = u1.user_id
-where u1.active = true
+WITH users_with_client_perm AS (
+  SELECT DISTINCT user_id
+  FROM sp_user u 
+    JOIN sp_provider p USING (provider_id) 
+    JOIN (SELECT DISTINCT role_id, r.name FROM sp_action_in_role ar JOIN sp_role r USING (role_id) JOIN action a USING (action_id) WHERE a.name = 'CLIENT_CLIENT_VIEW') r USING (role_id)
+  WHERE u.active AND p.active AND (
+       (r.name ILIKE 'READ_ONLY%' AND (p.enable_clientpoint OR p.activity_flag OR p.callcenter_flag))
+    OR (p.enable_clientpoint AND u.allow_clientpoint)
+    OR EXISTS (SELECT 1
+               FROM sp_setting 
+               WHERE val_bool IS NOT DISTINCT FROM TRUE 
+                 AND ((name = 'callcenter_211module' AND p.callcenter_flag AND u.allow_callpoint) 
+                   OR (name = 'activitypoint_module' AND p.activity_flag AND u.allow_activitypoint)))
+  )
+)
+SELECT DISTINCT u1.username,e.user_id, p.provider_id 
+FROM sp_user_eda_group e 
+JOIN sp_eda_group_provider_tree p ON (e.eda_group_id = p.eda_group_id)
+JOIN sp_user u1 ON (e.user_id = u1.user_id)
+JOIN users_with_client_perm c ON (c.user_id = u1.user_id)
+WHERE u1.active = true
   AND u1.username <> 'SVPDELETED'
   and length(trim(u1.username)) > 0
 UNION 
-select DISTINCT u.username,u.user_id, u.provider_id from sp_user u
-where u.active = true
+SELECT DISTINCT u.username,u.user_id, u.provider_id 
+FROM sp_user u
+JOIN users_with_client_perm c ON (c.user_id = u.user_id)
+WHERE u.active = true
   AND u.username <> 'SVPDELETED'
   and length(trim(u.username)) > 0;
 
