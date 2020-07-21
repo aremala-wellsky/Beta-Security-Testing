@@ -1,5 +1,5 @@
 USER:
-WITH users_with_client_perm AS (
+SQL WITH users_with_client_perm AS (
   SELECT DISTINCT user_id
   FROM sp_user u 
     JOIN sp_provider p USING (provider_id) 

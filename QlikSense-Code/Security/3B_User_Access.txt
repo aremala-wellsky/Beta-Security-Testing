@@ -1,6 +1,6 @@
 // --for each user, establish their user_provider_id and user_access_tier
 USER_ACCESS_tmp:
-WITH users_with_client_perm AS (
+SQL WITH users_with_client_perm AS (
   SELECT DISTINCT user_id
   FROM sp_user u 
     JOIN sp_provider p USING (provider_id) 
