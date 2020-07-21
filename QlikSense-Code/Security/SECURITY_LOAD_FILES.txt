@@ -2,7 +2,7 @@ $(Must_Include=[lib://$(vSVNConnection)/$(vSVNSiteFolder)/$(vSiteName).txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/StartTime.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/Main.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_USERS.txt]);
-$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_User_Access.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_User_Access.qvs]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_User_Visibility_Group.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Section_Access.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Section_Application.txt]);
@@ -56,7 +56,7 @@ $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Release_Of_Info_Visibil
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Answers.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Followup_Answers.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Entry_Exit_Answers.txt]);
-$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Entry_Exit_Reviews.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Entry_Exit_Reviews.qvs]);
 
 
 
