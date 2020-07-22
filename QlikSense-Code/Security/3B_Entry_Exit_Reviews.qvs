@@ -5,6 +5,7 @@ DROP TABLE BUILD_DELTA_EE_REVIEW_TABLE;
 
 Temp_Client_Review_Answer:
 SELECT eer.entry_exit_review_id,
+split_part(sec_key, '|', 1)||'|'||split_part(sec_key, '|', 2)||'|'||eer.entry_exit_id AS ee_sec_key,
 plv(eer.point_in_time_type_id) as entry_exit_review_pit_type, 
 plv(eer.review_type_id) AS entry_exit_review_type, 
 eer.review_date::DATE AS entry_exit_review_date,
@@ -15,7 +16,7 @@ JOIN sp_entry_exit_review eer ON (split_part(sec_key, '|', 3) = eer.entry_exit_r
 Client_Review_Answer:
 Noconcatenate
 LOAD DISTINCT
-sec_key AS %SA_EE_REVIEW_ANSWER,
+ee_sec_key AS %SA_EE_REVIEW_ANSWER,
 entry_exit_review_id AS [Entry Exit Review Id],
 *
 RESIDENT Temp_Client_Review_Answer;
@@ -32,7 +33,7 @@ LOAD
 RESIDENT Temp_Client_Review_Answer;
 DROP TABLE Temp_Client_Review_Answer;
 
-DROP FIELDS sec_key,entry_exit_review_id,entry_exit_review_pit_type,entry_exit_review_type,entry_exit_review_date
+DROP FIELDS sec_key,ee_sec_key,entry_exit_review_id,entry_exit_review_pit_type,entry_exit_review_type,entry_exit_review_date
 FROM Client_Review_Answer;
 
  
