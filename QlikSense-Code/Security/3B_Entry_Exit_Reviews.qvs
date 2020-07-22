@@ -32,7 +32,7 @@ LOAD
 RESIDENT Temp_Client_Review_Answer;
 DROP TABLE Temp_Client_Review_Answer;
 
-DROP FIELDS sec_key,entry_exit_review_id,entry_exit_review_pit_type,ee_sec_key,entry_exit_review_type,entry_exit_review_date
+DROP FIELDS sec_key,entry_exit_review_id,entry_exit_review_pit_type,entry_exit_review_type,entry_exit_review_date
 FROM Client_Review_Answer;
 
  
