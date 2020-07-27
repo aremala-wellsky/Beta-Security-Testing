@@ -28,12 +28,12 @@ Load
 *
 RESIDENT Temp_Client_Review_Answer_eer;
 DROP TABLE Temp_Client_Review_Answer_eer;
- 
+
 Temp_Client_Review_Answer:
 Noconcatenate
 LOAD 
 *,
-tempseckey||ee_sec_key_part as ee_sec_key
+tempseckey & ee_sec_key_part as ee_sec_key
 RESIDENT Temp_Client_Review_Answer_pivot;
 DROP TABLE Temp_Client_Review_Answer_pivot;
  
