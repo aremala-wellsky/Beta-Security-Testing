@@ -3,15 +3,44 @@ SELECT qlik_build_review_answers_table('2015-01-01', '2015-01-01');
 SELECT qlik_build_answer_pivot_views('2015-01-01', '2015-01-01', ARRAY['review']);
 DROP TABLE BUILD_DELTA_EE_REVIEW_TABLE; 
 
-Temp_Client_Review_Answer:
-SELECT eer.entry_exit_review_id,
-split_part(sec_key, '|', 1)||'|'||split_part(sec_key, '|', 2)||'|'||eer.entry_exit_id AS ee_sec_key,
+Temp_Client_Review_Answer_eer:
+Noconcatenate
+SELECT 
+eer.entry_exit_review_id,
+eer.entry_exit_review_id AS joinkeyreviewpivot,
+eer.entry_exit_id AS ee_sec_key_part,
 plv(eer.point_in_time_type_id) as entry_exit_review_pit_type, 
 plv(eer.review_type_id) AS entry_exit_review_type, 
-eer.review_date::DATE AS entry_exit_review_date,
-t.* 
-FROM qlik_review_answer_pivot_view t 
-JOIN sp_entry_exit_review eer ON (split_part(sec_key, '|', 3) = eer.entry_exit_review_id::VARCHAR);
+eer.review_date::DATE AS entry_exit_review_date
+FROM sp_entry_exit_review eer
+where eer.review_date >= '2015-01-01';
+ 
+Temp_Client_Review_Answer_pivot:
+Noconcatenate
+SELECT 
+t.*, 
+split_part(sec_key, '|', 1)||'|'||split_part(sec_key, '|', 2)||'|' AS tempseckey,
+(split_part(sec_key, '|', 3) AS joinkeyreviewpivot
+FROM qlik_review_answer_pivot_view t ;
+ 
+JOIN(Temp_Client_Review_Answer_eer)
+Load 
+*
+RESIDENT Temp_Client_Review_Answer_pivot;
+DROP TABLE Temp_Client_Review_Answer_pivot;
+ 
+Temp_Client_Review_Answer:
+Noconcatenate
+LOAD 
+*,
+
+
+tempseckey||ee_sec_key_part as ee_sec_key
+
+RESIDENT Temp_Client_Review_Answer_eer;
+DROP TABLE Temp_Client_Review_Answer_eer;
+ 
+DROP FIELDS tempseckey, joinkeyreviewpivot, ee_sec_key_part FROM Temp_Client_Review_Answer;
 
 Client_Review_Answer:
 Noconcatenate
