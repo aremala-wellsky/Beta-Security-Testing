@@ -20,7 +20,7 @@ Noconcatenate
 SELECT 
 *, 
 split_part(sec_key, '|', 1)||'|'||split_part(sec_key, '|', 2)||'|' AS tempseckey,
-(split_part(sec_key, '|', 3) AS joinkeyreviewpivot
+split_part(sec_key, '|', 3) AS joinkeyreviewpivot
 FROM qlik_review_answer_pivot_view ;
  
 JOIN(Temp_Client_Review_Answer_pivot)
