@@ -18,27 +18,24 @@ where eer.review_date >= '2015-01-01';
 Temp_Client_Review_Answer_pivot:
 Noconcatenate
 SELECT 
-t.*, 
+*, 
 split_part(sec_key, '|', 1)||'|'||split_part(sec_key, '|', 2)||'|' AS tempseckey,
 (split_part(sec_key, '|', 3) AS joinkeyreviewpivot
-FROM qlik_review_answer_pivot_view t ;
+FROM qlik_review_answer_pivot_view ;
  
-JOIN(Temp_Client_Review_Answer_eer)
+JOIN(Temp_Client_Review_Answer_pivot)
 Load 
 *
-RESIDENT Temp_Client_Review_Answer_pivot;
-DROP TABLE Temp_Client_Review_Answer_pivot;
+RESIDENT Temp_Client_Review_Answer_eer;
+DROP TABLE Temp_Client_Review_Answer_eer;
  
 Temp_Client_Review_Answer:
 Noconcatenate
 LOAD 
 *,
-
-
 tempseckey||ee_sec_key_part as ee_sec_key
-
-RESIDENT Temp_Client_Review_Answer_eer;
-DROP TABLE Temp_Client_Review_Answer_eer;
+RESIDENT Temp_Client_Review_Answer_pivot;
+DROP TABLE Temp_Client_Review_Answer_pivot;
  
 DROP FIELDS tempseckey, joinkeyreviewpivot, ee_sec_key_part FROM Temp_Client_Review_Answer;
 
