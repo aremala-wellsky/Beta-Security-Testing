@@ -10,7 +10,7 @@ $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Recent_Client_Pool.txt]
 
 
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Client_Visibility.txt]);
-$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Entry_Exit_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Entry_Exit_Visibility.qvs]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Case_Manager_Visibility.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Goal_Visibility.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Goal_Actionstep_Visibility.txt]);
