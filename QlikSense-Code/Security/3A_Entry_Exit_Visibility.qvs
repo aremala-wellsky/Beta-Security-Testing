@@ -14,9 +14,7 @@ LOAD
     client_id
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_ENTRY_EXIT.qvd]
 (qvd)
-WHERE match(covered_by_roi, 1) AND (isNull(num(exit_date) OR num(exit_date) >= '$(vNumDateSet)'));
-
-STORE Entry_Exit_tmp INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Entry_Exit_tmp.qvd];
+WHERE isNull(num(exit_date)) OR (num(exit_date) >= '$(vNumDateSet)');
 
 Entry_Exit:
 NOCONCATENATE
@@ -34,11 +32,9 @@ SELECT
     ev.visibility_group_id,
     ev.visible
 	from sp_entry_exitvisibility ev inner join sp_entry_exit e on e.entry_exit_id = ev.entry_exit_id 
-WHERE (e.exit_date is null OR ((e.exit_date) >= '2015-01-01'));
+WHERE e.covered_by_roi AND (e.exit_date is null OR ((e.exit_date) >= '2015-01-01'));
 
 DROP TABLE Entry_Exit_tmp;
-
-STORE Entry_Exit INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Entry_Exit.qvd];
 
 //RENAME table Entry_Exit_tmp to Entry_Exit_VIS;
 
