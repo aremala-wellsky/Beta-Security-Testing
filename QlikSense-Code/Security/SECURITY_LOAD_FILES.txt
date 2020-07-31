@@ -17,7 +17,7 @@ $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Goal_Actionstep_Visibil
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Need_Visibility.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Client_Infraction_Visibility.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Matrix_Group_Visibility.txt]);
-$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Call_Record_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Call_Record_Visibility.qvs]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Call_Record_Answer_Visibility.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Call_Recordset_Visibility.txt]);
 
