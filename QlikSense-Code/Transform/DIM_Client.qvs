@@ -526,9 +526,6 @@ LOAD
 	-(call_record_id)																AS %DIM_CLIENT_KEY
 
 RESIDENT FACT_psuedo_sp_call_record_TMP;
-
-STORE FACT_psuedo_sp_call_record_TMP INTO [lib://$(vStoreConnection)/$(vStoreQVDType)/$(vDBname)/$(vStoreQVDTypePrefix)_FACT_psuedo_sp_call_record_TMP.qvd];
-
 DROP TABLE FACT_psuedo_sp_call_record_TMP;
 
 DROP FIELDS %ClientId FROM DIM_Client;
