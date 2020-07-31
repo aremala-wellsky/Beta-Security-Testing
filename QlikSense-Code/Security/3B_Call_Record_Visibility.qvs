@@ -37,6 +37,8 @@ LOAD
 	[TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_FOLLOWUP_RECORD_CALL_ANSWER
 RESIDENT explicit_call_record_security;
 
+STORE explicit_call_record_security INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_explicit_call_record_security.qvd];
+
 DROP TABLE explicit_call_record_security;
 
 

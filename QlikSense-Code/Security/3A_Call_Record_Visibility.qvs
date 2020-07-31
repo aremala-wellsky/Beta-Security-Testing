@@ -14,7 +14,7 @@ LOAD
 	client_id
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CALL_RECORD.qvd]
 (qvd)
-WHERE covered_by_roi = 1 AND (isNull(num(end_date)) OR (num(end_date) >= '$(vNumDateSet)'));
+WHERE isNull(num(end_date)) OR (num(end_date) >= '$(vNumDateSet)');
 
 Call_Record:
 NOCONCATENATE
@@ -34,7 +34,9 @@ LOAD
     visibility_group_id,
     visible
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CALLRECORDVISIBILITY.qvd]
-(qvd);
+(qvd)
+WHERE match(covered_by_roi, 1);
+
 
 Call_Record_visibility:
 LEFT JOIN (Call_Record_Group)
