@@ -74,7 +74,7 @@ NOCONCATENATE
 LOAD DISTINCT
 	provider_id,
 	call_record_id AS [Call Record Id],
-	client_id AS %callrecordclientid
+	IF(LEN(client_id) = 0,-(call_record_id),client_id) AS %callrecordclientid
 RESIDENT Visible
 WHERE match(Visible, 1)  AND isNull(not_Visible);
 
