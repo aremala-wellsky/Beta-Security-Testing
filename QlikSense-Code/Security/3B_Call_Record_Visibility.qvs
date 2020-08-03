@@ -1,6 +1,8 @@
 
 CLIENT_CALL_RECORD_ACCESS:
 LOAD DISTINCT 
+    [Client Id] as %clientidclientaccess,
+	 [TIER_LINK] as %tierlinkclientaccess,
     [Call Record Id] AS %CALL_RECORD_KEY_SEC,
 	[TIER_LINK] & '|' & [Client Id] AS %SA_CLIENT_TEST,
 	[TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_RECORD_CALL_RECORDSET,
@@ -31,7 +33,9 @@ FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_Ca
 
 CONCATENATE(CLIENT_CALL_RECORD_ACCESS)
 LOAD
-    [Call Record Id] AS %CALL_RECORD_KEY_SEC,
+    [Call Record Id] AS %CALL_RECORD_KEY_SEC,	
+    %callrecordclientid as %clientidclientaccess,
+	[TIER_LINK] as %tierlinkclientaccess,
 	[TIER_LINK] & '|' & %callrecordclientid AS %SA_CLIENT_TEST,
 	[TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_RECORD_CALL_RECORDSET,
 	[TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_RECORD_CALL_ANSWER,
