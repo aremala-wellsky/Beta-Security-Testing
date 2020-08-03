@@ -16,22 +16,6 @@ LOAD
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT.qvd]
 (qvd);
 
-FACT_psuedo_sp_call_record_TMP:
-NoConcatenate
-Load 
-	call_record_id,
-	provider_creating_id,
-	active
-FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CALL_RECORD.qvd](qvd)
-WHERE len(client_id) = 0 or NOT active;
-
-CONCATENATE (Client_tmp)
-LOAD 
-	provider_creating_id,
-	-(call_record_id)		AS client_id,
-	active
-RESIDENT FACT_psuedo_sp_call_record_TMP;
-DROP TABLE FACT_psuedo_sp_call_record_TMP;
 
 
 Client:
@@ -50,12 +34,7 @@ LOAD
 	client_id
 RESIDENT RECENT_CLIENT_tmp;
 
-Client_tempa:
-LOAD
-*
-RESIDENT Client;
 
- 
 INNER JOIN (Client)
 LOAD
     client_id,
@@ -63,20 +42,6 @@ LOAD
     visible
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENTVISIBILITY.qvd]
 (qvd);
-
-INNER JOIN (Client_tempa)
-LOAD
-    -(client_id),
-    visibility_group_id,
-    visible
-FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENTVISIBILITY.qvd]
-(qvd);
-
-CONCATENATE(Client)
-LOAD
-*
-RESIDENT Client_tempa;
-DROP TABLE Client_tempa;
 
 
 Client_visibility:

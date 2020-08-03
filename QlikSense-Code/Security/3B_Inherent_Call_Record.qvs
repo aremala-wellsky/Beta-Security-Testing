@@ -2,8 +2,6 @@ CALL_RECORD_ACCESS:
 NOCONCATENATE
 LOAD DISTINCT
 	TIER_LINK,
-//     provider_id,
-// 	user_access_tier,
     [Client Provider Created By Id]
 FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
 (qvd)
@@ -24,14 +22,12 @@ INNER JOIN(CALL_RECORD_ACCESS)
 LOAD
     IF(LEN(client_id) = 0,-(call_record_id),client_id) AS [Client Id],
     call_record_id AS [Call Record Id],
-	 call_record_id as %call_worksheets_link,
-//     provider_id,
+	call_record_id as %call_worksheets_link,
     provider_creating_id AS [Client Provider Created By Id],
-    1 AS [INHERENT SECURITY]
+    1 AS [INHERENT SECURITY],
+	active as tempactive
 RESIDENT call_record_security
-WHERE match(active, 1)
-//   AND client_id > 0
-  AND call_record_id > 0;
+WHERE call_record_id > 0;
 
 
 DROP TABLE call_record_security;

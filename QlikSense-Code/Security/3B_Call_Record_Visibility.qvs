@@ -6,7 +6,8 @@ LOAD DISTINCT
 	[TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_RECORD_CALL_RECORDSET,
 	[TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_RECORD_CALL_ANSWER,
 	[TIER_LINK] & '|' & [Call Record Id] AS %SA_CALL_FOLLOWUP_RECORD_CALL_ANSWER
-RESIDENT CALL_RECORD_ACCESS;
+RESIDENT CALL_RECORD_ACCESS
+WHERE match(tempactive, 1);
 
 
 explicit_call_record_security:

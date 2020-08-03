@@ -34,8 +34,5 @@ LOAD DISTINCT
     1 AS [INHERENT SECURITY]
 RESIDENT client_security
 WHERE match([Client Is Active], 'Yes');
-
 DROP TABLE client_security;
-
-
 
