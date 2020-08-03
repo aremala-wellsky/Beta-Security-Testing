@@ -5,16 +5,34 @@ LOAD DISTINCT
 FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
 (qvd)
 WHERE (user_access_tier <> 1);
-//RESIDENT USER_GROUP; 
 
 
 
 Client_tmp:
 LOAD
     client_id,
-    active
+    active,
+	provider_creating_id
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT.qvd]
 (qvd);
+
+FACT_psuedo_sp_call_record_TMP:
+NoConcatenate
+Load 
+	call_record_id,
+	provider_creating_id,
+	active
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CALL_RECORD.qvd](qvd)
+WHERE len(client_id) = 0 or NOT active;
+
+CONCATENATE (Client_tmp)
+LOAD 
+	provider_creating_id,
+	-(call_record_id)		AS client_id,
+	active
+RESIDENT FACT_psuedo_sp_call_record_TMP;
+DROP TABLE FACT_psuedo_sp_call_record_TMP;
+
 
 Client:
 NOCONCATENATE
@@ -32,17 +50,34 @@ LOAD
 	client_id
 RESIDENT RECENT_CLIENT_tmp;
 
+Client_tempa:
+LOAD
+*
+RESIDENT Client;
 
-
-//client_visibility_tmp:
+ 
 INNER JOIN (Client)
 LOAD
-//     clientvisibility_id,
     client_id,
     visibility_group_id,
     visible
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENTVISIBILITY.qvd]
 (qvd);
+
+INNER JOIN (Client_tempa)
+LOAD
+    -(client_id),
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENTVISIBILITY.qvd]
+(qvd);
+
+CONCATENATE(Client)
+LOAD
+*
+RESIDENT Client_tempa;
+DROP TABLE Client_tempa;
+
 
 Client_visibility:
 LEFT JOIN (Client_Group)
@@ -83,7 +118,6 @@ WHERE match(Visible, 1)  AND isNull(not_Visible);
 
 DROP TABLE Visible;
 
-//client_tmp:
 LEFT JOIN(client_visibility)
 LOAD
     [Client Id],

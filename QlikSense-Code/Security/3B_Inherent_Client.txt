@@ -5,7 +5,6 @@ LOAD DISTINCT
     [Client Provider Created By Id]
 FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_INHERENT_SECURITY.qvd]
 (qvd);
-//RESIDENT INHERENT_SECURITY; 
 
 client_security:
 LOAD
@@ -35,7 +34,6 @@ LOAD DISTINCT
     1 AS [INHERENT SECURITY]
 RESIDENT client_security
 WHERE match([Client Is Active], 'Yes');
-//   AND [Client Id] > 0;
 
 DROP TABLE client_security;
 
