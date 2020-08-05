@@ -5,16 +5,18 @@ LOAD DISTINCT
 FROM [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_USER_GROUP.qvd]
 (qvd)
 WHERE (user_access_tier <> 1);
-//RESIDENT USER_GROUP; 
 
 
 
 Client_tmp:
 LOAD
     client_id,
-    active
+    active,
+	provider_creating_id
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT.qvd]
 (qvd);
+
+
 
 Client:
 NOCONCATENATE
@@ -33,16 +35,14 @@ LOAD
 RESIDENT RECENT_CLIENT_tmp;
 
 
-
-//client_visibility_tmp:
 INNER JOIN (Client)
 LOAD
-//     clientvisibility_id,
     client_id,
     visibility_group_id,
     visible
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENTVISIBILITY.qvd]
 (qvd);
+
 
 Client_visibility:
 LEFT JOIN (Client_Group)
@@ -83,7 +83,6 @@ WHERE match(Visible, 1)  AND isNull(not_Visible);
 
 DROP TABLE Visible;
 
-//client_tmp:
 LEFT JOIN(client_visibility)
 LOAD
     [Client Id],
