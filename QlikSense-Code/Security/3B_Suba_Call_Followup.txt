@@ -59,7 +59,7 @@ FOR i=0 to $(NumRows)-1
   INNER JOIN($(varRecordSetQlikName_Callf))
   LOAD
     call_recordset_id AS [recordset_id],
-	 call_record_id AS [Call Record Id],
+	call_recordset_id AS %CALL_FOLLOWUPRECORDSET_KEY_SEC,
     provider_creating_id AS 'call_$(varRecordSetQlikName_Ucase_Callf)_Provider_Creating_callfollow',
     name AS 'call_$(varRecordSetQlikName_Ucase_Callf)_Provider_Name_Creating_callfollow',
     user_creating_id AS 'call_$(varRecordSetQlikName_Ucase_Callf)_User_Created_By_Id_callfollow',
