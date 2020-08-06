@@ -110,7 +110,7 @@ SELECT DISTINCT ee.entry_exit_id, ft.recordset_id,dr.question_id,dr.provider_cre
   INNER JOIN sp_entry_exit_review eer USING (entry_exit_id)
   WHERE 
   (ee.active = TRUE) AND (eer.active = TRUE) AND 
-  AND ((eer.review_date::DATE >= '$(vEntryExitDate)')
+  (eer.review_date::DATE >= '$(vEntryExitDate)')
   AND ((ee3.exit_date IS NULL) OR (ee3.exit_date >= '$(vEntryExitDate)'))
   AND dr.covered_by_roi
   AND ((((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.review_date::DATE)) 
