@@ -111,7 +111,7 @@ SELECT DISTINCT ee.entry_exit_id, ft.recordset_id,dr.question_id,dr.provider_cre
   WHERE 
   (ee.active = TRUE) AND (eer.active = TRUE) AND 
   (eer.review_date::DATE >= '$(vEntryExitDate)')
-  AND ((ee3.exit_date IS NULL) OR (ee3.exit_date >= '$(vEntryExitDate)'))
+  AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '$(vEntryExitDate)'))
   AND dr.covered_by_roi
   AND ((((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.review_date::DATE)) 
   AND (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL)) 
