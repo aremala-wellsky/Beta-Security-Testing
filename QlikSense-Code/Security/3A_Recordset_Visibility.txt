@@ -10,6 +10,12 @@ LOAD DISTINCT
 *
 RESIDENT Recordset_security_exit;
 
+Recordset_security_interim_in:
+NOCONCATENATE
+LOAD DISTINCT
+*
+RESIDENT Recordset_security_interim;
+
 Recordset_Group:
 LOAD DISTINCT 
  	provider_id,
@@ -36,6 +42,14 @@ LOAD
 FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT_RECORDSETVISIBILITY.qvd]
 (qvd);
 
+INNER JOIN (Recordset_security_interim)
+LOAD
+    recordset_id as %interim_recordset_id,
+    visibility_group_id,
+    visible
+FROM [lib://$(vConnection)/$(vQVDType)/$(vDBname)/$(vFilenamePrefix)_SP_CLIENT_RECORDSETVISIBILITY.qvd]
+(qvd);
+
 Recordset:
 NOCONCATENATE
 LOAD
@@ -49,6 +63,12 @@ LOAD
 * 
 RESIDENT Recordset_security_exit;
 DROP TABLE Recordset_security_exit;
+
+CONCATENATE(Recordset)
+LOAD
+* 
+RESIDENT Recordset_security_interim;
+DROP TABLE Recordset_security_interim;
 
 
 LEFT JOIN (Recordset_Group)

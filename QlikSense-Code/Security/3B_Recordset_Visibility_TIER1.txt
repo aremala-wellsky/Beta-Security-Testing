@@ -5,7 +5,7 @@ LOAD DISTINCT
 RESIDENT EE_RECORDSET_ACCESS_TIER1;
 DROP TABLE EE_RECORDSET_ACCESS_TIER1;
 
-DROP FIELDS %exit_recordset_id,%entry_recordset_id,%suba_provider_creating_id,entry_exit_id, provider_id,TIER_LINK,[Entry Exit Id],[Client Provider Created By Id], 
+DROP FIELDS %interim_recordset_id,%exit_recordset_id,%entry_recordset_id,%suba_provider_creating_id,entry_exit_id, provider_id,TIER_LINK,[Entry Exit Id],[Client Provider Created By Id], 
 entry_recordset_id,exit_recordset_id, visible, Visible, not_Visible, visibility_group_id
 FROM EERECORDSET_ACCESS;
 

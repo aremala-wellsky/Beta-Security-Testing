@@ -21,6 +21,12 @@ LOAD DISTINCT
 RESIDENT Recordset_security_exit_in;
 DROP TABLE Recordset_security_exit_in;
 
+CONCATENATE(Recordset_security_vis)
+LOAD DISTINCT
+*
+RESIDENT Recordset_security_interim_in;
+DROP TABLE Recordset_security_interim_in;
+
 
 INNER JOIN(EE_RECORDSET_ACCESS)
 LOAD    

@@ -9,6 +9,12 @@ SELECT qlik_flatten_all_suba_view('1/01/2015');
 
 DROP TABLE BUILD_RECORDSET_VIEWS;
 
+Recordset_security_interim:
+Noconcatenate
+LOAD * INLINE [
+	entry_exit_id,%interim_recordset_id,%suba_provider_creating_id
+];
+
 
 RECORDSET_LIST_INTERIM:
 //SELECT table_name AS sp_table_name, 'sa_' || SUBSTRING(table_name, 14, CHAR_LENGTH(table_name)) AS qlik_table_name,  SUBSTRING(table_name, 14, CHAR_LENGTH(table_name)) AS table_name_only
@@ -39,6 +45,7 @@ FOR i=0 to $(NumRows)-1
   Noconcatenate
   LOAD DISTINCT
   *,
+  recordset_id as %interim_recordset_id,
   recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Interim)RECORDSET_ID_review'
   RESIDENT $(varRecordSetQlikName);
   
@@ -65,13 +72,13 @@ RS_Interim:
     INNER JOIN sp_picklist_value pv ON (pv.picklist_value_id = eer.point_in_time_type_id)  
   INNER JOIN sp_provider_tree belowtree ON (belowtree.ancestor_provider_id = ee.provider_id)
   WHERE 
-  --(dr.date_effective >= '$(vEntryExitDate)')AND 
   (ee.active = TRUE) AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '$(vEntryExitDate)'))
-    AND (eer.active = TRUE) --AND (eer.review_date >= '$(vEntryExitDate)')
+    AND (eer.active = TRUE) 
     AND pv.code NOT IN ('EEPOINTINTIME_EXIT','EEPOINTINTIME_ENTRY')
   AND (belowtree.provider_id = dr.provider_creating_id)
     AND (ft.$(varRecordSetTableNameOnly)startdate::DATE <= eer.review_date::DATE)
-    AND ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL) OR (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= eer.review_date::DATE))
+    AND ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL) 
+	OR (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= eer.review_date::DATE))
   UNION
   SELECT DISTINCT ee.entry_exit_id, ft.recordset_id, dr.provider_creating_id, p.name, dr.user_creating_id, u.name AS user_name,
     plv(eer.point_in_time_type_id) AS entry_exit_review_pit_type,
@@ -87,13 +94,30 @@ RS_Interim:
     INNER JOIN sp_picklist_value pv ON (pv.picklist_value_id = eer.point_in_time_type_id)  
   INNER JOIN sp_provider_tree abovetree ON (abovetree.provider_id = ee.provider_id)
   WHERE 
-  --(dr.date_effective >= '$(vEntryExitDate)'::DATE)AND
   (ee.active = TRUE) AND ((ee.exit_date IS NULL) OR (ee.exit_date >= '$(vEntryExitDate)'))
     AND (eer.active = TRUE) --AND (eer.review_date >= '$(vEntryExitDate)')
     AND pv.code NOT IN ('EEPOINTINTIME_EXIT','EEPOINTINTIME_ENTRY')
   AND (abovetree.ancestor_provider_id = dr.provider_creating_id)
     AND (ft.$(varRecordSetTableNameOnly)startdate::DATE <= eer.review_date::DATE)
-    AND ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL) OR (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= eer.review_date::DATE));
+    AND ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL) OR 
+	(ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= eer.review_date::DATE));
+	
+RS_Interim_Explicit:	
+SELECT DISTINCT ee.entry_exit_id, ft.recordset_id,dr.question_id,dr.provider_creating_id
+  FROM $(varRecordSetTableName) ft
+  JOIN da_recordset dr ON dr.recordset_id = ft.recordset_id
+  INNER JOIN sp_entry_exit ee ON (ee.client_id = ft.client_id)
+  INNER JOIN sp_entry_exit_review eer USING (entry_exit_id)
+  WHERE 
+  (ee.active = TRUE) AND (eer.active = TRUE) AND 
+  AND ((eer.review_date::DATE >= '$(vEntryExitDate)')
+  AND ((ee3.exit_date IS NULL) OR (ee3.exit_date >= '$(vEntryExitDate)'))
+  AND dr.covered_by_roi
+  AND ((((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.review_date::DATE)) 
+  AND (ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE IS NULL)) 
+                   OR (((ft.$(varRecordSetTableNameOnly)startdate::DATE <= ee.review_date::DATE)) 
+                   AND ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= ee.review_date::DATE) 
+                   OR ((ft.$(varRecordSetTableNameOnlyUseEndDate)::DATE >= date(now()))))));
 
 
   INNER JOIN($(varRecordSetQlikName_Interim))
@@ -105,6 +129,16 @@ RS_Interim:
   user_creating_id AS [client_$(varRecordSetQlikName_Ucase_Interim)_User_Created_By_Id_Review],
   user_name AS [client_$(varRecordSetQlikName_Ucase_Interim)_User_Created_By_Review]
   RESIDENT RS_Interim;
+  
+  CONCATENATE(Recordset_security_interim)
+  LOAD
+  entry_exit_id, 
+  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Interim)RECORDSET_ID_review',
+  recordset_id as %interim_recordset_id,
+  provider_creating_id as %suba_provider_creating_id
+  RESIDENT RS_Entry_Explicit;
+  DROP TABLE RS_Entry_Explicit;
+  
   
   TEMP_SUBA_REVIEW:
   Noconcatenate
@@ -131,7 +165,7 @@ RS_Interim:
   DROP TABLE RS_Interim;
   
   DROP FIELDS client_id FROM $(varRecordSetQlikName_Interim);
-  DROP FIELDS recordset_id FROM $(varRecordSetQlikName_Interim);
+  DROP FIELDS recordset_id,[Entry Exit Review Id] FROM $(varRecordSetQlikName_Interim);
 
 
   FieldMapSaClientInterim:
