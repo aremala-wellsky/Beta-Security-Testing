@@ -136,8 +136,8 @@ SELECT DISTINCT ee.entry_exit_id, ft.recordset_id,dr.question_id,dr.provider_cre
   recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Interim)RECORDSET_ID_review',
   recordset_id as %interim_recordset_id,
   provider_creating_id as %suba_provider_creating_id
-  RESIDENT RS_Entry_Explicit;
-  DROP TABLE RS_Entry_Explicit;
+  RESIDENT RS_Interim_Explicit;
+  DROP TABLE RS_Interim_Explicit;
   
   
   TEMP_SUBA_REVIEW:
