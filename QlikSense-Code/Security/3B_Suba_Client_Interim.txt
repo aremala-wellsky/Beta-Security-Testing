@@ -46,7 +46,8 @@ FOR i=0 to $(NumRows)-1
   LOAD DISTINCT
   *,
   recordset_id as %interim_recordset_id,
-  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Interim)RECORDSET_ID_review'
+  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Interim)RECORDSET_ID_review',
+  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Interim)_RECORDSET_ID_review'
   RESIDENT $(varRecordSetQlikName);
   
    CustomEndFieldCheck:
@@ -133,7 +134,7 @@ SELECT DISTINCT ee.entry_exit_id, ft.recordset_id,dr.question_id,dr.provider_cre
   CONCATENATE(Recordset_security_interim)
   LOAD
   entry_exit_id, 
-  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Interim)RECORDSET_ID_review',
+  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Interim)_RECORDSET_ID_review',
   recordset_id as %interim_recordset_id,
   provider_creating_id as %suba_provider_creating_id
   RESIDENT RS_Interim_Explicit;
