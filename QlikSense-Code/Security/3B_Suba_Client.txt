@@ -62,8 +62,7 @@ FOR i=0 to $(NumRows)-1
   Noconcatenate
   LOAD DISTINCT
   *,
-  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Entry)RECORDSET_ID_entry',
-  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Exit)_RECORDSET_ID_entry'
+  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Entry)RECORDSET_ID_entry'
   RESIDENT $(varRecordSetQlikName);
 
 
@@ -118,7 +117,7 @@ FOR i=0 to $(NumRows)-1
 CONCATENATE(Recordset_security_entry)
   LOAD
   entry_exit_id, 
- recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Entry)_RECORDSET_ID_entry',
+ recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Entry)RECORDSET_ID_entry',
    recordset_id as %entry_recordset_id,
   provider_creating_id as %suba_provider_creating_id
   RESIDENT RS_Entry_Explicit;
@@ -247,9 +246,7 @@ FOR i=0 to $(NumRows)-1
   Noconcatenate
   LOAD DISTINCT
   *,
-  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Exit)RECORDSET_ID_exit',
-  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Exit)_RECORDSET_ID_exit'
-  
+  recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Exit)RECORDSET_ID_exit'
   RESIDENT $(varRecordSetQlikName);
   
   $(varRecordSetQlikName):
@@ -314,7 +311,7 @@ FOR i=0 to $(NumRows)-1
 CONCATENATE(Recordset_security_exit)
   LOAD
   entry_exit_id, 
-  recordset_id as %exit_recordset_id,recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Exit)_RECORDSET_ID_exit',
+  recordset_id as %exit_recordset_id,recordset_id AS 'client_$(varRecordSetQlikName_Ucase_Exit)RECORDSET_ID_exit',
   provider_creating_id as %suba_provider_creating_id
   RESIDENT RS_Exit_Explicit;
   DROP TABLE RS_Exit_Explicit;
