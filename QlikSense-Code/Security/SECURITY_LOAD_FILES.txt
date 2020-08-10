@@ -19,7 +19,7 @@ $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Client_Infraction_Visib
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Matrix_Group_Visibility.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Call_Record_Visibility.qvs]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Call_Record_Answer_Visibility.txt]);
-$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Call_Recordset_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3A_Call_Recordset_Visibility.qvs]);
 
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Security.txt]);
 
@@ -53,9 +53,9 @@ $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Release_Of_Info_Visibil
 
 
 
-$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Answers.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Answers.qvs]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Followup_Answers.txt]);
-$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Entry_Exit_Answers.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Entry_Exit_Answers.qvs]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Entry_Exit_Reviews.qvs]);
 
 
@@ -103,7 +103,7 @@ LET varencrypted_upgrade_setting=Peek('encrypted_upgrade_setting',0,'sp_setting_
 
 IF (($(varsite_upgrade_setting) = 0) AND ($(varencrypted_upgrade_setting) = 1)) THEN
 ELSE
-$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Suba_Call.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Suba_Call.qvs]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Suba_Call_Followup.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Suba_Client.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Suba_Client_Interim.txt]);

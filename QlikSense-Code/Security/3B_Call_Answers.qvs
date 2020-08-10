@@ -18,8 +18,11 @@ DROP TABLE Temp_Call_Start_Answer_Table;
 
 DROP FIELDS sec_key FROM Call_Start_Answer;
 
+DROP_CALL_RESOURCES:
+DROP TABLE IF EXISTS qlik_call_answer_access;
+DROP TABLE IF EXISTS qlik_call_answers;
+DROP TABLE IF EXISTS qlik_call_followup_answers;
+DROP VIEW IF EXISTS qlik_call_answer_pivot_view;
+DROP VIEW IF EXISTS qlik_call_followup_answer_pivot_view;
 
-
-
-
-
+DROP TABLE DROP_CALL_RESOURCES;

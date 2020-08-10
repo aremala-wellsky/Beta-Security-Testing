@@ -36,13 +36,4 @@ RESIDENT explicit_call_recordset_security;
 DROP TABLE explicit_call_recordset_security;	
 
 STORE CALL_RECORDSET_ACCESS INTO [lib://$(vConnection)/$(vQVDStoreType)/$(vDBname)/$(vStoreQVDTypePrefix)_CALL_RECORDSET_ACCESS.qvd];
-DROP TABLE CALL_RECORDSET_ACCESS;
-
-
-
-
-
-
-
-
-	
+DROP TABLE CALL_RECORDSET_ACCESS;	

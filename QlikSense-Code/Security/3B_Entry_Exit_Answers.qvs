@@ -49,6 +49,11 @@ LOAD
 Resident Virtual_Field_Name_TMP;
 Drop Table Virtual_Field_Name_TMP;
 
+DROP_ANSWER_RESOURCES:
+DROP TABLE IF EXISTS qlik_answer_access;
+DROP TABLE IF EXISTS qlik_entry_answers;
+DROP TABLE IF EXISTS qlik_exit_answers;
+DROP VIEW IF EXISTS qlik_entry_answer_pivot_view;
+DROP VIEW IF EXISTS qlik_exit_answer_pivot_view;
 
-
-
+DROP TABLE DROP_ANSWER_RESOURCES;
