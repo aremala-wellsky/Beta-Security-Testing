@@ -54,7 +54,7 @@ $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Release_Of_Info_Visibil
 
 
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Answers.qvs]);
-$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Followup_Answers.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Followup_Answers.qvs]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Entry_Exit_Answers.qvs]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Entry_Exit_Reviews.qvs]);
 
@@ -73,7 +73,7 @@ $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Call_Answer_TI
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Answer_Visibility_TIER1.txt]);
 
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Call_Recordset.txt]);
-$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Recordset_Visibility.txt]);
+$(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Call_Recordset_Visibility.qvs]);
 
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Inherent_Entry_Exit.txt]);
 $(Must_Include=[lib://$(vSVNConnection)/$(vSVNFolder)/3B_Entry_Exit_Visibility.txt]);

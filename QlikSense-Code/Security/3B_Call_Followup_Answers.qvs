@@ -1,5 +1,3 @@
-
-
 Temp_Call_Followup_Answer_Table:
 select * from qlik_call_followup_answer_pivot_view;
 
@@ -13,8 +11,8 @@ DROP TABLE Temp_Call_Followup_Answer_Table;
 
 DROP FIELDS sec_key FROM Call_Followup_Answer;
 
+DROP_CALL_FOLLOWUP_RESOURCES:
+DROP TABLE IF EXISTS qlik_call_followup_answers;
+DROP VIEW IF EXISTS qlik_call_followup_answer_pivot_view;
 
-
-
-
-
+DROP TABLE DROP_CALL_FOLLOWUP_RESOURCES;
