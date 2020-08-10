@@ -52,7 +52,7 @@ Load DISTINCT
     1 AS Visible,
 	call_record_id
 RESIDENT Call_Recordset_Group
-WHERE match(Visible, 1);
+WHERE visible = 1;
 
 not_Visible:
 LEFT JOIN(Visible)
@@ -62,7 +62,7 @@ Load DISTINCT
     1 AS not_Visible,
 	call_record_id
 RESIDENT Call_Recordset_Group
-WHERE match(Visible, 0);
+WHERE visible = 0;
 
 DROP TABLE Call_Recordset_Group;
 
