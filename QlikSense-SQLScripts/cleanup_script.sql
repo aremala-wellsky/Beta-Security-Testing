@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS qlik_answer_vis_provider_entry;
 DROP TABLE IF EXISTS qlik_answer_vis_provider_exit;
 DROP TABLE IF EXISTS qlik_answer_access_entry;
 DROP TABLE IF EXISTS qlik_answer_access_exit;
+DROP TABLE IF EXISTS qlik_answer_questions;
 DROP TABLE IF EXISTS qlik_callfollow_answers;
 DROP TABLE IF EXISTS qlik_review_answer_pivot;
 DROP TABLE IF EXISTS tmp_table_sec_aa_entry;
